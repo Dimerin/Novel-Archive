@@ -1,5 +1,5 @@
 <?php
-include '/db/db.php';
+include 'db/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
