@@ -25,6 +25,19 @@
         background-image: url('imgs/bg.jpg');
         min-height: 100%;
     }
+    .bgimg-2 {
+        background-position: center;
+        background-size: cover;
+        background-image: url('imgs/pricing.jpg');
+        min-height: 100%;
+        color: white;
+    }
+    .bgimg-3 {
+        background-position: center;
+        background-size: cover;
+        background-image: url('imgs/team.jpg');
+        min-height: 100%;
+    }
 
     .w3-bar .w3-button {
         padding: 16px;
@@ -123,13 +136,13 @@
     </div>
   </header>
     <!-- Pricing Section -->
-    <div class="w3-container w3-center w3-dark-red" style="padding:128px 16px; position: relative;" id="pricing">
+    <div class="w3-container w3-center bgimg-2" style="padding:128px 16px; position: relative;" id="pricing">
         <h3>PRICING</h3>
         <p class="w3-large">Choose a pricing plan that fits your needs.</p>
         <div class="w3-row-padding w3-center" style="margin-top:46px">
             <div class="w3-half w3-padding-small">
                 <ul class="w3-ul w3-white w3-hover-shadow w3-margin">
-                    <li class="w3-black w3-xlarge w3-padding-32">Free</li>
+                    <li class="w3-khaki w3-xlarge w3-padding-32">Free</li>
                     <li class="w3-padding-12"><b>500 MB</b> Novels storage</li>
                     <li class="w3-padding-12"><b>10</b> Novels downloads</li>
                     <li class="w3-padding-12"><b>Limited</b> Support</li>
@@ -142,7 +155,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="w3-half w3-padding">
+            <div class="w3-half w3-padding-small">
                 <ul class="w3-ul w3-white w3-hover-shadow w3-margin">
                     <li class="w3-teal w3-xlarge w3-padding-32">Premium</li>
                     <li class="w3-padding-12"><b>25 GB</b> Novels storage</li>
@@ -164,7 +177,7 @@
         </div>
     </div>
 <!-- Team Section -->
-<div class="w3-container" style="padding:128px 16px; position: relative;" id="team">
+<div class="w3-container bgimg-3" style="padding:128px 16px; position: relative;" id="team">
         <h3 class="w3-center">THE TEAM</h3>
         <p class="w3-center w3-large">The ones who developed this project</p>
         <div class="w3-row-padding w3-grayscale" style="margin-top:64px">

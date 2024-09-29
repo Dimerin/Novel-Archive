@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
         <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
         <a href="index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
-        <a href="login.php" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
+        <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
         <a href="register.php" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
     </nav>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">

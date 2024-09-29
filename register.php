@@ -77,8 +77,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             Novel Archive</a>
             <div class="w3-right w3-hide-small">
             <a href="index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
-            <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
-            <a href="register.php" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
+            <a href="login.php" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
+            <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
     </div>
     <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
       <i class="fa fa-bars"></i>
@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
         <a href="index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
         <a href="login.php" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
-        <a href="register.php" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
+        <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
     </nav>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
     <div class="w3-display-left w3-text-white" style="padding:48px">
