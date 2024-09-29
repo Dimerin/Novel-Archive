@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <input type="text" class="w3-input w3-border" name="username" placeholder="Username" required><br>
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
             <input type="password"  class="w3-input w3-border" name="password" placeholder="Password" required><br>
-            <button class="w3-button w3-black" type="submit"><i class="fa fa-user-plus"></i> REGISTER</button>
+            <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-user-plus"></i> REGISTER</button>
         </form>
     <script>
     // Used to toggle the menu on small screens when clicking on the menu button

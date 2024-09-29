@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form method="POST" action="" class="w3-animate-bottom">
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
             <input type="password"  class="w3-input w3-border" name="password" placeholder="Password" required><br>
-            <button class="w3-button w3-black" type="submit"><i class="fa fa-sign-in"></i> LOGIN</button>
+            <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-sign-in"></i> LOGIN</button>
             <a href="forgot_password.php"  class="w3-animate-bottom">Forgot password?</a>
         </form>
        
