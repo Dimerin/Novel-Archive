@@ -51,11 +51,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-position: center;
             background-size: cover;
             background-image: url('imgs/login.jpg');
-            min-height: 100%;
+            min-height: 100%;;
         }
 
         .w3-bar .w3-button {
             padding: 16px;
+        }
+        .w3-animate-bottom {
+        animation-duration: 1s; 
+        animation-fill-mode: forwards; 
+        opacity: 0; 
+        }
+
+
+        .w3-animate-delay-1 {
+            animation-delay: 0.5s;  
+        }
+
+        .w3-animate-delay-2 {
+            animation-delay: 1s;  
+        }
+
+        .w3-animate-delay-3 {
+            animation-delay: 1.5s; 
         }
     </style>
 </head>
