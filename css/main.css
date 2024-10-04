@@ -1,0 +1,53 @@
+body,h1,h2,h3,h4,h5,h6 {
+    font-family: "Raleway Bold", sans-serif;
+
+}
+
+body, html {
+    height: 100vh;
+    line-height: 1.8;
+}
+
+.bgimg-1 .bgimg-2 .bgimg-3 {
+    background-position: center;
+    background-size: cover;
+    min-height: 100vh;;
+}
+
+.w3-bar .w3-button {
+    padding: 16px;
+}
+.w3-animate-bottom {
+    animation-duration: 1s; 
+    animation-fill-mode: forwards; 
+    opacity: 0; 
+}
+
+.w3-animate-delay-1 {
+    animation-delay: 0.5s;  
+}
+
+.w3-animate-delay-2 {
+    animation-delay: 1s;  
+}
+
+.w3-animate-delay-3 {
+    animation-delay: 1.5s; 
+}
+
+
+.w3-bar .w3-button {
+    padding: 16px;
+}
+
+.inline-link {
+    display: inline-block;
+    margin-right: 10px; 
+}
+
+.w3-dark-red {
+    background-color: #4a1c1c; 
+    color: white;
+}
+
+
