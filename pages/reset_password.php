@@ -1,5 +1,5 @@
 <?php
-include 'db/db.php';
+include '../db/db.php';
 
 if ($_GET['token']) {
     $token = $_GET['token'];
@@ -25,7 +25,7 @@ if ($_GET['token']) {
 <html lang="en">
 <head>
     <title>Reset Password</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <h2>Reset Password</h2>

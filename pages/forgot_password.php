@@ -1,5 +1,5 @@
 <?php
-include 'db/db.php';
+include '../db/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
@@ -29,21 +29,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="../css/main.css">
 </head>
 <style>
     .bgimg-1 {
-        background-image: url('imgs/fpsw.jpg');
+        background-image: url('../imgs/fpsw.jpg');
     }
 </style>
 <body>
 <div class="w3-top">
         <div class="w3-bar w3-black w3-card w3-animate-bottom " id="myNavbar">
-            <a href="index.php" class="w3-bar-item w3-button w3-wide">
-            <img src="imgs/icon.png" alt="Icon" style="width:30px; height:30px; vertical-align:middle; margin-right:5px;">
+            <a href="../index.php" class="w3-bar-item w3-button w3-wide">
+            <img src="../imgs/icon.png" alt="Icon" style="width:30px; height:30px; vertical-align:middle; margin-right:5px;">
             Novel Archive</a>
             <div class="w3-right w3-hide-small">
-            <a href="index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
+            <a href="../index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
             <a href="login.php" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
             <a href="register.php" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
     </div>
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </div>
     <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
         <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
-        <a href="index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
+        <a href="../index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
         <a href="login.php" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
         <a href="register.php" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
     </nav>
@@ -69,6 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
         </div>
     </header>
-    <script src="js/menu.js"></script>
+    <script src="../js/menu.js"></script>
 </body>
 </html>

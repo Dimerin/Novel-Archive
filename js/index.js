@@ -22,27 +22,6 @@
         });
     });
 
-      // Smooth scrolling with mouse wheel
-    document.addEventListener('wheel', function(event) {
-    event.preventDefault();
-    const sections = document.querySelectorAll('header, .w3-container, footer');
-    let currentSectionIndex = Array.from(sections).findIndex(section => {
-        return section.getBoundingClientRect().top >= 0;
-    });
-
-    if (event.deltaY > 0) {
-        // Scrolling down
-        if (currentSectionIndex < sections.length - 1) {
-            sections[currentSectionIndex + 1].scrollIntoView({ behavior: 'smooth' });
-        }
-    } else {
-        // Scrolling up
-        if (currentSectionIndex > 0) {
-            sections[currentSectionIndex - 1].scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-}, { passive: false });
-
     function scrollToSection(direction) {
         const sections = document.querySelectorAll('header, .w3-container, footer');
         let currentSectionIndex = Array.from(sections).findIndex(section => {
