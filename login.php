@@ -35,13 +35,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="css/main.css">
     <style>
-  
+        body,h1,h2,h3,h4,h5,h6 {
+            font-family: "Raleway Bold", sans-serif;
+        
+        }
+
+        body, html {
+            height: 100%;
+            line-height: 1.8;
+        }
+
+    
         .bgimg-1 {
             background-position: center;
             background-size: cover;
             background-image: url('imgs/login.jpg');
+            min-height: 100%;;
+        }
+
+        .w3-bar .w3-button {
+            padding: 16px;
+        }
+        .w3-animate-bottom {
+        animation-duration: 1s; 
+        animation-fill-mode: forwards; 
+        opacity: 0; 
+        }
+
+
+        .w3-animate-delay-1 {
+            animation-delay: 0.5s;  
+        }
+
+        .w3-animate-delay-2 {
+            animation-delay: 1s;  
+        }
+
+        .w3-animate-delay-3 {
+            animation-delay: 1.5s; 
         }
     </style>
 </head>
@@ -82,6 +114,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
        
   </div> 
   </header>
-        <script src="js/menu.js"></script>
+   <script>
+    // Used to toggle the menu on small screens when clicking on the menu button
+    function w3_open() {
+        if (mySidebar.style.display === 'block') {
+            mySidebar.style.display = 'none';
+        } else {
+            mySidebar.style.display = 'block';
+        }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+        const mySidebar = document.getElementById("mySidebar");
+            mySidebar.style.display = "none";
+        }
+    </script>
 </body>
 </html>

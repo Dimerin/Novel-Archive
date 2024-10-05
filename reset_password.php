@@ -34,5 +34,4 @@ if ($_GET['token']) {
         <button type="submit">Reset Password</button>
     </form>
 </body>
-
 </html>
