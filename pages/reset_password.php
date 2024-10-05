@@ -1,7 +1,10 @@
 <?php
-include '../db/db.php';
+require_once '../db/db.php';
 
-if ($_GET['token']) {
+$db = new Database();
+$conn = $db->getConnection();
+
+if (isset($_GET['token'])) {
     $token = $_GET['token'];
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -15,6 +18,8 @@ if ($_GET['token']) {
         } else {
             echo "Error resetting password.";
         }
+
+        $stmt->close();
     }
 } else {
     echo "Invalid token.";

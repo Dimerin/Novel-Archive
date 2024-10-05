@@ -1,5 +1,8 @@
 <?php
-include '../db/db.php';
+require_once '../db/db.php';
+
+$db = new Database();
+$conn = $db->getConnection();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
@@ -23,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         echo "No user found.";
     }
+
+    $stmt->close();
 }
 ?>
 

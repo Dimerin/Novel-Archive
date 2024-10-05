@@ -1,5 +1,8 @@
 <?php
-include '../db/db.php';
+require_once '../db/db.php';
+
+$db = new Database();
+$conn = $db->getConnection();
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -14,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         echo "Error: " . $stmt->error;
     }
+
+    $stmt->close();
 }
 ?>
 
