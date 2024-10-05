@@ -1,6 +1,6 @@
-CREATE DATABASE novel_collection;
+CREATE DATABASE novel_archive;
 
-USE novel_collection;
+USE novel_archive;
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
