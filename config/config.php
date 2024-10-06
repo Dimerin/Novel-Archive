@@ -15,8 +15,9 @@ class Config {
             'DB_USER' => $_ENV['DB_USER'],
             'DB_PASSWORD' => $_ENV['DB_PASSWORD'],
             'DB_NAME' => $_ENV['DB_NAME'],
+            'MAIL_USER' => $_ENV['MAIL_USER'],
+            'MAIL_PASSWORD' => $_ENV['MAIL_PASSWORD'],
             //'MAIL_HOST' => $_ENV['MAIL_HOST'],
-            //'MAIL_PWD' => $_ENV['MAIL_PWD'],
             //'MAIL_PORT' => $_ENV['MAIL_PORT'],
             //'MAIL_FROM' => $_ENV['MAIL_FROM'],
             //'MAIL_FROM_NAME' => $_ENV['MAIL_FROM_NAME'],
@@ -50,3 +51,4 @@ class Config {
         return $this->config[$key] ?? null;
     }
 }
+?>
