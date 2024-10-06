@@ -1,20 +1,21 @@
 <?php
 require_once '../db/db.php';
+//require "DBManager.php";
 
 class FileManager {
     private $conn;
+    private $db;
 
     public function __construct() {
         //TODO: non funziona la connessione al db
         // devo fare la connessione al db in ogni metodo
         
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        $this->db = new Database();
+        $this->conn = $this->db->getConnection();
     }
 
     public function uploadFile($file) {
-        $db = new Database();
-        $this->conn = $db->getConnection();
+       
 
         $filename = basename($file['name']);
         $filetype = pathinfo($filename, PATHINFO_EXTENSION);
@@ -34,8 +35,7 @@ class FileManager {
         $filename = 'testo_inserito.txt';
         $filetype = 'txt';
         $filedata = $text;
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        
         $stmt = $this->conn->prepare("INSERT INTO files (filename, filetype, filedata) VALUES (?, ?, ?)");
         if (!$stmt) {
             throw new Exception("Preparazione della query fallita: " . $this->conn->error);
@@ -50,8 +50,7 @@ class FileManager {
     }
 
     public function downloadFile($id) {
-        $db = new Database();
-        $this->conn = $db->getConnection();
+        
         
         $stmt = $this->conn->prepare("SELECT filename, filetype, filedata FROM files WHERE id = ?");
         $stmt->bind_param("i", $id);
@@ -93,6 +92,7 @@ class FileManager {
     }
 
     public function __destruct() {
+        
         //$this->conn->close();
     }
 }
