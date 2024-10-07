@@ -1,6 +1,5 @@
 <?php
-//require 'config.php';
-//require '../db/db.php';
+
 require '../util/FileManager.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

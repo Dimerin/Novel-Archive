@@ -34,7 +34,6 @@ body, html {
     opacity: 0; 
 }
 
-
 .w3-animate-delay-1 {
     animation-delay: 0.5s;  
 }
@@ -58,4 +57,11 @@ body, html {
 .scroll-arrows .fa {
     font-size: 24px;
     cursor: pointer;
+}
+.hidden {
+    display: none;
+}
+.overlap-container {
+    position: relative;
+    margin-bottom: 20px;    
 }

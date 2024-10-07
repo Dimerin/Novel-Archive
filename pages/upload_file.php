@@ -1,66 +1,53 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
+    <title>Upload content</title>
     <meta charset="UTF-8">
-    <title>Caricamento File o Testo</title>
-    <script>
-        async function uploadFile(event) {
-            event.preventDefault();
-
-            const formData = new FormData();
-            const uploadType = document.querySelector('input[name="upload_type"]:checked').value;
-
-            if (uploadType === 'file') {
-                const fileInput = document.getElementById('file');
-                if (fileInput.files.length === 0) {
-                    alert('Seleziona un file da caricare.');
-                    return;
-                }
-                formData.append('file', fileInput.files[0]);
-            } else {
-                const textContent = document.getElementById('text_content').value;
-                if (textContent.trim() === '') {
-                    alert('Inserisci del testo da caricare.');
-                    return;
-                }
-                formData.append('text_content', textContent);
-            }
-
-            formData.append('upload_type', uploadType);
-
-            try {
-                const response = await fetch('../script/upload_file.php', {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                alert(result.message);
-            } catch (error) {
-                console.error('Errore durante il caricamento:', error);
-                alert('Errore durante il caricamento del file o del testo.');
-            }
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="../js/upload_file.js"></script>
+    <script src="../js/menu.js"></script>
+</head>
+<style>
+        .bgimg-1 {
+            background-image: url('../imgs/upload_file.jpg');
         }
-    </script>
+    </style>
 </head>
 <body>
-    <h1>Caricamento File o Testo</h1>
-    <form onsubmit="uploadFile(event)">
-        <label>
-            <input type="radio" name="upload_type" value="file" checked>
-            Carica un file
-        </label>
-        <br>
-        <label for="file">Scegli un file:</label>
-        <input type="file" name="file" id="file">
-        <br><br>
-        <label>
-            <input type="radio" name="upload_type" value="text">
-            Inserisci testo
-        </label>
-        <br>
-        <textarea name="text_content" id="text_content" rows="10" cols="30"></textarea>
-        <br><br>
-        <button type="submit">Carica</button>
-    </form>
+<?php include '../includes/navbar.php'; ?>
+    <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
+        <div class="w3-display-left w3-text-black" style="padding:48px">
+            <span class="w3-jumbo w3-hide-small w3-animate-bottom">Upload your content</span><br>
+            <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Upload your content</span><br>
+            
+            <form onsubmit="uploadFile(event)" class="w3-animate-bottom">
+                <input type="radio" name="upload_type" id="upload_file_radio" value="file" checked>
+                <span class="w3-medium ">PDF</span>
+                <input type="radio" name="upload_type" id="upload_text_radio" value="text">
+                <span class="w3-medium">Text</span>
+                <br>
+                <div class="overlap-container">
+                    <div id="file_upload_section">
+                        <label id="upload_file_label" for="upload_file">Select your PDF file</label>
+                        <input type="file" class="w3-input w3-border" name="upload_file" id="file"><br>
+                    </div>
+                    <div id="text_upload_section" class="hidden">
+                        <label id="text_content_label" for="text_content">Insert your text</label>
+                        <textarea class="w3-input w3-border" name="text_content" id="text_content" rows="10" cols="30"></textarea><br>
+                    </div>
+                </div>
+                    <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-upload"></i> UPLOAD</button>
+            </form>
+        </div> 
+    </header>
+    <script>
+    document.getElementById('upload_file_radio').addEventListener('change', toggleUploadSection);
+    document.getElementById('upload_text_radio').addEventListener('change', toggleUploadSection);   
+    toggleUploadSection();
+    </script>
 </body>
 </html>

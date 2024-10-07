@@ -41,27 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
  
 <body>
-<div class="w3-top">
-        <div class="w3-bar w3-black w3-card w3-animate-bottom " id="myNavbar">
-            <a href="../index.php" class="w3-bar-item w3-button w3-wide">
-            <img src="../imgs/icon.png" alt="Icon" style="width:30px; height:30px; vertical-align:middle; margin-right:5px;">
-            Novel Archive</a>
-            <div class="w3-right w3-hide-small">
-            <a href="../index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
-            <a href="login.php" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
-            <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
-    </div>
-    <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
-      <i class="fa fa-bars"></i>
-    </a>
-    </div>
-    </div>
-    <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
-        <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
-        <a href="../index.php" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
-        <a href="login.php" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
-        <a href="#home" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
-    </nav>
+<?php include '../includes/navbar.php'; ?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
     <div class="w3-display-left w3-text-white" style="padding:48px">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-">Registration Form</span><br>
