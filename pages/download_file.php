@@ -7,7 +7,7 @@
         async function downloadFile() {
             const fileId = document.getElementById('file_id').value;
             const viewType = document.querySelector('input[name="view_type"]:checked').value;
-            const response = await fetch(`../script/download_file.php?id=${fileId}`);
+            const response = await fetch(`../api/download_file.php?id=${fileId}`);
             const data = await response.json();
             console.log(data);
             //return;
