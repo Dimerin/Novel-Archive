@@ -27,7 +27,7 @@ async function uploadFile(event) {
             method: 'POST',
             body: formData
         });
-        const result = await response.json();
+        const result = await response.text();
         alert(result.message);
     } catch (error) {
         console.error('Errore durante il caricamento:', error);

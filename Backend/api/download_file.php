@@ -1,6 +1,6 @@
 <?php
 require '../db/db.php';
-require '../util/fileManager.php';
+require '../utils/fileManager.php';
 
 if (isset($_GET['id'])) {
     $fileManager = new FileManager();

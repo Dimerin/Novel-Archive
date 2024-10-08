@@ -1,7 +1,7 @@
 <?php
 /*
 PHP code to send an email using PHPMailer
-        require '../util/PostMan.php';
+        require '../utils/PostMan.php';
         $postman = new PostMan();
         $postman->send("example@gmail.com", "FUNZIONA", "Possiamo inviare le email, finalmente!");
 */
