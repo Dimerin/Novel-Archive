@@ -6,18 +6,18 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="./Frontend/css/main.css">
     <style>
     
     .bgimg-1 {
-        background-image: url('../imgs/bg.jpg');
+        background-image: url('./Frontend/imgs/bg.jpg');
     }
     .bgimg-2 {
-        background-image: url('../imgs/pricing.jpg');
+        background-image: url('./Frontend/imgs/pricing.jpg');
         color: white;
     }
     .bgimg-3 {       
-        background-image: url('../imgs/team.jpg');
+        background-image: url('./Frontend/imgs/team.jpg');
     }  
     #home .scroll-arrows .fa {
         color: white;
@@ -32,15 +32,15 @@
 
 </head>
 <body>
-    <?php include '../includes/navbar.php'; ?>
+    <?php require __DIR__ . '/../includes/navbar.php'; ?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
     <div class="w3-display-left w3-text-white" style="padding:48px">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-animate-delay-1">Novel Archive</span><br>
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1">Novel Archive</span><br>
         <span class="w3-xlarge w3-animate-bottom w3-animate-delay-2">A place to inspire and be inspired</span>
         <p class="w3-animate-bottom w3-animate-delay-3">
-            <a href="login.php" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">LOGIN</a>
-            <a href="register.php" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">REGISTER</a>
+            <a href="\login.php" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">LOGIN</a>
+            <a href="\register.php" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">REGISTER</a>
         </p>
     </div>
     <div class="scroll-arrows">
@@ -95,7 +95,7 @@
         <div class="w3-row-padding w3-grayscale" style="margin-top:64px">
             <div class="w3-third w3-margin-bottom w3-center">
                 <div class="w3-card">
-                    <img src="../imgs/tommaso.png" alt="Tommaso" style="width:60%">
+                    <img src="./Frontend/imgs/tommaso.png" alt="Tommaso" style="width:60%">
                     <div class="w3-container">
                         <h3 class="w3-center">Tommaso Califano</h3>
                         <p class="w3-opacity w3-center">Computer engineering student</p>
@@ -104,7 +104,7 @@
             </div>
             <div class="w3-third w3-margin-bottom w3-center">
                 <div class="w3-card">
-                    <img src="../imgs/nicola.png" alt="Nicola" style="width:60%">
+                    <img src="./Frontend/imgs/nicola.png" alt="Nicola" style="width:60%">
                     <div class="w3-container">
                         <h3 class="w3-center">Nicola Ramacciotti</h3>
                         <p class="w3-opacity w3-center">Computer engineering student</p>
@@ -113,7 +113,7 @@
             </div>
             <div class="w3-third w3-margin-bottom w3-center">
                 <div class="w3-card">
-                    <img src="../imgs/gabriele.png" alt="Gabriele" style="width:60%">
+                    <img src="./Frontend/imgs/gabriele.png" alt="Gabriele" style="width:60%">
                     <div class="w3-container">
                         <h3 class="w3-center">Gabriele Suma</h3>
                         <p class="w3-opacity w3-center">Computer engineering student</p>
@@ -130,11 +130,11 @@
 <footer class="w3-center w3-black w3-padding-64" id="footer">
   <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>To the top</a>
   <div class="w3-xlarge w3-section">
-    <img src="../imgs/cherubino_white.png" alt="cherubino" style="width:100px; height:100px; vertical-align:middle; margin-right:5px;">
+    <img src="./Frontend/imgs/cherubino_white.png" alt="cherubino" style="width:100px; height:100px; vertical-align:middle; margin-right:5px;">
   </div>
   <p>Powered by <a href="https://www.ing.unipi.it/it/" title="DII" target="_blank" class="w3-hover-text-green">Università di Pisa</a></p>
 </footer>
-    <script src="../js/index.js"></script>
-    <script src="../js/menu.js"></script>
+    <script src="./Frontend/js/index.js"></script>
+    <script src="./Frontend/js/menu.js"></script>
 </body>
 </html>

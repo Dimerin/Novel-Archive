@@ -3,7 +3,7 @@
 
 //use Dotenv\Dotenv;
 
-require_once '../config/config.php';
+require_once './Backend/config/config.php';
 
 class Database {
     private $host;

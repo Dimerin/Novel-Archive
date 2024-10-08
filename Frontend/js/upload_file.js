@@ -23,7 +23,7 @@ async function uploadFile(event) {
     formData.append('upload_type', uploadType);
 
     try {
-        const response = await fetch('../api/upload_file.php', {
+        const response = await fetch('/api/upload_file.php', {
             method: 'POST',
             body: formData
         });

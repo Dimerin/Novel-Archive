@@ -8,16 +8,16 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="./Frontend/css/main.css">
     <style>
         .bgimg-1 {
-            background-image: url('../imgs/login.jpg');
+            background-image: url('./Frontend/imgs/login.jpg');
         }       
     </style>
 </head>
  
 <body>
-    <?php include '../includes/navbar.php'; ?>
+    <?php require __DIR__ . '/../includes/navbar.php'; ?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
     <div class="w3-display-left w3-text-white" style="padding:48px">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-">Login</span><br>
@@ -32,6 +32,6 @@
        
   </div> 
   </header>
-  <script src="../js/menu.js"></script>
+  <script src="./Frontend/menu.js"></script>
 </body>
 </html>
