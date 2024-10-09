@@ -69,7 +69,7 @@ class FileManager {
                     'filedata' => $filedata
                 ];
 
-                header('Content-Type: application/json');
+                //header('Content-Type: application/json');
                 return json_encode($response);
             } else {
                 $response = [
@@ -78,7 +78,7 @@ class FileManager {
                     'filetype' => $filetype,
                     'filedata' => base64_encode($filedata)
                 ];
-                header('Content-Type: application/json');
+                //header('Content-Type: application/json');
                 return json_encode($response);
             }
         } else {
@@ -86,7 +86,7 @@ class FileManager {
                 'status' => 'error',
                 'message' => 'File non trovato'
             ];
-            header('Content-Type: application/json');
+            //header('Content-Type: application/json');
             return json_encode($response);
         }
     }

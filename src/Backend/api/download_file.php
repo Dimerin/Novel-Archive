@@ -1,4 +1,5 @@
 <?php
+// echo __DIR__; // path: /var/www/html/Backend/api
 require __DIR__ . '/../db/db.php';
 require __DIR__. '/../utils/fileManager.php';
 
