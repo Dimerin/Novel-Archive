@@ -1,27 +1,3 @@
-<?php
- require_once __DIR__. '/../../Backend/db/db.php';
-
-$db = new Database();
-$conn = $db->getConnection();
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $username, $email, $password);
-
-    if ($stmt->execute()) {
-        header("Location: login.php");
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-
-    $stmt->close();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
     </style>
+    <script src="./Frontend/js/register.js"></script>
 </head>
  
 <body>
@@ -47,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-">Registration Form</span><br>
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Registration Form</span><br>
         <span class="w3-large w3-animate-bottom">Join us! Insert your credential to get access to our service</span>
-        <form method="POST" action="" class="w3-animate-bottom">
+        <form class="w3-animate-bottom">
             <input type="text" class="w3-input w3-border" name="username" placeholder="Username" required><br>
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
             <input type="password"  class="w3-input w3-border" name="password" placeholder="Password" required><br>
