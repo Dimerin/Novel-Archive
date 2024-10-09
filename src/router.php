@@ -49,6 +49,7 @@ class Router
             case 'register':
                 $this->handleApiMethod($this->api_path . '/register_handler.php');
                 break;
+               
             default:
                 http_response_code(404);
                 echo json_encode(['error' => 'API not found']);
@@ -80,6 +81,10 @@ class Router
             case '/download_file':
                 $current_page = 'download_file';
                 require $this->pages_path . '/download_file.php';
+                break;
+            case '/dashboard':
+                $current_page = 'dashboard';
+                $this->handleApiMethod($this->pages_path . '/dashboard.php');
                 break;
             default:
                 require $this->pages_path . '/404.php';

@@ -23,6 +23,7 @@
     <a href="#" onclick="w3_close_dash()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey" title="close menu">
       <i class="fa fa-remove"></i>
     </a>
+    <img src="./Frontend/imgs/icon.png" alt="Icon" style="width:35%; vertical-align:middle; margin-right:5px;">
     <h2><b>Novel Archive</b></h2><br><br>
     <h4><b>USERNAME</b></h4>
   </div>
@@ -39,7 +40,7 @@
     <header id="dashboard">
         <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open_dash()"><i class="fa fa-bars"></i></span>
         <div class="w3-container">
-        <h1><b>Novels Catalogue</b></h1>
+        <h1><b>Catalogue</b></h1>
         <div class="w3-section w3-bottombar w3-padding-16">
         <span class="w3-margin-right">Filter:</span> 
         <button class="w3-button w3-black">Latest</button>
