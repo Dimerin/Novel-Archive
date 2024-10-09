@@ -3,6 +3,7 @@
 <head>
     <title>Reset Password</title>
     <link rel="stylesheet" href="../css/style.css">
+    <script src="./Frontend/js/reset_password.js"></script>
 </head>
 <body>
     <h2>Reset Password</h2>
