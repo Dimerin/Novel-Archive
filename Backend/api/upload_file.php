@@ -1,6 +1,6 @@
 <?php
 
-require '../utils/FileManager.php';
+require __DIR__ .'/../../Backend/utils/FileManager.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $fileManager = new FileManager();

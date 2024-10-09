@@ -1,6 +1,6 @@
 <?php
-require '../db/db.php';
-require '../utils/fileManager.php';
+require __DIR__ . '/../db/db.php';
+require __DIR__. '/../utils/fileManager.php';
 
 if (isset($_GET['id'])) {
     $fileManager = new FileManager();

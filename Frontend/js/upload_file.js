@@ -23,11 +23,11 @@ async function uploadFile(event) {
     formData.append('upload_type', uploadType);
 
     try {
-        const response = await fetch('/api/upload_file.php', {
+        const response = await fetch('/api/upload_file', {
             method: 'POST',
             body: formData
         });
-        const result = await response.text();
+        const result = await response.json();
         alert(result.message);
     } catch (error) {
         console.error('Errore durante il caricamento:', error);

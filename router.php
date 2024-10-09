@@ -4,6 +4,9 @@ class Router
     private $request;
     private $method;
     private $current_page;
+    private $base_path;
+    private $api_path;
+    private $pages_path;
 
     public function __construct()
     {
@@ -39,6 +42,12 @@ class Router
                 break;
             case 'download_file':
                 $this->handleApiMethod($this->api_path . '/download_file.php');
+                break;
+            case 'login':
+                $this->handleApiMethod($this->api_path . '/login_handler.php');
+                break;
+            case 'register':
+                $this->handleApiMethod($this->api_path . '/register_handler.php');
                 break;
             default:
                 http_response_code(404);

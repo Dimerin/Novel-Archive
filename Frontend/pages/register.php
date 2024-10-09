@@ -1,5 +1,5 @@
 <?php
- require_once 'C:\Users\tomca\Documents\GitHub\SNH-Project\Backend/db/db.php';
+ require_once __DIR__. '/../../Backend/db/db.php';
 
 $db = new Database();
 $conn = $db->getConnection();
