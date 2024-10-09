@@ -49,6 +49,12 @@ class Router
             case 'register':
                 $this->handleApiMethod($this->api_path . '/register_handler.php');
                 break;
+            case 'reset_pwd':
+                $this->handleApiMethod($this->api_path . '/reset_pwd.php');
+                break;
+            case 'forgot_pwd':
+                $this->handleApiMethod($this->api_path . '/forgot_pwd.php');
+                break;
                
             default:
                 http_response_code(404);
