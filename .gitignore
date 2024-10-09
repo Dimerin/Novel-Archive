@@ -1,3 +1,5 @@
 Vendor
 composer.*
 .env
+Config-file
+DB
