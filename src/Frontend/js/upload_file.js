@@ -3,6 +3,9 @@ window.addEventListener('load', init);
 function init() {
     const uploadForm = document.getElementById('uploadForm');
     uploadForm.addEventListener('submit', uploadFile);
+    document.getElementById('upload_file_radio').addEventListener('change', toggleUploadSection);
+    document.getElementById('upload_text_radio').addEventListener('change', toggleUploadSection);   
+    toggleUploadSection();
 }
 
 async function uploadFile(event) {
