@@ -24,7 +24,7 @@
             <span class="w3-jumbo w3-hide-small w3-animate-bottom">Upload your content</span><br>
             <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Upload your content</span><br>
             
-            <form onsubmit="uploadFile(event)" class="w3-animate-bottom">
+            <form id="uploadForm" class="w3-animate-bottom">
                 <input type="radio" name="upload_type" id="upload_file_radio" value="file" checked>
                 <span class="w3-medium ">PDF</span>
                 <input type="radio" name="upload_type" id="upload_text_radio" value="text">

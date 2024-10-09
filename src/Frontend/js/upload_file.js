@@ -1,3 +1,10 @@
+window.addEventListener('load', init);
+
+function init() {
+    const uploadForm = document.getElementById('uploadForm');
+    uploadForm.addEventListener('submit', uploadFile);
+}
+
 async function uploadFile(event) {
     event.preventDefault();
 
@@ -50,3 +57,4 @@ function toggleUploadSection() {
         textUploadSection.classList.add('hidden');
     }
 }
+
