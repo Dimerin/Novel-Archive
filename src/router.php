@@ -90,7 +90,7 @@ class Router
                 break;
             case '/dashboard':
                 $current_page = 'dashboard';
-                $this->handleApiMethod($this->pages_path . '/dashboard.php');
+                require $this->pages_path . '/dashboard.php';
                 break;
             default:
                 require $this->pages_path . '/404.php';

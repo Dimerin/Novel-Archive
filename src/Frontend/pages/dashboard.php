@@ -25,7 +25,8 @@
     </a>
     <img src="./Frontend/imgs/icon.png" alt="Icon" style="width:35%; vertical-align:middle; margin-right:5px;">
     <h2><b>Novel Archive</b></h2><br><br>
-    <h4><b>USERNAME</b></h4>
+    <h3><b>USERNAME</b></h3>
+    <h4><b>ROLE</b></h4>
   </div>
   <div class="w3-bar-block">
     <a href="#dashboard" onclick="w3_close_dash()" class="w3-bar-item w3-button w3-padding w3-white"><i class="fa fa-th-list fa-fw w3-margin-right"></i>CATALOGUE</a> 
