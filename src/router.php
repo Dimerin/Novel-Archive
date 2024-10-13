@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . '/Backend/Controller/FileController.php';
-require_once __DIR__ . '/Backend/Controller/UserController.php';
+require_once __DIR__ . '/Backend/controller/FileController.php';
+require_once __DIR__ . '/Backend/controller/UserController.php';
 class Router
 {
     private $request;
