@@ -39,8 +39,8 @@
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1">Novel Archive</span><br>
         <span class="w3-xlarge w3-animate-bottom w3-animate-delay-2">A place to inspire and be inspired</span>
         <p class="w3-animate-bottom w3-animate-delay-3">
-            <a href="./Frontend/pages/login" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">LOGIN</a>
-            <a href="./Frontend/pages/register" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">REGISTER</a>
+            <a href="/login" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">LOGIN</a>
+            <a href="/register" class="w3-button w3-white w3-padding-large w3-large w3-margin-top w3-hover-opacity-on inline-link">REGISTER</a>
         </p>
     </div>
     <div class="scroll-arrows">

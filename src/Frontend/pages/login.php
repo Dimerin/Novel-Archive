@@ -32,6 +32,6 @@
        
   </div> 
   </header>
-  <script src="./Frontend/menu.js"></script>
+  <script src="./Frontend/js/menu.js"></script>
 </body>
 </html>
