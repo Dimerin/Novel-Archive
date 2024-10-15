@@ -23,6 +23,11 @@
                         echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
                         <a href="/login" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>';
                     break;
+                    case 'logout':
+                        echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
+                        <a href="/login" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
+                        <a href="/register" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>';
+                    break;
                     default:                
                         echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>';
                     break;
@@ -54,6 +59,11 @@
             case 'register':
                 echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
                 <a href="/login" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>';
+            break;
+            case 'logout':
+                echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
+                <a href="/login" class="w3-bar-item w3-button"><i class="fa fa-sign-in"></i> LOGIN</a>
+                <a href="/register" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>';
             break;
             default:                
                 echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>';

@@ -69,7 +69,7 @@ class Router
             case 'forgot_pwd':
                 $this->handleApiMethod("{$this->api_path}/forgot_pwd.php");
                 break;
-               
+           
             default:
                 http_response_code(404);
                 echo json_encode(['error' => 'API not found']);
@@ -106,6 +106,10 @@ class Router
             case '/dashboard':
                 $current_page = 'dashboard';
                 require "{$this->pages_path}/dashboard.php";
+                break;
+            case '/logout':
+                $current_page = 'logout';
+                require "{$this->pages_path}/logout.php";
                 break;
             default:
                 require "{$this->pages_path}/404.php";

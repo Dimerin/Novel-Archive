@@ -1,3 +1,12 @@
+<?php 
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+    if (!isset($_SESSION["username"])) {
+        header("Location: /login");
+        exit();
+    }
+ ?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,6 +27,7 @@
         }      
     </style>
 <!-- Sidebar/menu -->
+
 <nav class="w3-sidebar w3-collapse w3-black w3-animate-left bgimg-1" style="z-index:3;width:300px;" id="mySidebar"><br>
   <div class="w3-container">
     <a href="#" onclick="w3_close_dash()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey" title="close menu">
@@ -25,8 +35,23 @@
     </a>
     <img src="./Frontend/imgs/icon.png" alt="Icon" style="width:35%; vertical-align:middle; margin-right:5px;">
     <h2><b>Novel Archive</b></h2><br><br>
-    <h3><b>USERNAME</b></h3>
-    <h4><b>ROLE</b></h4>
+    <h3 id="username"><b>User: <?php echo $_SESSION["username"]?></b></h3>
+    <h4 id="role"><b><?php
+    switch ($_SESSION["role"]) {
+        case 'non-premium':
+            echo '<span style="color: lightgreen;">Free Plan</span>';
+            break;
+        case 'premium':
+            echo '<span style="color: yellow;">Premium Plan</span>';
+            break;
+        case 'admin':
+            echo '<span style="color: red;">Admin User</span>';
+            break;
+        default:
+            echo '<span style="color: black;">Unknown Role</span>';
+            break;
+    }
+    ?></b></h4>
   </div>
   <div class="w3-bar-block">
     <a href="#dashboard" onclick="w3_close_dash()" class="w3-bar-item w3-button w3-padding w3-white"><i class="fa fa-th-list fa-fw w3-margin-right"></i>CATALOGUE</a> 

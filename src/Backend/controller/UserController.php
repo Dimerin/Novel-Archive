@@ -45,12 +45,15 @@ class UserController
     }
 
     public function login()
-    {
+    {   
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
         $email = $_POST['email'];
         $password = $_POST['password'];
 
         // Controlla se l'utente esiste
-        $stmt = $this->conn->prepare("SELECT id, username, password FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare(query: "SELECT id, username, password, role FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
@@ -58,15 +61,20 @@ class UserController
         if ($stmt->num_rows == 0) {
             $stmt->close();
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
+
         }
 
-        $stmt->bind_result($id, $username, $hashedPassword);
+        $stmt->bind_result($id, $username, $hashedPassword, $role);
         $stmt->fetch();
         $stmt->close();
 
         // Verifica la password
         if (password_verify($password, $hashedPassword)) {
+            $_SESSION['username'] = $username;
+            $_SESSION['role'] =$role;
+
             return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
+
         } else {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
         }
