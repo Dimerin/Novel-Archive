@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./Frontend/css/main.css">
+    <link rel="stylesheet" href="./Frontend/css/toast.css">
     <script src="./Frontend/js/upload_file.js"></script>
     <script src="./Frontend/js/menu.js"></script>
 </head>
@@ -18,6 +19,9 @@
     </style>
 </head>
     <body>
+    <div class="toast-container">
+        <ul class="notifications"></ul>
+    </div>
         <?php include './Frontend/includes/navbar.php'; ?>
         <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
             <div class="w3-display-left w3-text-black" style="padding:48px">
@@ -44,5 +48,6 @@
                 </form>
             </div> 
         </header>
+        <script src="./Frontend/js/toast.js"></script>
     </body>
 </html>

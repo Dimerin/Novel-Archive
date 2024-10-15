@@ -29,12 +29,17 @@ async function handleRegister(event) {
         if (response.ok) {
             const result = await response.json();
             //console.log('Registration successful:', result);
-            alert(result.message);
+            //alert(result.message);
+            showToast('success', result.message);
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 2000);
             // Handle successful registration (e.g., redirect to login page)
         } else {
             const error = await response.json();
             //console.error('Registration failed:', error);
-            alert(error.message);
+            //alert(error.message);
+            showToast('error', error.message);
             // Handle registration error (e.g., display error message)
         }
     } catch (error) {

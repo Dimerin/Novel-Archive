@@ -17,14 +17,17 @@ async function uploadFile(event) {
     if (uploadType === 'file') {
         const fileInput = document.getElementById('file');
         if (fileInput.files.length === 0) {
-            alert('Seleziona un file da caricare.');
+            //alert('Seleziona un file da caricare.');
+            showToast('error', 'Select a file to upload.');
             return;
         }
         formData.append('file', fileInput.files[0]);
     } else {
         const textContent = document.getElementById('text_content').value;
         if (textContent.trim() === '') {
-            alert('Inserisci del testo da caricare.');
+
+            //alert('Inserisci del testo da caricare.');
+            showToast('error', 'Insert text to upload.');
             return;
         }
         formData.append('text_content', textContent);
@@ -38,10 +41,12 @@ async function uploadFile(event) {
             body: formData
         });
         const result = await response.json();
-        alert(result.message);
+        //alert(result.message);
+        showToast(result.status, result.message);
     } catch (error) {
-        console.error('Errore durante il caricamento:', error);
-        alert('Errore durante il caricamento del file o del testo.');
+        console.error('Error during file or text upload:', error);
+        //alert('Errore durante il caricamento del file o del testo.');
+        showToast('error', 'Error during file or text upload.');
     }
 }
 

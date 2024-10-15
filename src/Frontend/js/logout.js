@@ -1,5 +1,3 @@
-window.addEventListener('load', init);
-
 
 async function logoutUser() {
     try {

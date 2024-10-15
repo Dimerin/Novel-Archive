@@ -19,13 +19,17 @@ async function handleLogin(event){
         if (response.ok) {
             const result = await response.json();
             //console.log('Login successful:', result);
-            alert(result.message);
+            //alert(result.message);
+            showToast('success', result.message);
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 2000);
             // Redirecting to the home page
-            window.location.href = '/dashboard';
         } else {
             const error = await response.json();
             //console.error('Login failed:', error);
-            alert(error.message);
+            //alert(error.message);
+            showToast('error', error.message);
             // Handle login error (e.g., display error message)
         }
     } catch (error) {
