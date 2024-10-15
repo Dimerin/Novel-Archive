@@ -1,3 +1,5 @@
-Vendor
-composer.*
+vendor
+composer*
 .env
+Config-File
+dump
