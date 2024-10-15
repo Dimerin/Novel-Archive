@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="./Frontend/css/main.css">
 <script src="./Frontend/js/menu.js"></script>
+<script src="./Frontend/js/logout.js"></script>
 <style>
         .bgimg-1 {
             background-image: url('./Frontend/imgs/sidebar.jpg');
@@ -57,8 +58,7 @@
     <a href="#dashboard" onclick="w3_close_dash()" class="w3-bar-item w3-button w3-padding w3-white"><i class="fa fa-th-list fa-fw w3-margin-right"></i>CATALOGUE</a> 
     <a href="/upload_file" onclick="w3_close_dash()" class="w3-bar-item w3-button w3-padding"><i class="fa fa-upload fa-fw w3-margin-right"></i>UPLOAD NOVEL</a>
     <a href="/download_file" onclick="w3_close_dash()" class="w3-bar-item w3-button w3-padding"><i class="fa fa-download fa-fw w3-margin-right"></i>DOWNLOAD NOVEL</a> 
-    <a href="/logout" onclick="w3_close_dash()" class="w3-bar-item w3-button w3-padding"><i class="fa fa-sign-out fa-fw w3-margin-right"></i>LOGOUT</a>
-  </div>
+    <a href="#" onclick="logoutUser(); w3_close_dash();" class="w3-bar-item w3-button w3-padding"><i class="fa fa-sign-out fa-fw w3-margin-right"></i>LOGOUT</a>  </div>
 </nav>
 <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close_dash()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
 

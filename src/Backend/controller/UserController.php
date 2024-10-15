@@ -79,6 +79,21 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
         }
     }
+    public function logout()
+    {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            // Destroy the session
+            session_unset();
+            session_destroy();
+            return $this->sendResponse(['status' => 'success', 'message' => 'Logout successful.'], 200);
+        }
+        else {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
+    }
 
     private function sendResponse($data, $statusCode = 200)
     {

@@ -1,12 +1,3 @@
-<?php 
-//handling the logout
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-session_unset();
-session_destroy();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,17 +21,12 @@ session_destroy();
     <div class="w3-display-left w3-text-white" style="padding:48px">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-">Logout</span><br>
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Logout</span><br>
-        <span class="w3-large w3-animate-bottom">You have successfully log-out, you will be redirected to the homepage in three seconds.</span>
+        <span class="w3-large w3-animate-bottom">You have successfully logged out, you will be redirected to the homepage in <span id="countdown">3</span> seconds.</span>
         
        
   </div> 
   </header>
   <script src="./Frontend/js/menu.js"></script>
-  <script>
-        // Redirect to the homepage after 3 seconds
-        setTimeout(function() {
-            window.location.href = '/';
-        }, 3000);
-    </script>
+  <script src="./Frontend/js/logout_timer.js"></script>
 </body>
 </html>

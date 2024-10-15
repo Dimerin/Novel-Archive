@@ -63,6 +63,9 @@ class Router
                 $this->uc->register();
                 //$this->handleApiMethod("{$this->api_path}/register_handler.php");
                 break;
+            case 'logout':
+                $this->uc->logout();
+                break;
             case 'reset_pwd':
                 $this->handleApiMethod("{$this->api_path}/reset_pwd.php");
                 break;
