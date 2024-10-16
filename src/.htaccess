@@ -1,16 +1,24 @@
 RewriteEngine On
-
 RewriteBase /
 
-RewriteCond %{REQUEST_FILENAME} !-d
+# Forza HTTPS (opzionale)
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
+# Non riscrivere richieste per risorse statiche
+RewriteCond %{REQUEST_URI} !\.(css|js|png|jpg|jpeg|gif|ico)$ [NC]
+
+# Non riscrivere richieste di file o directory esistenti
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 
+# Riscrivi tutto verso index.php
 RewriteRule ^(.+)$ index.php [QSA,L]
 
+# Protezione del file .env
 <Files .env>
-    Order allow,deny
-    Deny from all
+    Require all denied
 </Files>
 
+# Disabilita l'indice di directory
 Options -Indexes
