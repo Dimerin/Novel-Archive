@@ -33,7 +33,7 @@ async function handleRegister(event) {
             showToast('success', result.message);
             setTimeout(() => {
                 window.location.href = '/login';
-            }, 2000);
+            }, 1500);
             // Handle successful registration (e.g., redirect to login page)
         } else {
             const error = await response.json();

@@ -83,7 +83,7 @@
   width: 100%;
   bottom: 0px;
   left: 0px;
-  animation: progress 2s linear forwards; /* Match the timer in JavaScript */
+  animation: progress 1.5s linear forwards; /* Match the timer in JavaScript */
 }
 
 @keyframes progress {

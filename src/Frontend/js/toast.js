@@ -1,25 +1,25 @@
-const notifications = document.querySelector(".notifications");
+let notifications;
 
 const toastDetails = {
   timer: 2000,
   success: {
-    icon: "fa-circle-check",
+    icon: "fa fa-check-circle",
     defaultText: "This is a success toast.",
   },
   error: {
-    icon: "fa-circle-xmark",
+    icon: "fa fa-times-circle",
     defaultText: "This is an error toast.",
   },
   warning: {
-    icon: "fa-triangle-exclamation",
+    icon: "fa fa-warning",
     defaultText: "This is a warning toast.",
   },
   info: {
-    icon: "fa-circle-info",
+    icon: "	fa fa-info-circle",
     defaultText: "This is an information toast.",
   },
   random: {
-    icon: "fa-star",
+    icon: "	fa fa-question-circle",
     defaultText: "This is a random toast.",
   },
 };
@@ -51,3 +51,10 @@ const showToast = (type, message) => {
     console.error(`Toast type "${type}" is not defined.`);
   }
 };
+
+function initNotifications() {
+  notifications = document.querySelector(".notifications");
+}
+
+// Initialize notifications on script load
+initNotifications();

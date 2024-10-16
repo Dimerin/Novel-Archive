@@ -49,6 +49,11 @@ class UserController
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
+        // Regenerate session ID upon login to prevent session fixation
+        if (!isset($_SESSION['initiated'])) {
+            session_regenerate_id(true);
+            $_SESSION['initiated'] = true;
+        }
         $email = $_POST['email'];
         $password = $_POST['password'];
 
@@ -70,8 +75,11 @@ class UserController
 
         // Verifica la password
         if (password_verify($password, $hashedPassword)) {
+            // Regenerate session ID to prevent fixation after successful login
+            session_regenerate_id(true);
             $_SESSION['username'] = $username;
-            $_SESSION['role'] =$role;
+            $_SESSION['role'] = $role;
+            $_SESSION['id'] = $id;
 
             return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
 

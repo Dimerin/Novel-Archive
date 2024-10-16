@@ -23,7 +23,7 @@ async function handleLogin(event){
             showToast('success', result.message);
             setTimeout(() => {
                 window.location.href = '/dashboard';
-            }, 2000);
+            }, 1500);
             // Redirecting to the home page
         } else {
             const error = await response.json();
