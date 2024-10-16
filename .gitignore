@@ -3,3 +3,4 @@ composer*
 .env
 Config-File
 dump
+logs
