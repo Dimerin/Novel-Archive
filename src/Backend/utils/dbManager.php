@@ -1,11 +1,7 @@
 <?php
-//require '../vendor/autoload.php';
+require_once __DIR__.'/../config/config.php';
 
-//use Dotenv\Dotenv;
-
-require_once './Backend/config/config.php';
-
-class Database {
+class dbManager {
     private $host;
     private $user;
     private $password;
@@ -21,13 +17,7 @@ class Database {
     }
 
     public function __construct() {
-        //$dotenv = Dotenv::createImmutable(dirname(__DIR__));
-        //$dotenv->load();
-
-        //$this->host = $_ENV['DB_HOST'];
-        //$this->user = $_ENV['DB_USER'];
-        //$this->password = $_ENV['DB_PASSWORD'];
-        //$this->dbname = $_ENV['DB_NAME'];
+        
         $this->_initVar();
 
         $this->conn = new mysqli($this->host, $this->user, $this->password, $this->dbname);
@@ -44,7 +34,7 @@ class Database {
     public function __destruct() {
         if ($this->conn) {
             $this->conn->close();
+            $this->conn = null;
         }
     }
 }
-?>

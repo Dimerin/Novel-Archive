@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../db/db.php';
+require_once __DIR__ . '/../utils/dbManager.php';
 
 class FileController
 {
@@ -9,7 +9,7 @@ class FileController
 
     public function __construct()
     {
-        $this->db = new Database();
+        $this->db = new dbManager();
         $this->conn = $this->db->getConnection();
     }
 
@@ -87,11 +87,6 @@ class FileController
         if (!isset($_GET['file_id'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'ID del file non fornito.'], 400);
         }
-
-        //FIXME: non mi funziona bind_result altrimetni, ma in user controller funziona
-        $filename = '';
-        $filetype = '';
-        $filedata = '';
 
         $fileId = $_GET['file_id'];
         $stmt = $this->conn->prepare("SELECT filename, filetype, filedata FROM files WHERE id = ?");
