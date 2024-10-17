@@ -1,6 +1,9 @@
 class Dashboard {
     constructor(mainContentId) {
         this.mainContent = document.getElementById(mainContentId);
+        this.currentPage = 1;
+        this.usersPerPage = 10;
+        this.users = [];
         // Capture the original content at initialization
         this.originalContent = this.mainContent ? this.mainContent.innerHTML : '';
     }
@@ -49,9 +52,9 @@ class Dashboard {
                 <span class="w3-jumbo w3-hide-small w3-animate-bottom">Manage Users</span><br>
                 <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Manage Users</span><br>
                 <div class="w3-container">
-                    <table class="w3-table w3-bordered  w3-centered w3-animate-bottom w3-hoverable">
+                    <table class="w3-table w3-bordered w3-centered w3-animate-bottom w3-hoverable">
                         <thead>
-                            <tr class="w3-dark-grey">
+                            <tr class="w3-black">
                                 <th>ID</th>
                                 <th>Username</th>
                                 <th>Email</th>
@@ -62,6 +65,11 @@ class Dashboard {
                             <!-- User rows will be inserted here -->
                         </tbody>
                     </table>
+                    <div class="w3-center w3-padding-16">
+                        <button class="w3-button w3-black" id="prevPageBtn">Previous</button>
+                        <span id="pageInfo"></span>
+                        <button class="w3-button w3-black" id="nextPageBtn">Next</button>
+                    </div>
                 </div>
             </div>
         `;
@@ -80,8 +88,8 @@ class Dashboard {
             
             // Assuming the users data is inside `result.data`
             if (result.status === 'success' && result.data) {
-                // Call renderUserList with the data array
-                this.renderUserList(result.data);
+                this.users = result.data;
+                this.renderUserList();
             } else {
                 console.error('Cannot retrieve users:', result.message);
             }
@@ -91,21 +99,37 @@ class Dashboard {
 
         this.ensureToastScript();
         this.updateLinkClasses(document.getElementById('adminPageLink'));
+
+        // Add event listeners for pagination buttons
+        document.getElementById('prevPageBtn').addEventListener('click', () => this.prevPage());
+        document.getElementById('nextPageBtn').addEventListener('click', () => this.nextPage());
+
+        // Add event listener for role change using event delegation
+        document.getElementById('userTableBody').addEventListener('change', (event) => {
+            if (event.target && event.target.name === 'role') {
+                const userId = event.target.getAttribute('data-user-id');
+                const newRole = event.target.value;
+                const actualRole = event.target.getAttribute('data-actual-role');
+                this.changeUserRole(userId, newRole, actualRole);
+            }
+        });
     }
 
-    renderUserList(users) {
-        // Start by setting up the outer structure with a table
+    renderUserList() {
+        const start = (this.currentPage - 1) * this.usersPerPage;
+        const end = start + this.usersPerPage;
+        const paginatedUsers = this.users.slice(start, end);
+
         let userHtml = '';
 
-        // Loop through the users array to create a row for each user
-        users.slice(0, 10).forEach(user => {
+        paginatedUsers.forEach(user => {
             userHtml += `
                 <tr>
-                    <td>${user.id}</td>
-                    <td>${user.username}</td>
-                    <td>${user.email}</td>
+                    <td class="w3-bold">${user.id}</td>
+                    <td class="w3-bold">${user.username}</td>
+                    <td class="w3-bold">${user.email}</td>
                     <td>
-                        <select class="w3-select w3-border scrollable-menu" name="role">
+                        <select class="w3-select w3-border scrollable-menu" name="role" data-user-id="${user.id}" data-actual-role="${user.role}">
                             <option value="non-premium" ${user.role === 'non-premium' ? 'selected' : ''}>Non-Premium</option>
                             <option value="premium" ${user.role === 'premium' ? 'selected' : ''}>Premium</option>
                             <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
@@ -115,9 +139,58 @@ class Dashboard {
             `;
         });
 
-        // Update the user table body with the generated HTML
         document.getElementById('userTableBody').innerHTML = userHtml;
+        this.updatePageInfo();
     }
+
+    async changeUserRole(userId, newRole, actualRole) {
+        try {
+            const formData = new FormData();
+            formData.append('id', userId);
+            formData.append('new_role', newRole);
+            formData.append('actual_role', actualRole);
+            const response = await fetch('/api/change_role', {
+                method: 'POST',
+                body: formData
+            });
+            console.log(userId, newRole, actualRole);
+            console.log(response.body);
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                showToast('success', result.message);
+            } else {
+                showToast('error', result.message);
+                console.error('Failed to change role:', result.message);
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred while changing the role');
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+
+    updatePageInfo() {
+        const pageInfo = document.getElementById('pageInfo');
+        const totalPages = Math.ceil(this.users.length / this.usersPerPage);
+        pageInfo.textContent = `Page ${this.currentPage} of ${totalPages}`;
+    }
+
+    prevPage() {
+        if (this.currentPage > 1) {
+            this.currentPage--;
+            this.renderUserList();
+        }
+    }
+
+    nextPage() {
+        const totalPages = Math.ceil(this.users.length / this.usersPerPage);
+        if (this.currentPage < totalPages) {
+            this.currentPage++;
+            this.renderUserList();
+        }
+    }
+
 
     resetHomePage() {
         // Restore the original content captured during initialization
