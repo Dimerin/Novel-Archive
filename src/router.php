@@ -66,6 +66,12 @@ class Router
             case 'logout':
                 $this->uc->logout();
                 break;
+            case 'show_users':
+                $this->uc->showUsers();
+                break;
+            case 'change_role':
+                $this->uc->changeUserRole();
+                break;
             case 'reset_pwd':
                 $this->handleApiMethod("{$this->api_path}/reset_pwd.php");
                 break;

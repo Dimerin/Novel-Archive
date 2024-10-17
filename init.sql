@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('non-premium', 'premium') DEFAULT 'non-premium',
+    role ENUM('non-premium', 'premium', 'admin') DEFAULT 'non-premium',
     token VARCHAR(255) DEFAULT NULL,
     token_expire DATETIME DEFAULT NULL
 );
