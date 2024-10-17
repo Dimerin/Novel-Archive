@@ -214,6 +214,14 @@ class UserController
         if($role === 'admin') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
+
+        if($role === $newRole) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
+        
+        if($role !== $actualRole) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
         
         $stmt = $this->conn->prepare("UPDATE users SET role = ? WHERE id = ?");
         $stmt->bind_param("si", $newRole, $id);
