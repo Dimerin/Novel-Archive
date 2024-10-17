@@ -40,6 +40,8 @@
                             <input type="file" class="w3-input w3-border" name="upload_file" id="file"><br>
                         </div>
                         <div id="text_upload_section" class="hidden">
+                            <label id="title_label" for="title">Insert your title</label>
+                            <input class="w3-input w3-border" type="text" name="title" id="title"><br>
                             <label id="text_content_label" for="text_content">Insert your text</label>
                             <textarea class="w3-input w3-border" name="text_content" id="text_content" rows="10" cols="30"></textarea><br>
                         </div>

@@ -126,8 +126,8 @@ class FileController
         if( $page < 1){
             $page = 1; //FIXME: come controllo la pagina massima da ritornare?
         }
-        if( $limit < 1 || $limit > 10){
-            $limit = 10;
+        if( $limit < 1 || $limit > 6){
+            $limit = 6;
         }
 
         $offset = ($page - 1) * $limit;

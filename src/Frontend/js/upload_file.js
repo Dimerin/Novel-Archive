@@ -8,7 +8,7 @@ function init() {
     toggleUploadSection();
 }
 
-async function uploadFile(event) {
+async function uploadFile(event) { //TODO 1: Implement the backend API endpoint for file upload
     event.preventDefault();
 
     const formData = new FormData();
@@ -22,11 +22,17 @@ async function uploadFile(event) {
         }
         formData.append('file', fileInput.files[0]);
     } else {
+        const title = document.getElementById('title').value;
         const textContent = document.getElementById('text_content').value;
+        if (title.trim() === '') {
+            showToast('warning', 'Insert a title.');
+            return;
+        }
         if (textContent.trim() === '') {
             showToast('warning', 'Insert text to upload.');
             return;
         }
+        formData.append('title', title);
         formData.append('text_content', textContent);
     }
 

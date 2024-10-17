@@ -73,8 +73,9 @@
     <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close_dash()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
         <div class="w3-main bgimg-2" style="margin-left:300px" id="main">
             <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open_dash()"><i class="fa fa-bars"></i></span>
-        <!-- !PAGE CONTENT! -->
+       
             <div class="w3-main " id="mainContent">
+                 <!-- !PAGE CONTENT! 
                 <header id="dashboard">
                     <div class="w3-container">
                     <h1><b>Catalogue</b></h1>
@@ -82,12 +83,12 @@
                         <span class="w3-margin-right">Filter:</span> 
                         <button class="w3-button w3-black">Latest</button>
                         <button class="w3-button w3-white"><i class="fa fa-file-pdf-o w3-margin-right"></i>PDF</button>
-                        <button class="w3-button w3-white w3-hide-small"><i class="fa fa-file-text-o w3-margin-right"></i>Text</button>
+                        <button class="w3-button w3-white"><i class="fa fa-file-text-o w3-margin-right"></i>Text</button>
                         </div>
                 </div>
                 </header>
             
-                <!-- First Novels Grid-->
+            First Novels Grid
                 <div class="w3-row-padding bg">
                     <div class="w3-third w3-container w3-center w3-margin-bottom">
                     <img src="./Frontend/imgs/text-file.png" alt="Norway" style="width:20%" class="w3-hover-opacity">
@@ -118,7 +119,7 @@
                     </div>
                 </div>
 
-                    <!-- Second Novels Grid-->
+                   Second Novels Grid
                 <div class="w3-row-padding">
                     <div class="w3-third w3-container w3-center w3-margin-bottom">
                         <img src="./Frontend/imgs/pdf-file.png" alt="Norway" style="width:30%" class="w3-hover-opacity">
@@ -148,7 +149,7 @@
                             <button class="w3-button w3-black w3-margin-bottom">Read</button>
                     </div>
                 </div>
-                    <!-- Pagination -->
+                   
                 <div class="w3-center w3-padding-32">
                     <div class="w3-bar">
                     <a href="#" class="w3-bar-item w3-button w3-hover-black">«</a>
@@ -158,7 +159,7 @@
                     <a href="#" class="w3-bar-item w3-button w3-hover-black">4</a>
                     <a href="#" class="w3-bar-item w3-button w3-hover-black">»</a>
                     </div>
-                </div>
+                </div>-->
         </div>
     </div>
 </body>
