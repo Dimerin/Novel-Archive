@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../db/db.php';
+require_once __DIR__ . '/../utils/dbManager.php';
 
 class UserController
 {
@@ -8,7 +8,7 @@ class UserController
 
     public function __construct()
     {
-        $this->db = new Database();
+        $this->db = new dbManager();
         $this->conn = $this->db->getConnection();
     }
 
