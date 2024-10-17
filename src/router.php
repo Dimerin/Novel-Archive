@@ -55,6 +55,9 @@ class Router
                 //$this->fc->handleRequest();
                 $this->fc->downloadFile();
                 break;
+            case 'show_files':
+                $this->fc->showFiles();
+                break;
             case 'login':
                 $this->uc->login();
                 //$this->handleApiMethod("{$this->api_path}/login_handler.php");
@@ -152,4 +155,3 @@ class Router
         return $current_page;
     }
 }
-?>

@@ -110,6 +110,46 @@ class FileController
         return $this->sendResponse($response);
     }
 
+    public function showFiles(){
+        if( session_status() == PHP_SESSION_NONE ){
+            session_start();
+        }
+
+        if( $_SERVER["REQUEST_METHOD"] != "GET" ){
+            return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
+        }
+
+        $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) :1;
+        $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? intval($_GET['limit']) :10;
+        $file_type = isset($_GET['file_type']) ? $_GET['file_type'] : 'txt';
+        
+        if( $page < 1){
+            $page = 1; //FIXME: come controllo la pagina massima da ritornare?
+        }
+        if( $limit < 1 || $limit > 10){
+            $limit = 10;
+        }
+
+        $offset = ($page - 1) * $limit;
+        $stmt = $this->conn->prepare('SELECT id, filename, filetype FROM files WHERE filetype = ? LIMIT ?, ?');
+        $stmt->bind_param('sii', $file_type, $offset, $limit);
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $files = [];
+
+        if( $result->num_rows > 0){
+            while( $row = $result->fetch_assoc() ){
+                $files[] = $row;
+            }
+        }
+
+        $stmt->close();
+        return $this->sendResponse(['status'=> 'success','files'=> $files],200);
+
+    }
+
     private function sendResponse($data, $statusCode = 200)
     {
         http_response_code($statusCode);
