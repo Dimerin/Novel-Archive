@@ -16,18 +16,7 @@ class Config {
             'DB_PASSWORD' => $_ENV['DB_PASSWORD'],
             'DB_NAME' => $_ENV['DB_NAME'],
             'MAIL_USER' => $_ENV['MAIL_USER'],
-            'MAIL_PASSWORD' => $_ENV['MAIL_PASSWORD'],
-            //'MAIL_HOST' => $_ENV['MAIL_HOST'],
-            //'MAIL_PORT' => $_ENV['MAIL_PORT'],
-            //'MAIL_FROM' => $_ENV['MAIL_FROM'],
-            //'MAIL_FROM_NAME' => $_ENV['MAIL_FROM_NAME'],
-            //'MAIL_REPLY_TO' => $_ENV['MAIL_REPLY_TO'],
-            //'MAIL_REPLY_TO_NAME' => $_ENV['MAIL_REPLY_TO_NAME'],
-            //'MAIL_SUBJECT' => $_ENV['MAIL_SUBJECT'],
-            //'MAIL_BODY' => $_ENV['MAIL_BODY'],
-            //'MAIL_ALT_BODY' => $_ENV['MAIL_ALT_BODY'],
-            //'MAIL_TO' => $_ENV['MAIL_TO'],
-            //'MAIL_TO_NAME' => $_ENV['MAIL_TO_NAME'],  
+            'MAIL_PASSWORD' => $_ENV['MAIL_PASSWORD']
         ];
 
         //TODO: da problemi con db_pwd che è vuoto
@@ -51,4 +40,3 @@ class Config {
         return $this->config[$key] ?? null;
     }
 }
-?>

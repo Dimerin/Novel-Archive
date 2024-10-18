@@ -1,3 +1,8 @@
+<?php 
+    require_once __DIR__ . '/../../router.php';
+    $current_page = Router::getInstance()->getCurrentPage();
+?>
+
 <div class="w3-top">
     <div class="w3-bar w3-black w3-card w3-animate-bottom" id="myNavbar">
         <a href="/" class="w3-bar-item w3-button w3-wide">
