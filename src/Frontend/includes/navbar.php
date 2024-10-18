@@ -1,6 +1,7 @@
 <?php 
     require_once __DIR__ . '/../../router.php';
     $current_page = Router::getInstance()->getCurrentPage();
+
 ?>
 
 <div class="w3-top">
@@ -19,7 +20,32 @@
                                 <a href="/register" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
                                 <a href="#team" class="w3-bar-item w3-button"><i class="fa fa-user"></i> TEAM</a>';
                     break;
-                    
+                    case 'dashboard':
+
+                        echo '<a href="#" id="username" class="w3-button w3-bar-item"><b>User: ' . htmlspecialchars($_SESSION['username']) . '</b></a>
+                              <a href="#" class="w3-button w3-bar-item" id="role"><b>';
+                        switch ($_SESSION['role']) {
+                            case 'non-premium':
+                                echo '<span style="color: lightgreen;">Free Plan</span>';
+                                break;
+                            case 'premium':
+                                echo '<span style="color: yellow;">Pro Plan</span>';
+                                break;
+                            case 'admin':
+                                echo '<span style="color: red;">Admin User</span>';
+                                break;
+                            default:
+                                echo '<span style="color: black;">Unknown Role</span>';
+                                break;
+                        }
+                        echo '</b></a>
+                              <a href="#" class="w3-bar-item w3-button" id="catalogueLink"><i class="fa fa-th-list fa-fw"></i> CATALOGUE</a>
+                              <a href="#" class="w3-bar-item w3-button" id="uploadFileLink"><i class="fa fa-upload fa-fw"></i> UPLOAD NOVEL</a>';
+                        if ($_SESSION['role'] === 'admin') {
+                            echo '<a href="#" class="w3-bar-item w3-button" id="adminPageLink"><i class="fa fa-users fa-fw" aria-hidden="true"></i> MANAGE USERS</a>';
+                        }
+                        echo '<a href="#" class="w3-bar-item w3-button" onclick="logoutUser()"><i class="fa fa-sign-out fa-fw"></i> LOGOUT</a>';
+                    break;
                     case 'login':
                             echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
                             <a href="/register" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>';
@@ -56,7 +82,32 @@
                       <a href="/register" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>
                       <a href="#team" class="w3-bar-item w3-button"><i class="fa fa-user"></i> TEAM</a>';
             break;
+            case 'dashboard':
 
+                echo '<a href="#" id="username" class="w3-button w3-bar-item"><b>User: ' . htmlspecialchars($_SESSION['username']) . '</b></a>
+                      <a href="#" class="w3-button w3-bar-item" id="role"><b>';
+                switch ($_SESSION['role']) {
+                    case 'non-premium':
+                        echo '<span style="color: lightgreen;">Free Plan</span>';
+                        break;
+                    case 'premium':
+                        echo '<span style="color: yellow;">Pro Plan</span>';
+                        break;
+                    case 'admin':
+                        echo '<span style="color: red;">Admin User</span>';
+                        break;
+                    default:
+                        echo '<span style="color: black;">Unknown Role</span>';
+                        break;
+                }
+                echo '</b></a>
+                      <a href="#" onclick="w3_close()" class="w3-bar-item w3-button" id="catalogueLink-mobile"><i class="fa fa-th-list fa-fw"></i> CATALOGUE</a>
+                      <a href="#" onclick="w3_close()" class="w3-bar-item w3-button" id="uploadFileLink-mobile"><i class="fa fa-upload fa-fw"></i> UPLOAD NOVEL</a>';
+                if ($_SESSION['role'] === 'admin') {
+                    echo '<a href="#" onclick="w3_close()" class="w3-bar-item w3-button" id="adminPageLink-mobile"><i class="fa fa-users fa-fw" aria-hidden="true"></i> MANAGE USERS</a>';
+                }
+                echo '<a href="#" class="w3-bar-item w3-button" onclick="logoutUser()"><i class="fa fa-sign-out fa-fw"></i> LOGOUT</a>';
+            break;
             case 'login':
                     echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
                     <a href="/register" class="w3-bar-item w3-button"><i class="fa fa-user-plus"></i> REGISTER</a>';

@@ -8,7 +8,7 @@ function init() {
     toggleUploadSection();
 }
 
-async function uploadFile(event) { //TODO 1: Implement the backend API endpoint for file upload
+async function uploadFile(event) { //TODO: Implement the backend API endpoint for file upload
     event.preventDefault();
 
     const formData = new FormData();

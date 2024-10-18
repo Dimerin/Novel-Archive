@@ -16,25 +16,35 @@ class Dashboard {
             <div class="toast-container">
                 <ul class="notifications"></ul>
             </div> 
-            <div class="w3-display-center w3-text-black" style="padding:48px">
+            <div class="w3-display-center w3-text-black w3-padding-bottom-64 w3-margin-top" style="padding:48px">
+                <div class="w3-margin-top w3-padding-top-64">
                 <span class="w3-jumbo w3-hide-small w3-animate-bottom">Upload your content</span><br>
                 <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Upload your content</span><br>
+                </div>
                 <form id="uploadForm" class="w3-animate-bottom">
                     <input type="radio" name="upload_type" id="upload_file_radio" value="file" checked>
-                    <span class="w3-medium ">PDF</span>
+                    <span class="w3-medium "><b>PDF</b></span>
                     <input type="radio" name="upload_type" id="upload_text_radio" value="text">
-                    <span class="w3-medium">Text</span>
+                    <span class="w3-medium"><b>Text</b></span>
                     <br>
                     <div class="overlap-container">
                         <div id="file_upload_section">
-                            <label id="upload_file_label" for="upload_file">Select your PDF file</label>
+                            <label id="upload_file_label" for="upload_file"><b>Select your PDF file</b></label>
                             <input type="file" class="w3-input w3-border" name="upload_file" id="file"><br>
+                            <input type="radio" name="novel-category" id="novel-category-free-pdf" value="free" checked>
+                            <span class="w3-medium"><b>Free</b></span>
+                            <input type="radio" name="novel-category" id="novel-category-pro-pdf" value="pro">
+                            <span class="w3-medium"><b>Pro</b></span>
                         </div>
                         <div id="text_upload_section" class="hidden">
-                            <label id="title_label" for="title">Insert your title</label>
+                            <label id="title_label" for="title"><b>Insert your title</b></label>
                             <input class="w3-input w3-border" type="text" name="title" id="title"><br>
                             <label id="text_content_label" for="text_content">Insert your text</label>
                             <textarea class="w3-input w3-border" name="text_content" id="text_content" rows="10" cols="30"></textarea><br>
+                            <input type="radio" name="novel-category" id="novel-category-free-txt" value="free" checked>
+                            <span class="w3-medium "><b>Free</b></span>
+                            <input type="radio" name="novel-category" id="novel-category-pro-txt" value="pro">
+                            <span class="w3-medium"><b>Pro</b></span>
                         </div>
                     </div>
                     <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-upload"></i> UPLOAD</button>
@@ -53,10 +63,12 @@ class Dashboard {
             <div class="toast-container">
                 <ul class="notifications"></ul>
             </div> 
-            <div class="w3-display-center w3-text-black" style="padding:48px">
+            <div class="w3-display-center w3-text-black w3-padding-bottom-64 w3-margin-top" style="padding:48px">
+                <div class="w3-margin-top w3-padding-top-64">
                 <span class="w3-jumbo w3-hide-small w3-animate-bottom">Manage Users</span><br>
                 <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Manage Users</span><br>
-                <div class="w3-container">
+                </div>
+                <div class="w3-container w3-margin-top">
                     <table class="w3-table w3-bordered w3-centered w3-animate-bottom w3-hoverable">
                         <thead>
                             <tr class="w3-black">
@@ -152,14 +164,17 @@ class Dashboard {
             <div class="toast-container">
                 <ul class="notifications"></ul>
             </div> 
-             <div class="w3-display-center w3-text-black" style="padding:26px">
-                <span class="w3-xxxlarge w3-hide-small w3-animate-bottom">Catalogue</span><br>
-                <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Catalogue</span><br>
-                <div class="w3-section w3-bottombar w3-padding-16 w3-margin-bottom">
-                    <span class="w3-margin-right w3-hide-small">Filter:</span> 
-                    <button class="w3-button w3-black">Latest</button>
-                    <button class="w3-button w3-white"><i class="fa fa-file-pdf-o w3-margin-right"></i>PDF</button>
-                    <button class="w3-button w3-white"><i class="fa fa-file-text-o w3-margin-right"></i>Text</button>
+            <div class="w3-center w3-padding-64">
+                <div class="w3-center w3-text-black w3-margin-top">
+                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">Catalogue</span><br>
+                    <span class="w3-xxxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Catalogue</span><br>
+                </div>
+            
+                <div class="w3-left-align w3-margin-left w3-section w3-bottombar w3-padding-16 w3-margin-bottom">
+                    <span class="w3-margin-right w3-hide-small"><b>Filter:</b></span> 
+                    <button class="w3-button w3-white" id="latestBtn">Latest</button>
+                    <button class="w3-button w3-black" id="pdfBtn"><i class="fa fa-file-pdf-o w3-margin-right"></i>PDF</button>
+                    <button class="w3-button w3-black" id="txtBtn"><i class="fa fa-file-text-o w3-margin-right"></i>Text</button>
                 </div>
             </div>
             <div class="w3-row-padding w3-animate-bottom bg">
@@ -175,11 +190,36 @@ class Dashboard {
             </div>
         `;
     
+        document.getElementById('latestBtn').addEventListener('click', (event) => this.handleButtonClick(event, ''));
+        document.getElementById('pdfBtn').addEventListener('click', (event) => this.handleButtonClick(event, 'pdf'));
+        document.getElementById('txtBtn').addEventListener('click', (event) => this.handleButtonClick(event, 'txt'));
+        this.fetchCatalogueContent();
+    }
+    handleButtonClick(event, fileType) {
+        this.updateButtonClasses(event.target);
+        this.fetchCatalogueContent(fileType);
+    }
+    
+    updateButtonClasses(activeButton) {
+        const buttons = document.querySelectorAll('.w3-section .w3-button');
+        buttons.forEach(button => {
+            button.classList.remove('w3-white');
+            button.classList.add('w3-black');
+        });
+        activeButton.classList.remove('w3-black');
+        activeButton.classList.add('w3-white');
+    }
+    
+    async fetchCatalogueContent(fileType = '') {
         try {
             const queryParams = new URLSearchParams({
                 page: this.currentPage,
                 limit: this.novelsPerPage,
             });
+    
+            if (fileType) {
+                queryParams.append('file_type', fileType);
+            }
     
             const response = await fetch(`/api/show_files?${queryParams.toString()}`, {
                 method: 'GET'
@@ -203,7 +243,6 @@ class Dashboard {
         this.updateLinkClasses(document.getElementById('catalogueLink'));
         this.ensureToastScript();
     }
-    
 
 
     renderCards(files) {
@@ -231,20 +270,20 @@ class Dashboard {
     
             if (file.filetype === 'txt') {
                 imageSrc = './Frontend/imgs/text-file.png'; 
-                imageStyle = 'width:20%';
+                imageStyle = 'width:25%';
                 buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="readFile(${file.id})">Read</button>`;
             } else if (file.filetype === 'pdf') {
                 imageSrc = './Frontend/imgs/pdf-file.png'; 
-                imageStyle = 'width:30%';
+                imageStyle = 'width: 25%';
                 buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="downloadFile(${file.id})">Download</button>`;
             } else {
                 imageSrc = '/Frontend/imgs/nicola.png';  // Default image
-                imageStyle = 'width:20%';  // Default style
+                imageStyle = 'width:25%';  // Default style
             }
     
             const card = `
-                <div class="w3-third w3-container w3-center w3-margin-bottom">
-                    <img src="${imageSrc}" alt="${file.filename}" style="${imageStyle}" class="w3-hover-opacity">
+                <div class="w3-third w3-container w3-center w3-margin-bottom w3-hover-opacity w3-card">
+                    <img src="${imageSrc}" alt="${file.filename}" style="${imageStyle}">
                     <div class="w3-container">
                         <p><b>${file.filename}</b></p>
                         <p>File Type: ${file.filetype}</p>
@@ -263,20 +302,20 @@ class Dashboard {
     
             if (file.filetype === 'txt') {
                 imageSrc = './Frontend/imgs/text-file.png'; 
-                imageStyle = 'width:20%';
+                imageStyle = 'width:25%';
                 buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="readFile(${file.id})">Read</button>`;
             } else if (file.filetype === 'pdf') {
                 imageSrc = './Frontend/imgs/pdf-file.png'; 
-                imageStyle = 'width:30%';
+                imageStyle = 'width:25%';
                 buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="downloadFile(${file.id})">Download</button>`;
             } else {
                 imageSrc = '/Frontend/imgs/nicola.png';  // Default image
-                imageStyle = 'width:20%';  // Default style
+                imageStyle = 'width:25%';  // Default style
             }
     
             const card = `
-                <div class="w3-third w3-container w3-center w3-margin-bottom">
-                    <img src="${imageSrc}" alt="${file.filename}" style="${imageStyle}" class="w3-hover-opacity">
+                <div class="w3-third w3-container w3-center w3-margin-bottom w3-hover-opacity w3-card">
+                    <img src="${imageSrc}" alt="${file.filename}" style="${imageStyle}">
                     <div class="w3-container">
                         <p><b>${file.filename}</b></p>
                         <p>File Type: ${file.filetype}</p>
@@ -299,13 +338,15 @@ class Dashboard {
                 method: 'POST',
                 body: formData
             });
-            console.log(userId, newRole, actualRole);
-            console.log(response.body);
-
             const result = await response.json();
 
             if (result.status === 'success') {
                 showToast('success', result.message);
+                //Reload actual role
+                const selectElement = document.querySelector(`select[data-user-id="${userId}"]`);
+                if (selectElement) {
+                    selectElement.setAttribute('data-actual-role', newRole);
+                }
             } else {
                 showToast('error', result.message);
                 console.error('Failed to change role:', result.message);
@@ -369,7 +410,7 @@ class Dashboard {
     }
 
     updateLinkClasses(activeLink) {
-        const sidebarLinks = document.querySelectorAll('.w3-sidebar .w3-bar-item');
+        const sidebarLinks = document.querySelectorAll('.w3-bar-item');
         sidebarLinks.forEach(link => {
             link.classList.remove('w3-white');
         });
@@ -380,10 +421,20 @@ class Dashboard {
 document.addEventListener('DOMContentLoaded', function() {
     const dashboard = new Dashboard('mainContent');
 
-    document.getElementById('uploadFileLink').addEventListener('click', function(event) {
-        event.preventDefault();
-        dashboard.loadUploadFileContent();
-    });
+    const uploadFileLink = document.getElementById('uploadFileLink');
+    if (uploadFileLink) {
+        uploadFileLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            dashboard.loadUploadFileContent();
+        });
+    }
+    const uploadFileLink_mobile = document.getElementById('uploadFileLink-mobile');
+    if(uploadFileLink_mobile){
+        uploadFileLink_mobile.addEventListener('click', function(event) {
+            event.preventDefault();
+            dashboard.loadUploadFileContent();
+        });
+    }
 
     const adminPageLink = document.getElementById('adminPageLink');
     if (adminPageLink) {
@@ -393,9 +444,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.getElementById('catalogueLink').addEventListener('click', function(event) {
-        event.preventDefault();
-        dashboard.resetHomePage();
-    });
+    const adminPageLink_mobile = document.getElementById('adminPageLink-mobile');
+    if(adminPageLink_mobile){
+        adminPageLink_mobile.addEventListener('click', function(event) {
+            event.preventDefault();
+            dashboard.loadAdminPageContent();
+        });
+    }
+    const catalogueLink = document.getElementById('catalogueLink');
+    if (catalogueLink) {
+        catalogueLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            dashboard.loadCatalogueContent();
+        });
+    }
+    const catalogueLink_mobile = document.getElementById('catalogueLink-mobile');
+    if(catalogueLink_mobile){
+        catalogueLink_mobile.addEventListener('click', function(event) {
+            event.preventDefault();
+            dashboard.loadCatalogueContent();
+        });
+    }
     dashboard.loadCatalogueContent();
 });
