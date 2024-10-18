@@ -55,12 +55,17 @@ function toggleUploadSection() {
     const isTextSelected = document.getElementById('upload_text_radio').checked;
     const fileUploadSection = document.getElementById('file_upload_section');
     const textUploadSection = document.getElementById('text_upload_section');
+    const txt = document.getElementById('novel-category-free-txt');
+    const pdf = document.getElementById('novel-category-free-pdf');
+    
 
     if (isTextSelected) {
         fileUploadSection.classList.add('hidden');
         textUploadSection.classList.remove('hidden');
+        txt.checked = true;
     } else {
         fileUploadSection.classList.remove('hidden');
         textUploadSection.classList.add('hidden');
+        pdf.checked = true;
     }
 }

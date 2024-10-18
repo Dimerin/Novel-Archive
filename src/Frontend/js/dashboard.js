@@ -22,28 +22,28 @@ class Dashboard {
                 <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Upload your content</span><br>
                 </div>
                 <form id="uploadForm" class="w3-animate-bottom">
-                    <input type="radio" name="upload_type" id="upload_file_radio" value="file" checked>
+                    <input type="radio" name="upload_type" id="upload_file_radio" value="file" class="w3-radio" checked>
                     <span class="w3-medium "><b>PDF</b></span>
-                    <input type="radio" name="upload_type" id="upload_text_radio" value="text">
+                    <input type="radio" name="upload_type" id="upload_text_radio" class="w3-radio" value="text">
                     <span class="w3-medium"><b>Text</b></span>
                     <br>
                     <div class="overlap-container">
                         <div id="file_upload_section">
                             <label id="upload_file_label" for="upload_file"><b>Select your PDF file</b></label>
                             <input type="file" class="w3-input w3-border" name="upload_file" id="file"><br>
-                            <input type="radio" name="novel-category" id="novel-category-free-pdf" value="free" checked>
+                            <input type="radio" name="novel-category" id="novel-category-free-pdf" class="w3-radio" value="free" checked>
                             <span class="w3-medium"><b>Free</b></span>
-                            <input type="radio" name="novel-category" id="novel-category-pro-pdf" value="pro">
+                            <input type="radio" name="novel-category" id="novel-category-pro-pdf" class="w3-radio" value="pro">
                             <span class="w3-medium"><b>Pro</b></span>
                         </div>
                         <div id="text_upload_section" class="hidden">
                             <label id="title_label" for="title"><b>Insert your title</b></label>
                             <input class="w3-input w3-border" type="text" name="title" id="title"><br>
-                            <label id="text_content_label" for="text_content">Insert your text</label>
+                            <label id="text_content_label" for="text_content"><b>Insert your text</b></label>
                             <textarea class="w3-input w3-border" name="text_content" id="text_content" rows="10" cols="30"></textarea><br>
-                            <input type="radio" name="novel-category" id="novel-category-free-txt" value="free" checked>
+                            <input type="radio" name="novel-category" id="novel-category-free-txt" class="w3-radio" value="free" checked>
                             <span class="w3-medium "><b>Free</b></span>
-                            <input type="radio" name="novel-category" id="novel-category-pro-txt" value="pro">
+                            <input type="radio" name="novel-category" id="novel-category-pro-txt" class="w3-radio" value="pro">
                             <span class="w3-medium"><b>Pro</b></span>
                         </div>
                     </div>
