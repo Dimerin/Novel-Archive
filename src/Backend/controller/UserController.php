@@ -178,11 +178,11 @@ class UserController
         $newRole = $_POST['new_role'];
         $actualRole = $_POST['actual_role'];
 
-        if ($newRole !== 'non-premium' && $newRole !== 'admin' && $newRole !== 'premium') {
+        if ($newRole !== 'free' && $newRole !== 'admin' && $newRole !== 'pro') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid role.'], 400);
         }
 
-        if ($actualRole !== 'non-premium'&& $actualRole !== 'admin' && $actualRole !== 'premium') {
+        if ($actualRole !== 'free'&& $actualRole !== 'admin' && $actualRole !== 'pro') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid role.'], 400);
         }
 

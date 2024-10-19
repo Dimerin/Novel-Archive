@@ -44,10 +44,11 @@ class FileController
         $stmt->fetch();
         $stmt->close();
 
-        $visibility = $role == 'non-premium' ? 0 : 1;
+        $visibility = $role == 'free' ? 0 : 1;
         return $visibility;
     }
-
+    // FIXME: le due funzioni uploadFile e uploadText sono molto simili, si potrebbe fare una funzione generica
+    // get user visibility
     private function uploadFile()
     {
         if (!isset($_FILES['file'])) {
@@ -55,24 +56,30 @@ class FileController
         }
 
         $file = $_FILES['file'];
-        $filename = basename($file['name']);
-        $filetype = pathinfo($filename, PATHINFO_EXTENSION);
+        $title = basename($file['name']);
+        $filetype = pathinfo($title, PATHINFO_EXTENSION);
         $filedata = file_get_contents($file['tmp_name']);
+        $novel_category = $_POST['novel_category'];
 
-        // FIXME: le due funzioni uploadFile e uploadText sono molto simili, si potrebbe fare una funzione generica
         // get user visibility
         $user_id = 1; //TODO: when not testing, comment this line
         // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         // FIXME: passare user_id o ricavarlo da sessione dentro la funzione? 
-        $visibility = $this->getUserVisibility();
+        $userVisibility = $this->getUserVisibility();
+
+        $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
+
+        if($userVisibility < $selectedVisibility){
+            return $this->sendResponse(['status' => 'error', 'message' => 'Non hai i permessi per caricare questo contenuto.'], 403);
+        }
 
         $query = '
-            INSERT INTO files (filename, filetype, filedata, user_id, visibility)
+            INSERT INTO files (title, filetype, filedata, user_id, visibility)
             VALUES (?, ?, ?, ?, ?)
         ';
 
         $stmt = $this->conn->prepare( $query);
-        $stmt->bind_param("sssii", $filename, $filetype, $filedata, $user_id, $visibility);
+        $stmt->bind_param("sssii", $title, $filetype, $filedata, $user_id, $visibility);
 
         if ($stmt->execute()) {
             $stmt->close();
@@ -90,8 +97,10 @@ class FileController
         }
         
         $text = $_POST['text_content'];
+        $title = $_POST['title'];
+        $novel_category = $_POST['novel_category'];
         // FIXME: non ricordo che campi si passano dal frontend, modificare i campi in base a quelli passati
-        $filename = 'testo_inserito.txt';
+        //$title = 'testo_inserito.txt';
         $filetype = 'txt';
         $filedata = $text;
 
@@ -99,10 +108,16 @@ class FileController
         // get user visibility
         $user_id = 1; //TODO: when not testing, comment this line
         // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
-        $visibility = $this->getUserVisibility();
+        $userVisibility = $this->getUserVisibility();
+
+        $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
+
+        if($userVisibility < $selectedVisibility){
+            return $this->sendResponse(['status' => 'error', 'message' => 'Non hai i permessi per caricare questo contenuto.'], 403);
+        }
         
         $query = '
-            INSERT INTO files (filename, filetype, filedata, user_id, visibility)
+            INSERT INTO files (title, filetype, filedata, user_id, visibility)
             VALUES (?, ?, ?, ?, ?)
         ';
 
@@ -111,7 +126,7 @@ class FileController
             throw new Exception("Preparazione della query fallita: " . $this->conn->error);
         }
 
-        $stmt->bind_param("sssii", $filename, $filetype, $filedata, $user_id, $visibility);
+        $stmt->bind_param("sssii", $title, $filetype, $filedata, $user_id, $selectedVisibility);
         if ($stmt->execute()) {
             $stmt->close();
             return $this->sendResponse(['status' => 'success', 'message' => 'Testo caricato con successo.'], 201);
@@ -120,28 +135,30 @@ class FileController
             return $this->sendResponse(['status' => 'error', 'message' => 'Caricamento del testo fallito.'], 500);
         }
     }
-
+    
     public function downloadFile()
     {
+        //FIXME: con questa funzione downloadFile chiunque entri in possesso del file_id può scaricare il file,
+        // bisogna aggiungere un controllo per vedere se l'utente ha i permessi per scaricare il file
         if (!isset($_GET['file_id'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'ID del file non fornito.'], 400);
         }
 
         $fileId = $_GET['file_id'];
-        $stmt = $this->conn->prepare("SELECT filename, filetype, filedata FROM files WHERE id = ?");
+        $stmt = $this->conn->prepare("SELECT title, filetype, filedata FROM files WHERE id = ?");
         $stmt->bind_param("i", $fileId);
         $stmt->execute();
-        $stmt->bind_result($filename, $filetype, $filedata);
+        $stmt->bind_result($title, $filetype, $filedata);
         $stmt->fetch();
         $stmt->close();
 
-        if (!$filename || !$filedata) {
+        if (!$title || !$filedata) {
             return $this->sendResponse(['status' => 'error', 'message' => 'File non trovato.'], 404);
         }
 
         $response = [
             'status' => 'success',
-            'filename' => $filename,
+            'title' => $title,
             'filetype' => $filetype,
             'filedata' => $filetype === 'txt' ? $filedata : base64_encode($filedata)
         ];
@@ -175,7 +192,7 @@ class FileController
         $userVisibility = $this->getUserVisibility();
         
         $query = '
-            SELECT f.id, f.filename, f.filetype, u.username, f.uploaded_at
+            SELECT f.id, f.title, f.filetype, u.username, f.uploaded_at
             FROM files f INNER JOIN users u ON f.user_id = u.id
             WHERE (f.filetype = ? OR ? = "both") AND ? >= f.visibility
             ORDER BY f.uploaded_at DESC
