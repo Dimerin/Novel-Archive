@@ -14,8 +14,10 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS files (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    filename VARCHAR(255) NOT NULL,
-    filetype VARCHAR(50) NOT NULL,
-    filedata LONGBLOB NOT NULL,
-    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        filename VARCHAR(255) NOT NULL,
+        filetype VARCHAR(50) NOT NULL,
+        filedata LONGBLOB NOT NULL,
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        user_id INT NOT NULL REFERENCES users(id),
+        visibility TINYINT(1) NOT NULL DEFAULT 0
 );

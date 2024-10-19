@@ -33,6 +33,21 @@ class FileController
         }
     }
 
+    private function getUserVisibility()
+    {
+        $user_id = 1; //TODO: when not testing, comment this line
+        // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
+        $stmt->bind_param('i', $user_id);
+        $stmt->execute();
+        $stmt->bind_result($role);
+        $stmt->fetch();
+        $stmt->close();
+
+        $visibility = $role == 'non-premium' ? 0 : 1;
+        return $visibility;
+    }
+
     private function uploadFile()
     {
         if (!isset($_FILES['file'])) {
@@ -44,8 +59,20 @@ class FileController
         $filetype = pathinfo($filename, PATHINFO_EXTENSION);
         $filedata = file_get_contents($file['tmp_name']);
 
-        $stmt = $this->conn->prepare("INSERT INTO files (filename, filetype, filedata) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $filename, $filetype, $filedata);
+        // FIXME: le due funzioni uploadFile e uploadText sono molto simili, si potrebbe fare una funzione generica
+        // get user visibility
+        $user_id = 1; //TODO: when not testing, comment this line
+        // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        // FIXME: passare user_id o ricavarlo da sessione dentro la funzione? 
+        $visibility = $this->getUserVisibility();
+
+        $query = '
+            INSERT INTO files (filename, filetype, filedata, user_id, visibility)
+            VALUES (?, ?, ?, ?, ?)
+        ';
+
+        $stmt = $this->conn->prepare( $query);
+        $stmt->bind_param("sssii", $filename, $filetype, $filedata, $user_id, $visibility);
 
         if ($stmt->execute()) {
             $stmt->close();
@@ -63,16 +90,28 @@ class FileController
         }
         
         $text = $_POST['text_content'];
+        // FIXME: non ricordo che campi si passano dal frontend, modificare i campi in base a quelli passati
         $filename = 'testo_inserito.txt';
         $filetype = 'txt';
         $filedata = $text;
 
-        $stmt = $this->conn->prepare("INSERT INTO files (filename, filetype, filedata) VALUES (?, ?, ?)");
+
+        // get user visibility
+        $user_id = 1; //TODO: when not testing, comment this line
+        // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        $visibility = $this->getUserVisibility();
+        
+        $query = '
+            INSERT INTO files (filename, filetype, filedata, user_id, visibility)
+            VALUES (?, ?, ?, ?, ?)
+        ';
+
+        $stmt = $this->conn->prepare($query);
         if (!$stmt) { //TODO: check if this is correct
             throw new Exception("Preparazione della query fallita: " . $this->conn->error);
         }
 
-        $stmt->bind_param("sss", $filename, $filetype, $filedata);
+        $stmt->bind_param("sssii", $filename, $filetype, $filedata, $user_id, $visibility);
         if ($stmt->execute()) {
             $stmt->close();
             return $this->sendResponse(['status' => 'success', 'message' => 'Testo caricato con successo.'], 201);
@@ -121,8 +160,8 @@ class FileController
 
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) :1;
         $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? intval($_GET['limit']) :10;
-        $file_type = isset($_GET['file_type']) ? $_GET['file_type'] : 'txt';
-        
+        $file_type = isset($_GET['file_type']) ? $_GET['file_type'] : 'both';
+
         if( $page < 1){
             $page = 1; //FIXME: come controllo la pagina massima da ritornare?
         }
@@ -131,8 +170,20 @@ class FileController
         }
 
         $offset = ($page - 1) * $limit;
-        $stmt = $this->conn->prepare('SELECT id, filename, filetype FROM files WHERE filetype = ? LIMIT ?, ?');
-        $stmt->bind_param('sii', $file_type, $offset, $limit);
+
+        // get user visibility
+        $userVisibility = $this->getUserVisibility();
+        
+        $query = '
+            SELECT f.id, f.filename, f.filetype, u.username, f.uploaded_at
+            FROM files f INNER JOIN users u ON f.user_id = u.id
+            WHERE (f.filetype = ? OR ? = "both") AND ? >= f.visibility
+            ORDER BY f.uploaded_at DESC
+            LIMIT ?, ?
+        ';
+
+        $stmt = $this->conn->prepare( $query );
+        $stmt->bind_param('ssiii', $file_type, $file_type, $userVisibility, $offset, $limit);
 
         $stmt->execute();
         $result = $stmt->get_result();
