@@ -6,11 +6,11 @@
 
 <div class="w3-top">
     <div class="w3-bar w3-black w3-card w3-animate-bottom" id="myNavbar">
-        <a href="/" class="w3-bar-item w3-button w3-wide">
+        <a href="/" class="w3-bar-item w3-button w3-wide" id="HomeLink">
             <img src="./Frontend/imgs/icon.png" alt="Icon" style="width:30px; height:30px; vertical-align:middle; margin-right:5px;">
             Novel Archive
         </a>
-        <div class="w3-right w3-hide-small">
+        <div class="w3-right w3-hide-medium w3-hide-small">
             <?php
                 switch($current_page) {
                     case 'homepage':
@@ -22,7 +22,7 @@
                     break;
                     case 'dashboard':
 
-                        echo '<a href="#" id="username" class="w3-button w3-bar-item"><b>User: ' . htmlspecialchars($_SESSION['username']) . '</b></a>
+                        echo '<a href="#" id="username" class="w3-button w3-bar-item"><b>' . htmlspecialchars($_SESSION['username']) . '</b></a>
                               <a href="#" class="w3-button w3-bar-item" id="role"><b>';
                         switch ($_SESSION['role']) {
                             case 'non-premium':
@@ -32,7 +32,7 @@
                                 echo '<span style="color: yellow;">Pro Plan</span>';
                                 break;
                             case 'admin':
-                                echo '<span style="color: red;">Admin User</span>';
+                                echo '<span style="color: red;">Admin</span>';
                                 break;
                             default:
                                 echo '<span style="color: black;">Unknown Role</span>';
@@ -66,12 +66,12 @@
             
             ?>
         </div>
-        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
+        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large" onclick="w3_open()">
             <i class="fa fa-bars"></i>
         </a>
     </div>
 </div>
-<nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
+<nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-large" style="display:none" id="mySidebar">
 <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
     <?php
         switch($current_page) {
