@@ -1,6 +1,7 @@
 class Dashboard {
     constructor(mainContentId) {
         this.mainContent = document.getElementById(mainContentId);
+        this.originalClasses = this.mainContent.className;
         this.userPage = 1;
         this.usersPerPage = 10;
         this.cataloguePage = 1;
@@ -12,6 +13,7 @@ class Dashboard {
     }
 
     loadUploadFileContent() {
+        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -59,6 +61,7 @@ class Dashboard {
     }
 
     async loadAdminPageContent() {
+        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -160,6 +163,7 @@ class Dashboard {
         this.updatePageInfo();
     }
     async loadCatalogueContent() {
+        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -271,11 +275,11 @@ class Dashboard {
             if (file.filetype === 'txt') {
                 imageSrc = './Frontend/imgs/text-file.png'; 
                 imageStyle = 'width:25%';
-                buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="readFile(${file.id})">Read</button>`;
+                buttons = `<button class="w3-button w3-black w3-margin-bottom" data-file-id="${file.id}" data-action="read">Read</button>`;
             } else if (file.filetype === 'pdf') {
                 imageSrc = './Frontend/imgs/pdf-file.png'; 
                 imageStyle = 'width: 25%';
-                buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="downloadFile(${file.id})">Download</button>`;
+                buttons = `<button class="w3-button w3-black w3-margin-bottom" data-file-id="${file.id}" data-action="download">Download</button>`;
             } else {
                 imageSrc = '/Frontend/imgs/nicola.png';  // Default image
                 imageStyle = 'width:25%';  // Default style
@@ -303,11 +307,11 @@ class Dashboard {
             if (file.filetype === 'txt') {
                 imageSrc = './Frontend/imgs/text-file.png'; 
                 imageStyle = 'width:25%';
-                buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="readFile(${file.id})">Read</button>`;
+                buttons = `<button class="w3-button w3-black w3-margin-bottom" data-file-id="${file.id}" data-action="read">Read</button>`;
             } else if (file.filetype === 'pdf') {
                 imageSrc = './Frontend/imgs/pdf-file.png'; 
-                imageStyle = 'width:25%';
-                buttons = `<button class="w3-button w3-black w3-margin-bottom" onclick="downloadFile(${file.id})">Download</button>`;
+                imageStyle = 'width: 25%';
+                buttons = `<button class="w3-button w3-black w3-margin-bottom" data-file-id="${file.id}" data-action="download">Download</button>`;
             } else {
                 imageSrc = '/Frontend/imgs/nicola.png';  // Default image
                 imageStyle = 'width:25%';  // Default style
@@ -325,7 +329,116 @@ class Dashboard {
             `;
             secondContainer.insertAdjacentHTML('beforeend', card);
         });
+        container.querySelectorAll('button[data-action="read"]').forEach(button => {
+            button.addEventListener('click', (event) => this.readFile(event.target.dataset.fileId));
+        });
+        container.querySelectorAll('button[data-action="download"]').forEach(button => {
+            button.addEventListener('click', (event) => this.downloadFile(event.target.dataset.fileId));
+        });
+        secondContainer.querySelectorAll('button[data-action="read"]').forEach(button => {
+            button.addEventListener('click', (event) => this.readFile(event.target.dataset.fileId));
+        });
+        secondContainer.querySelectorAll('button[data-action="download"]').forEach(button => {
+            button.addEventListener('click', (event) => this.downloadFile(event.target.dataset.fileId));
+        });
+
     }
+
+    async downloadFile(fileId) {
+        try {
+                if (!fileId) {
+                    throw new Error('File ID is required');
+                }
+                const queryParams = new URLSearchParams({
+                    file_id: fileId
+                });
+            
+                const response = await fetch(`/api/download_file?${queryParams.toString()}`, {
+                    method: 'GET'
+                });
+        
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+        
+                const result = await response.json();
+                if (result.status === 'success' && result.filetype === 'pdf') {
+                    showToast('success', "Download started");
+                    const link = document.createElement('a');
+                    link.href = `data:application/pdf;base64,${result.filedata}`;
+                    link.download = result.filename;
+                    link.click();
+                }
+                else {
+                    showToast('error', result.message);
+                }
+            } catch (error) {
+                showToast('error', 'An error occurred while downloading the file');
+            }
+            this.updateLinkClasses(document.getElementById('catalogueLink'));
+            this.ensureToastScript();
+        }
+
+    async readFile(fileId) {
+        try {
+            if (!fileId) {
+                throw new Error('File ID is required');
+            }
+            const queryParams = new URLSearchParams({
+                file_id: fileId
+            });
+
+            const response = await fetch(`/api/download_file?${queryParams.toString()}`, {
+                method: 'GET'
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            const result = await response.json();
+            if (result.status === 'success' && result.filetype === 'txt') {
+                this.loadNovelContent(result.filedata, result.filename);
+            }
+            else {
+                showToast('error', result.message);
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred while downloading the file');
+        }
+        this.updateLinkClasses(document.getElementById('catalogueLink'));
+        this.ensureToastScript();
+        const sidebarLinks = document.querySelectorAll('.w3-bar-item');
+        sidebarLinks.forEach(link => {
+            link.classList.remove('w3-white');
+        });
+    }
+
+    loadNovelContent(fileData, filename) {
+        this.toggleBackgroundImage(true);
+        this.mainContent.classList.remove('bgimg-1')
+        this.mainContent.classList.add('bgnovel')
+        
+        this.mainContent.innerHTML = `
+           <div class="toast-container">
+                <ul class="notifications"></ul>
+            </div> 
+            <div class="w3-center w3-padding-64">
+                <div class="w3-center w3-text-black w3-margin-top">
+                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">${filename}</span><br>
+                    <span class="w3-xxxlarge w3-hide-large w3-hide-medium w3-animate-bottom">${filename}</span><br>
+                </div>
+            
+                <div class="w3-left-align w3-margin-left w3-section w3-bottombar w3-padding-16 w3-margin-bottom">
+                </div>
+                <div class="w3-container w3-animate-bottom">
+                ${fileData}
+                </div>
+            </div>
+            `;
+        this.ensureToastScript();
+        this.updateLinkClasses(document.getElementById('catalogueLink'));
+    }
+
     
     
     async changeUserRole(userId, newRole, actualRole) {
@@ -372,6 +485,14 @@ class Dashboard {
         }
     }
 
+    toggleBackgroundImage(add) {
+        if (add) {
+            this.mainContent.classList.remove('bgimg-1');
+            this.mainContent.classList.add('bgnovel');
+        } else {
+            this.mainContent.className = this.originalClasses;
+        }
+    }
     prevPage() {
         if (this.userPage > 1) {
             this.userPage--;
@@ -387,15 +508,6 @@ class Dashboard {
         }
     }
     
-
-
-    resetHomePage() {
-        // Restore the original content captured during initialization
-        //this.mainContent.innerHTML = this.originalContent;
-        this.loadCatalogueContent();
-        initNotifications(); // Reinitialize notifications
-        this.updateLinkClasses(document.getElementById('catalogueLink'));
-    }
 
     ensureToastScript() {
         // Check if toast.js is already loaded
@@ -465,5 +577,14 @@ document.addEventListener('DOMContentLoaded', function() {
             dashboard.loadCatalogueContent();
         });
     }
+ 
+    const HomeLink = document.getElementById('HomeLink');
+
+        HomeLink.href = '/dashboard';
+        HomeLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            // Load the catalogue content
+            dashboard.loadCatalogueContent();
+        });
     dashboard.loadCatalogueContent();
 });
