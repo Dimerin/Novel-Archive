@@ -25,10 +25,10 @@
                         echo '<a href="#" id="username" class="w3-button w3-bar-item"><b>' . htmlspecialchars($_SESSION['username']) . '</b></a>
                               <a href="#" class="w3-button w3-bar-item" id="role"><b>';
                         switch ($_SESSION['role']) {
-                            case 'non-premium':
+                            case 'free':
                                 echo '<span style="color: lightgreen;">Free Plan</span>';
                                 break;
-                            case 'premium':
+                            case 'pro':
                                 echo '<span style="color: yellow;">Pro Plan</span>';
                                 break;
                             case 'admin':
@@ -87,10 +87,10 @@
                 echo '<a href="#" id="username" class="w3-button w3-bar-item"><b>User: ' . htmlspecialchars($_SESSION['username']) . '</b></a>
                       <a href="#" class="w3-button w3-bar-item" id="role"><b>';
                 switch ($_SESSION['role']) {
-                    case 'non-premium':
+                    case 'free':
                         echo '<span style="color: lightgreen;">Free Plan</span>';
                         break;
-                    case 'premium':
+                    case 'pro':
                         echo '<span style="color: yellow;">Pro Plan</span>';
                         break;
                     case 'admin':

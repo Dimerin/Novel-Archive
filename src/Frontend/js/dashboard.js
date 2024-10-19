@@ -33,29 +33,24 @@ class Dashboard {
                         <div id="file_upload_section">
                             <label id="upload_file_label" for="upload_file"><b>Select your PDF file</b></label>
                             <input type="file" class="w3-input w3-border" name="upload_file" id="file"><br>
-                            <input type="radio" name="novel-category" id="novel-category-free-pdf" class="w3-radio" value="free" checked>
-                            <span class="w3-medium"><b>Free</b></span>
-                            <input type="radio" name="novel-category" id="novel-category-pro-pdf" class="w3-radio" value="pro">
-                            <span class="w3-medium"><b>Pro</b></span>
+                           
                         </div>
                         <div id="text_upload_section" class="hidden">
                             <label id="title_label" for="title"><b>Insert your title</b></label>
                             <input class="w3-input w3-border" type="text" name="title" id="title"><br>
                             <label id="text_content_label" for="text_content"><b>Insert your text</b></label>
                             <textarea class="w3-input w3-border" name="text_content" id="text_content" rows="10" cols="30"></textarea><br>
-                            <input type="radio" name="novel-category" id="novel-category-free-txt" class="w3-radio" value="free" checked>
-                            <span class="w3-medium "><b>Free</b></span>
-                            <input type="radio" name="novel-category" id="novel-category-pro-txt" class="w3-radio" value="pro">
-                            <span class="w3-medium"><b>Pro</b></span>
                         </div>
+                        <input type="radio" name="novel-category" id="novel-category-free-pdf" class="w3-radio" value="free" checked>
+                        <span class="w3-medium"><b>Free</b></span>
+                        <input type="radio" name="novel-category" id="novel-category-pro-pdf" class="w3-radio" value="pro">
+                        <span class="w3-medium"><b>Pro</b></span>
                     </div>
                     <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-upload"></i> UPLOAD</button>
                 </form>
             </div>
         `;
         init(); // Reinitialize event listeners
-
-        // Ensure toast.js is loaded
         this.ensureToastScript();
         this.updateLinkClasses(document.getElementById('uploadFileLink'));
     }
@@ -86,9 +81,9 @@ class Dashboard {
                         </tbody>
                     </table>
                     <div class="w3-center w3-padding-16">
-                        <button class="w3-button w3-black" id="prevPageBtn">Previous</button>
+                        <button class="w3-button w3-black" id="prevUserPageBtn">Previous</button>
                         <span id="usersPageInfo"></span>
-                        <button class="w3-button w3-black" id="nextPageBtn">Next</button>
+                        <button class="w3-button w3-black" id="nextUserPageBtn">Next</button>
                     </div>
                 </div>
             </div>
@@ -121,8 +116,8 @@ class Dashboard {
         this.updateLinkClasses(document.getElementById('adminPageLink'));
 
         // Add event listeners for pagination buttons
-        document.getElementById('prevPageBtn').addEventListener('click', () => this.prevPage());
-        document.getElementById('nextPageBtn').addEventListener('click', () => this.nextPage());
+        document.getElementById('prevUserPageBtn').addEventListener('click', () => this.prevPage());
+        document.getElementById('nextUserPageBtn').addEventListener('click', () => this.nextPage());
 
         // Add event listener for role change using event delegation
         document.getElementById('userTableBody').addEventListener('change', (event) => {
@@ -150,8 +145,8 @@ class Dashboard {
                     <td class="w3-bold">${user.email}</td>
                     <td>
                         <select class="w3-select w3-border scrollable-menu" name="role" data-user-id="${user.id}" data-actual-role="${user.role}">
-                            <option value="non-premium" ${user.role === 'non-premium' ? 'selected' : ''}>Non-Premium</option>
-                            <option value="premium" ${user.role === 'premium' ? 'selected' : ''}>Premium</option>
+                            <option value="free" ${user.role === 'free' ? 'selected' : ''}>Free</option>
+                            <option value="pro" ${user.role === 'pro' ? 'selected' : ''}>Pro</option>
                             <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
                         </select>
                     </td>
@@ -188,9 +183,9 @@ class Dashboard {
                 <!-- Second set of cards will be inserted here -->
             </div>
             <div class="w3-center w3-padding-16 w3-animate-bottom">
-                <button class="w3-button w3-black" id="prevPageBtn">Previous</button>
+                <button class="w3-button w3-black" id="prevCataloguePageBtn">Previous</button>
                 <span id="cataloguePageInfo"></span>
-                <button class="w3-button w3-black" id="nextPageBtn">Next</button>
+                <button class="w3-button w3-black" id="nextCataloguePageBtn">Next</button>
             </div>
         `;
     
@@ -251,27 +246,43 @@ class Dashboard {
 
     renderCards(files) {
         const container = this.mainContent.querySelector('.w3-row-padding.bg');
-        const secondContainer = this.mainContent.querySelector('.second-container');
-    
-        if (!container || !secondContainer) {
-            console.warn('One or both card containers not found. Skipping card rendering.');
-            return;
+
+    if (!container) {
+        console.warn('Card container not found. Skipping card rendering.');
+        return;
+    }
+
+    container.innerHTML = '';  // Clear existing content
+
+    // Create rows dynamically and add cards to them
+    let row;
+    files.forEach((file, index) => {
+        if (index % 3 === 0) {
+            row = document.createElement('div');
+            row.className = 'w3-row-padding';
+            container.appendChild(row);
         }
-    
-        container.innerHTML = '';  // Clear existing content for the first container
-        secondContainer.innerHTML = '';  // Clear existing content for the second container
-    
-        // Determine how to split the files between the two containers
-        const midpoint = Math.ceil(files.length / 2);
-        const firstHalf = files.slice(0, midpoint);
-        const secondHalf = files.slice(midpoint);
-    
-        // Render the first half of the files in the first container
-        firstHalf.forEach(file => {
-            let imageSrc;
-            let imageStyle;
-            let buttons = '';
-    
+
+        let imageSrc;
+        let imageStyle;
+        let buttons = '';
+        let role;
+        let roleColor;
+        console.log('file_visibility:', file.visibility);
+        switch (file.visibility) {
+            case 0:
+                role = "Free";
+                roleColor = "lightgreen";
+                break;
+            case 1:
+                role = "Pro";
+                roleColor = "yellow";
+                break;
+            default:
+                role = "Undefined";
+                roleColor = "black";
+                break;
+        }
             if (file.filetype === 'txt') {
                 imageSrc = './Frontend/imgs/text-file.png'; 
                 imageStyle = 'width:25%';
@@ -289,61 +300,25 @@ class Dashboard {
                 <div class="w3-third w3-container w3-center w3-margin-bottom w3-hover-opacity w3-card">
                     <img src="${imageSrc}" alt="${file.filename}" style="${imageStyle}">
                     <div class="w3-container">
-                        <p><b>${file.filename}</b></p>
-                        <p>File Type: ${file.filetype}</p>
+                        <p><b>${file.title}</b></p>
+                        <p>Author: ${file.username}</p>
+                        <p style="color: ${roleColor};"><b>${role}</b></p>
+
                     </div>
                     ${buttons}
                 </div>
             `;
-            container.insertAdjacentHTML('beforeend', card);
+            row.insertAdjacentHTML('beforeend', card);
         });
     
-        // Render the second half of the files in the second container
-        secondHalf.forEach(file => {
-            let imageSrc;
-            let imageStyle;
-            let buttons = '';
-    
-            if (file.filetype === 'txt') {
-                imageSrc = './Frontend/imgs/text-file.png'; 
-                imageStyle = 'width:25%';
-                buttons = `<button class="w3-button w3-black w3-margin-bottom" data-file-id="${file.id}" data-action="read">Read</button>`;
-            } else if (file.filetype === 'pdf') {
-                imageSrc = './Frontend/imgs/pdf-file.png'; 
-                imageStyle = 'width: 25%';
-                buttons = `<button class="w3-button w3-black w3-margin-bottom" data-file-id="${file.id}" data-action="download">Download</button>`;
-            } else {
-                imageSrc = '/Frontend/imgs/nicola.png';  // Default image
-                imageStyle = 'width:25%';  // Default style
-            }
-    
-            const card = `
-                <div class="w3-third w3-container w3-center w3-margin-bottom w3-hover-opacity w3-card">
-                    <img src="${imageSrc}" alt="${file.filename}" style="${imageStyle}">
-                    <div class="w3-container">
-                        <p><b>${file.filename}</b></p>
-                        <p>File Type: ${file.filetype}</p>
-                    </div>
-                    ${buttons}
-                </div>
-            `;
-            secondContainer.insertAdjacentHTML('beforeend', card);
-        });
+       
         container.querySelectorAll('button[data-action="read"]').forEach(button => {
             button.addEventListener('click', (event) => this.readFile(event.target.dataset.fileId));
         });
         container.querySelectorAll('button[data-action="download"]').forEach(button => {
             button.addEventListener('click', (event) => this.downloadFile(event.target.dataset.fileId));
         });
-        secondContainer.querySelectorAll('button[data-action="read"]').forEach(button => {
-            button.addEventListener('click', (event) => this.readFile(event.target.dataset.fileId));
-        });
-        secondContainer.querySelectorAll('button[data-action="download"]').forEach(button => {
-            button.addEventListener('click', (event) => this.downloadFile(event.target.dataset.fileId));
-        });
-
     }
-
     async downloadFile(fileId) {
         try {
                 if (!fileId) {
@@ -397,7 +372,7 @@ class Dashboard {
     
             const result = await response.json();
             if (result.status === 'success' && result.filetype === 'txt') {
-                this.loadNovelContent(result.filedata, result.filename);
+                this.loadNovelContent(result.filedata, result.title, result.visibility);
             }
             else {
                 showToast('error', result.message);
@@ -413,7 +388,7 @@ class Dashboard {
         });
     }
 
-    loadNovelContent(fileData, filename) {
+    loadNovelContent(fileData, title) {
         this.toggleBackgroundImage(true);
         this.mainContent.classList.remove('bgimg-1')
         this.mainContent.classList.add('bgnovel')
@@ -424,8 +399,8 @@ class Dashboard {
             </div> 
             <div class="w3-center w3-padding-64">
                 <div class="w3-center w3-text-black w3-margin-top">
-                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">${filename}</span><br>
-                    <span class="w3-xxxlarge w3-hide-large w3-hide-medium w3-animate-bottom">${filename}</span><br>
+                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">${title}</span><br>
+                    <span class="w3-xxxlarge w3-hide-large w3-hide-medium w3-animate-bottom">${title}</span><br>
                 </div>
             
                 <div class="w3-left-align w3-margin-left w3-section w3-bottombar w3-padding-16 w3-margin-bottom">
@@ -475,13 +450,53 @@ class Dashboard {
         const usersPageInfo = document.getElementById('usersPageInfo');
         const totalUsersPages = Math.ceil(this.users.length / this.usersPerPage);
         const totalCataloguePages = Math.ceil(this.novels.length / this.novelsPerPage);
-
+    
         if (usersPageInfo) {
             usersPageInfo.textContent = `Page ${this.userPage} of ${totalUsersPages}`;
         }
-
+    
         if (cataloguePageInfo) {
             cataloguePageInfo.textContent = `Page ${this.cataloguePage} of ${totalCataloguePages}`;
+        }
+    
+        // Disable buttons and hide span if not enough novels for pagination
+        const prevCataloguePageBtn = document.getElementById('prevCataloguePageBtn');
+        const nextCataloguePageBtn = document.getElementById('nextCataloguePageBtn');
+    
+        if (prevCataloguePageBtn && nextCataloguePageBtn) {
+            if (totalCataloguePages <= 1) {
+                prevCataloguePageBtn.disabled = true;
+                nextCataloguePageBtn.disabled = true;
+                if (cataloguePageInfo) {
+                    cataloguePageInfo.style.display = 'none';
+                }
+            } else {
+                prevCataloguePageBtn.disabled = this.cataloguePage === 1;
+                nextCataloguePageBtn.disabled = this.cataloguePage === totalCataloguePages;
+                if (cataloguePageInfo) {
+                    cataloguePageInfo.style.display = 'inline';
+                }
+            }
+        }
+    
+        // Disable buttons and hide span if not enough users for pagination
+        const prevUserPageBtn = document.getElementById('prevUserPageBtn');
+        const nextUserPageBtn = document.getElementById('nextUserPageBtn');
+    
+        if (prevUserPageBtn && nextUserPageBtn) {
+            if (totalUsersPages <= 1) {
+                prevUserPageBtn.disabled = true;
+                nextUserPageBtn.disabled = true;
+                if (usersPageInfo) {
+                    usersPageInfo.style.display = 'none';
+                }
+            } else {
+                prevUserPageBtn.disabled = this.userPage === 1;
+                nextUserPageBtn.disabled = this.userPage === totalUsersPages;
+                if (usersPageInfo) {
+                    usersPageInfo.style.display = 'inline';
+                }
+            }
         }
     }
 

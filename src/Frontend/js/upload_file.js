@@ -24,6 +24,7 @@ async function uploadFile(event) { //TODO: Implement the backend API endpoint fo
     } else {
         const title = document.getElementById('title').value;
         const textContent = document.getElementById('text_content').value;
+        const role = document.querySelector('input[name="novel-category"]:checked').value;
         if (title.trim() === '') {
             showToast('warning', 'Insert a title.');
             return;
@@ -32,8 +33,10 @@ async function uploadFile(event) { //TODO: Implement the backend API endpoint fo
             showToast('warning', 'Insert text to upload.');
             return;
         }
-        formData.append('title', title);
+        
         formData.append('text_content', textContent);
+        formData.append('title', title);
+        formData.append('novel_category', role);
     }
 
     formData.append('upload_type', uploadType);
@@ -54,18 +57,13 @@ async function uploadFile(event) { //TODO: Implement the backend API endpoint fo
 function toggleUploadSection() {
     const isTextSelected = document.getElementById('upload_text_radio').checked;
     const fileUploadSection = document.getElementById('file_upload_section');
-    const textUploadSection = document.getElementById('text_upload_section');
-    const txt = document.getElementById('novel-category-free-txt');
-    const pdf = document.getElementById('novel-category-free-pdf');
-    
+    const textUploadSection = document.getElementById('text_upload_section');  
 
     if (isTextSelected) {
         fileUploadSection.classList.add('hidden');
         textUploadSection.classList.remove('hidden');
-        txt.checked = true;
     } else {
         fileUploadSection.classList.remove('hidden');
         textUploadSection.classList.add('hidden');
-        pdf.checked = true;
     }
 }

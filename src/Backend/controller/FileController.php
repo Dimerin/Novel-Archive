@@ -36,7 +36,7 @@ class FileController
     private function getUserVisibility()
     {
         $user_id = 1; //TODO: when not testing, comment this line
-        // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        //$user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
         $stmt->bind_param('i', $user_id);
         $stmt->execute();
@@ -192,7 +192,7 @@ class FileController
         $userVisibility = $this->getUserVisibility();
         
         $query = '
-            SELECT f.id, f.title, f.filetype, u.username, f.uploaded_at
+            SELECT f.id, f.title, f.filetype, u.username, f.uploaded_at, f.visibility
             FROM files f INNER JOIN users u ON f.user_id = u.id
             WHERE (f.filetype = ? OR ? = "both") AND ? >= f.visibility
             ORDER BY f.uploaded_at DESC
