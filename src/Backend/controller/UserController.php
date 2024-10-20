@@ -93,7 +93,7 @@ class UserController
             session_regenerate_id(true);
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $role;
-            $_SESSION['id'] = $id;
+            $_SESSION['user_id'] = $id;
 
             return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
 

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./Frontend/css/main.css">
     <link rel="stylesheet" href="./Frontend/css/toast.css">
+    <link rel="icon" href="./Frontend/imgs/icon.ico">
     <style>
         .bgimg-1 {
             background-image: url('./Frontend/imgs/register.jpg');

@@ -35,8 +35,8 @@ class FileController
 
     private function getUserVisibility()
     {
-        $user_id = 1; //TODO: when not testing, comment this line
-        //$user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        //$user_id = 1; //TODO: when not testing, comment this line
+        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
         $stmt->bind_param('i', $user_id);
         $stmt->execute();

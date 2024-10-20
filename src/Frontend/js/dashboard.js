@@ -169,7 +169,7 @@ class Dashboard {
                     <span class="w3-xxxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Catalogue</span><br>
                 </div>
             
-                <div class="w3-left-align w3-margin-left w3-section w3-bottombar w3-padding-16 w3-margin-bottom">
+                <div class="w3-left-align w3-margin-left w3-section w3-bottombar w3-padding-16 w3-margin-bottom w3-animate-bottom">
                     <span class="w3-margin-right w3-hide-small"><b>Filter:</b></span> 
                     <button class="w3-button w3-white" id="latestBtn">Latest</button>
                     <button class="w3-button w3-black" id="pdfBtn"><i class="fa fa-file-pdf-o w3-margin-right"></i>PDF</button>
