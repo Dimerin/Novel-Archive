@@ -62,8 +62,8 @@ class FileController
         $novel_category = $_POST['novel_category'];
 
         // get user visibility
-        $user_id = 1; //TODO: when not testing, comment this line
-        // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        #$user_id = 1; //TODO: when not testing, comment this line
+        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         // FIXME: passare user_id o ricavarlo da sessione dentro la funzione? 
         $userVisibility = $this->getUserVisibility();
 
@@ -106,8 +106,8 @@ class FileController
 
 
         // get user visibility
-        $user_id = 1; //TODO: when not testing, comment this line
-        // $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        #$user_id = 1; //TODO: when not testing, comment this line
+        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         $userVisibility = $this->getUserVisibility();
 
         $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
@@ -145,10 +145,23 @@ class FileController
         }
 
         $fileId = $_GET['file_id'];
-        $stmt = $this->conn->prepare("SELECT title, filetype, filedata FROM files WHERE id = ?");
+        $stmt = $this->conn->prepare("
+            SELECT 
+                files.title, 
+                files.filetype, 
+                files.filedata, 
+                users.username 
+            FROM 
+                files 
+            JOIN 
+                users 
+            ON 
+                files.user_id = users.id 
+            WHERE 
+                files.id = ?");
         $stmt->bind_param("i", $fileId);
         $stmt->execute();
-        $stmt->bind_result($title, $filetype, $filedata);
+        $stmt->bind_result($title, $filetype, $filedata, $author);
         $stmt->fetch();
         $stmt->close();
 
@@ -160,6 +173,7 @@ class FileController
             'status' => 'success',
             'title' => $title,
             'filetype' => $filetype,
+            'author' => $author,
             'filedata' => $filetype === 'txt' ? $filedata : base64_encode($filedata)
         ];
 

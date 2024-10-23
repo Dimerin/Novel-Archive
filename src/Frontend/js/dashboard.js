@@ -67,7 +67,7 @@ class Dashboard {
                 <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Manage Users</span><br>
                 </div>
                 <div class="w3-container w3-margin-top">
-                    <table class="w3-table w3-bordered w3-centered w3-animate-bottom w3-hoverable">
+                    <table class="w3-table w3-card-2 w3-border-black w3-round-large w3-centered w3-animate-bottom ">
                         <thead>
                             <tr class="w3-black">
                                 <th>ID</th>
@@ -144,7 +144,7 @@ class Dashboard {
                     <td class="w3-bold">${user.username}</td>
                     <td class="w3-bold">${user.email}</td>
                     <td>
-                        <select class="w3-select w3-border scrollable-menu" name="role" data-user-id="${user.id}" data-actual-role="${user.role}">
+                        <select class="w3-select w3-border-black w3-round-xxlarge scrollable-menu" name="role" data-user-id="${user.id}" data-actual-role="${user.role}">
                             <option value="free" ${user.role === 'free' ? 'selected' : ''}>Free</option>
                             <option value="pro" ${user.role === 'pro' ? 'selected' : ''}>Pro</option>
                             <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
@@ -297,7 +297,7 @@ class Dashboard {
             }
     
             const card = `
-                <div class="w3-third w3-container w3-center w3-margin-bottom w3-hover-opacity w3-card">
+                <div class="w3-third w3-container w3-center w3-margin-bottom w3-hover-shadow w3-card w3-border w3-round-xlarge">
                     <img src="${imageSrc}" alt="${file.filename}" style="${imageStyle}">
                     <div class="w3-container">
                         <p><b>${file.title}</b></p>
@@ -372,7 +372,7 @@ class Dashboard {
     
             const result = await response.json();
             if (result.status === 'success' && result.filetype === 'txt') {
-                this.loadNovelContent(result.filedata, result.title, result.visibility);
+                this.loadNovelContent(result.filedata, result.title, result.author);
             }
             else {
                 showToast('error', result.message);
@@ -388,27 +388,31 @@ class Dashboard {
         });
     }
 
-    loadNovelContent(fileData, title) {
+    loadNovelContent(fileData, title,author) {
         this.toggleBackgroundImage(true);
         this.mainContent.classList.remove('bgimg-1')
         this.mainContent.classList.add('bgnovel')
         
         this.mainContent.innerHTML = `
-           <div class="toast-container">
-                <ul class="notifications"></ul>
-            </div> 
-            <div class="w3-center w3-padding-64">
-                <div class="w3-center w3-text-black w3-margin-top">
-                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">${title}</span><br>
-                    <span class="w3-xxxlarge w3-hide-large w3-hide-medium w3-animate-bottom">${title}</span><br>
-                </div>
-            
-                <div class="w3-left-align w3-margin-left w3-section w3-bottombar w3-padding-16 w3-margin-bottom">
-                </div>
-                <div class="w3-container w3-animate-bottom">
-                ${fileData}
-                </div>
+            <div id="wrapper">
+                <div id="container">
+                    <section class="open-book">
+                    <header>
+                        <h6>Author: ${author}</h6>
+                    </header>
+                    <article>
+                        <h2 class="chapter-title">${title}</h2>
+                        <p>${fileData}</p>
+                    </article>
+                    <footer>
+                    <ol id="page-numbers">
+                        <li>1</li>
+                        <li>2</li>
+                    </ol>
+                    </footer>
+                </section>
             </div>
+        </div>
             `;
         this.ensureToastScript();
         this.updateLinkClasses(document.getElementById('catalogueLink'));

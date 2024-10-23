@@ -20,10 +20,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="./Frontend/css/main.css">
 <link rel="stylesheet" href="./Frontend/css/toast.css">
+<link rel="stylesheet" href="./Frontend/css/book.css">
 <script src="./Frontend/js/menu.js"></script>
 <script src="./Frontend/js/logout.js"></script>
 <script src="./Frontend/js/upload_file.js"></script>
 <script src="./Frontend/js/dashboard.js"></script>
+
 
 <style>
         .bgimg-1 {
