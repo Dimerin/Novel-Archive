@@ -8,6 +8,7 @@ class Dashboard {
         this.novelsPerPage = 6;
         this.novels = [];
         this.users = [];
+        this.previousContent = '';
         // Capture the original content at initialization
         //this.originalContent = this.mainContent ? this.mainContent.innerHTML : '';
     }
@@ -268,7 +269,6 @@ class Dashboard {
         let buttons = '';
         let role;
         let roleColor;
-        console.log('file_visibility:', file.visibility);
         switch (file.visibility) {
             case 0:
                 role = "Free";
@@ -388,36 +388,62 @@ class Dashboard {
         });
     }
 
-    loadNovelContent(fileData, title,author) {
+    
+
+    loadNovelContent(fileData, title, author) {
+        // Store the current content before loading new content
+        this.previousContent = this.mainContent.innerHTML;
+    
         this.toggleBackgroundImage(true);
-        this.mainContent.classList.remove('bgimg-1')
-        this.mainContent.classList.add('bgnovel')
         
         this.mainContent.innerHTML = `
+            <div style="margin-top: 5em; position: relative; z-index:1000;">
+            <button class="w3-button w3-black w3-border w3-round-xxlarge w3-margin-left"  id="backButton"><i class="fa fa-mail-reply"></i></a>
+                </div>
             <div id="wrapper">
                 <div id="container">
                     <section class="open-book">
-                    <header>
-                        <h6>Author: ${author}</h6>
-                    </header>
-                    <article>
-                        <h2 class="chapter-title">${title}</h2>
-                        <p>${fileData}</p>
-                    </article>
-                    <footer>
-                    <ol id="page-numbers">
-                        <li>1</li>
-                        <li>2</li>
-                    </ol>
-                    </footer>
-                </section>
+                    
+                        <header>
+                            <h6>Author: ${author}</h6>
+                        </header>
+                        <article>
+                            <h2 class="chapter-title">${title}</h2>
+                            <p>${fileData}</p>
+                        </article>
+                        <footer>
+                            <ol id="page-numbers">
+                                <li>1</li>
+                                <li>2</li>
+                            </ol>
+                        </footer>
+                    </section>
+                </div>
             </div>
-        </div>
-            `;
+        `;
+    
+        // Add event listener to the back button
+        document.getElementById('backButton').addEventListener('click', () => {
+            this.mainContent.innerHTML = this.previousContent;
+            this.toggleBackgroundImage(false);
+            this.reinitializeEventListeners();
+
+        });
+    
         this.ensureToastScript();
         this.updateLinkClasses(document.getElementById('catalogueLink'));
     }
+    reinitializeEventListeners() {
+        const readButtons = this.mainContent.querySelectorAll('button[data-action="read"]');
+        readButtons.forEach(button => {
+            button.addEventListener('click', (event) => this.readFile(event.target.dataset.fileId));
+        });
 
+        const downloadButtons = this.mainContent.querySelectorAll('button[data-action="download"]');
+        downloadButtons.forEach(button => {
+            button.addEventListener('click', (event) => this.downloadFile(event.target.dataset.fileId));
+        });
+    }
     
     
     async changeUserRole(userId, newRole, actualRole) {
