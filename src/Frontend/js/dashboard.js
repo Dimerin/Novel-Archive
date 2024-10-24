@@ -391,58 +391,43 @@ class Dashboard {
     
 
     loadNovelContent(fileData, title, author) {
-        // Store the current content before loading new content
-        this.previousContent = this.mainContent.innerHTML;
-    
-        this.toggleBackgroundImage(true);
-        
-        this.mainContent.innerHTML = `
-            <div style="margin-top: 5em; position: relative; z-index:1000;">
-            <button class="w3-button w3-black w3-border w3-round-xxlarge w3-margin-left"  id="backButton"><i class="fa fa-mail-reply"></i></a>
-                </div>
-            <div id="wrapper">
-                <div id="container">
-                    <section class="open-book">
-                    
-                        <header>
-                            <h6>Author: ${author}</h6>
-                        </header>
-                        <article>
-                            <h2 class="chapter-title">${title}</h2>
-                            <p>${fileData}</p>
-                        </article>
-                        <footer>
-                            <ol id="page-numbers">
-                                <li>1</li>
-                                <li>2</li>
-                            </ol>
-                        </footer>
-                    </section>
+        const modalHTML = `
+            <div id="novelModal" class="w3-modal w3-top" style="display: block;">
+                <div class="w3-modal-content w3-animate-opacity" style="position: relative; min-width: 80%; z-index:1000;">
+                    <span class="w3-button w3-black w3-display-topleft w3-border w3-round-xxlarge" id="closeModal">&times;</span>
+                    <div id="wrapper">
+                        <div id="container">
+                            <section class="open-book">
+                                <header>
+                                    <h6>Author: ${author}</h6>
+                                </header>
+                                <article>
+                                    <h2 class="chapter-title">${title}</h2>
+                                    <p>${fileData}</p>
+                                </article>
+                                <footer>
+                                    <ol id="page-numbers">
+                                        <li>1</li>
+                                        <li>2</li>
+                                    </ol>
+                                </footer>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
     
-        // Add event listener to the back button
-        document.getElementById('backButton').addEventListener('click', () => {
-            this.mainContent.innerHTML = this.previousContent;
-            this.toggleBackgroundImage(false);
-            this.reinitializeEventListeners();
-
+        // Append the modal to the body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Add event listener to the close button
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('novelModal').remove();
         });
     
         this.ensureToastScript();
         this.updateLinkClasses(document.getElementById('catalogueLink'));
-    }
-    reinitializeEventListeners() {
-        const readButtons = this.mainContent.querySelectorAll('button[data-action="read"]');
-        readButtons.forEach(button => {
-            button.addEventListener('click', (event) => this.readFile(event.target.dataset.fileId));
-        });
-
-        const downloadButtons = this.mainContent.querySelectorAll('button[data-action="download"]');
-        downloadButtons.forEach(button => {
-            button.addEventListener('click', (event) => this.downloadFile(event.target.dataset.fileId));
-        });
     }
     
     
