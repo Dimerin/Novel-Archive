@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__.'/../config/config.php';
 
 class dbManager {
     private $host;
@@ -9,11 +8,10 @@ class dbManager {
     private $conn;
 
     private function _initVar(){
-        $config = Config::getInstance();
-        $this->host = $config->get('DB_HOST');
-        $this->user = $config->get('DB_USER');
-        $this->password = $config->get('DB_PASSWORD');
-        $this->dbname = $config->get('DB_NAME');
+        $this->host = getenv('DB_HOST');
+        $this->user = getenv('DB_USER');
+        $this->password = getenv('DB_PASSWORD');
+        $this->dbname = getenv('DB_NAME');
     }
 
     public function __construct() {
