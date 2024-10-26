@@ -29,5 +29,6 @@ CREATE TABLE IF NOT EXISTS tmp_users (
     password VARCHAR(255) NOT NULL,
     otp VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL
+    expires_at TIMESTAMP NOT NULL,
+    necessity ENUM('register', 'reset') DEFAULT 'register'
 );

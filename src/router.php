@@ -87,6 +87,9 @@ class Router
             case 'reset_pwd':
                 //TODO: implementare
                 break;
+            case 'verify_reset_pwd':
+                //TODO: implementare
+                break;
             case 'forgot_pwd':
                 //TODO: implementare
                 break;

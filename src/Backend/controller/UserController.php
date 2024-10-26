@@ -78,7 +78,7 @@ class UserController
         
         // get the otp from the database
         $true_created_at = date('Y-m-d H:i:s', strtotime('-1 hour'));
-        $stmt = $this->conn->prepare("SELECT id FROM tmp_users WHERE otp = ? AND email = ? AND created_at > ?");
+        $stmt = $this->conn->prepare("SELECT id FROM tmp_users WHERE otp = ? AND email = ? AND necessity ='register' AND created_at > ?");
         $stmt->bind_param("sss", $recive_otp, $email, $true_created_at);
         $stmt->execute();
         $stmt->store_result();
@@ -106,6 +106,111 @@ class UserController
         $stmt->close();
         return $this->sendResponse(['status' => 'success', 'message' => 'User verificated successfully. id = '.$id], 201);
     }
+
+    public function resetPassword()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
+        
+        if (!isset($_POST['email'])) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Email is required.'], 400);
+        }
+    
+        $email = $_POST['email'];
+    
+        // Check if the user exists
+        $stmt = $this->conn->prepare("SELECT id, username FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+    
+        if ($stmt->num_rows == 0) {
+            $stmt->close();
+            return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 404);
+        }
+    
+        // Generate OTP
+        $otp = bin2hex(random_bytes(32));
+        $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
+    
+        // Store OTP in tmp_users table
+        $stmt->bind_result($id, $username);
+        $stmt->fetch();
+        $stmt->close();
+        
+        $stmt = $this->conn->prepare("INSERT INTO tmp_users (email, otp, necessity, created_at) VALUES (?, ?, 'reset_password', NOW()) ON DUPLICATE KEY UPDATE otp = VALUES(otp), necessity = VALUES(necessity), created_at = NOW()");
+        $stmt->bind_param("ss", $email, $otp);
+        $check = $stmt->execute();
+    
+        if ($check == false) {
+            $stmt->close();
+            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to initiate password reset.'], 500);
+        }
+    
+        // Send email with OTP
+        $postman = new PostMan();
+        $to = $email;
+        $subject = 'Password Reset Request';
+        $message = "Your OTP for password reset: https://localhost/api/verify_reset_pwd?email=".$email."&otp=".$otp;
+    
+        $postman->send($to, $subject, $message);
+        $stmt->close();
+    
+        return $this->sendResponse(['status' => 'success', 'message' => 'OTP sent to your email.'], 200);
+    }
+    
+    public function verifyResetPassword()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
+    
+        if (!isset($_GET['otp']) || !isset($_GET['email'])) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
+    
+        $recive_otp = $_GET['otp'];
+        $email = $_GET['email'];
+    
+        // Check if the OTP is valid
+        $true_created_at = date('Y-m-d H:i:s', strtotime('-1 hour'));
+        $stmt = $this->conn->prepare("SELECT id FROM tmp_users WHERE otp = ? AND email = ? AND necessity = 'reset' AND created_at > ?");
+        $stmt->bind_param("sss", $recive_otp, $email, $true_created_at);
+        $stmt->execute();
+        $stmt->store_result();
+    
+        if ($stmt->num_rows == 0) {
+            $stmt->close();
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP or OTP expired.'], 401);
+        }
+    
+        $stmt->bind_result($id);
+        $stmt->fetch();
+        $stmt->close();
+    
+        // Proceed to reset the password
+        if (!isset($_POST['new_password'])) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'New password is required.'], 400);
+        }
+    
+        $new_password = $_POST['new_password'];
+        $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
+    
+        // Update the user's password
+        $stmt = $this->conn->prepare("UPDATE users SET password = ? WHERE email = ?");
+        $stmt->bind_param("ss", $hashedPassword, $email);
+        $stmt->execute();
+    
+        // Delete OTP from tmp_users
+        $stmt = $this->conn->prepare("DELETE FROM tmp_users WHERE email = ? AND necessity = 'reset_password'");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+    
+        $stmt->close();
+        return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
+    }
+    
 
     public function login()
     {   
