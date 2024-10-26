@@ -13,7 +13,6 @@ class Dashboard {
     }
 
     loadUploadFileContent() {
-        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -57,7 +56,6 @@ class Dashboard {
     }
 
     async loadAdminPageContent() {
-        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -81,7 +79,7 @@ class Dashboard {
                             <!-- User rows will be inserted here -->
                         </tbody>
                     </table>
-                    <div class="w3-center w3-padding-16">
+                    <div class="w3-center w3-padding-16 w3-animate-bottom">
                         <button class="w3-button w3-black" id="prevUserPageBtn">Previous</button>
                         <span id="usersPageInfo"></span>
                         <button class="w3-button w3-black" id="nextUserPageBtn">Next</button>
@@ -135,7 +133,6 @@ class Dashboard {
         this.updatePageInfo();
     }
     async loadCatalogueContent() {
-        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -177,7 +174,8 @@ class Dashboard {
 
     handleButtonClick(event, fileType) {
         this.updateButtonClasses(event.target);
-        this.fetchCatalogueContent(fileType);
+        this.cataloguePage = 1;
+        this.fetchCatalogueContent(this.cataloguePage,fileType);
     }
     
     updateButtonClasses(activeButton) {
@@ -524,15 +522,6 @@ class Dashboard {
         }
     }
 
-    toggleBackgroundImage(add) {
-        if (add) {
-            this.mainContent.classList.remove('bgimg-1');
-            this.mainContent.classList.add('bgnovel');
-        } else {
-            this.mainContent.className = this.originalClasses;
-        }
-    
-    }
     ensureToastScript() {
         // Check if toast.js is already loaded
         if (!document.querySelector('script[src="./Frontend/js/toast.js"]')) {
