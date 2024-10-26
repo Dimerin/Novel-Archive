@@ -8,7 +8,7 @@ function init() {
     toggleUploadSection();
 }
 
-async function uploadFile(event) { //TODO: Implement the backend API endpoint for file upload
+async function uploadFile(event) {
     event.preventDefault();
 
     const formData = new FormData();
@@ -16,11 +16,13 @@ async function uploadFile(event) { //TODO: Implement the backend API endpoint fo
 
     if (uploadType === 'file') {
         const fileInput = document.getElementById('file');
+        const role = document.querySelector('input[name="novel-category"]:checked').value;
         if (fileInput.files.length === 0) {
             showToast('warning', 'Select a file to upload.');
             return;
         }
         formData.append('file', fileInput.files[0]);
+        formData.append('novel_category', role);
     } else {
         const title = document.getElementById('title').value;
         const textContent = document.getElementById('text_content').value;
@@ -49,7 +51,6 @@ async function uploadFile(event) { //TODO: Implement the backend API endpoint fo
         const result = await response.json();
         showToast(result.status, result.message);
     } catch (error) {
-        console.error('Error during file or text upload:', error);
         showToast('error', 'Error during file or text upload.');
     }
 }
