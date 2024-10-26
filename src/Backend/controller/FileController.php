@@ -202,6 +202,8 @@ class FileController
 
         $offset = ($page - 1) * $limit;
 
+        $limit +=1; // get one more element to check if there are more pages
+
         // get user visibility
         $userVisibility = $this->getUserVisibility();
         
@@ -220,16 +222,22 @@ class FileController
         $result = $stmt->get_result();
 
         $files = [];
+        $isLastPage = true;
 
         if( $result->num_rows > 0){
+            
             while( $row = $result->fetch_assoc() ){
                 $files[] = $row;
+            }
+
+            if( count($files) == $limit){
+                $isLastPage = false;
+                array_pop($files);
             }
         }
 
         $stmt->close();
-        return $this->sendResponse(['status'=> 'success','files'=> $files],200);
-
+        return $this->sendResponse(['status'=> 'success','files'=> $files, 'last-page' => $isLastPage],200);
     }
 
     private function sendResponse($data, $statusCode = 200)
