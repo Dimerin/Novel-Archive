@@ -4,12 +4,10 @@ require_once __DIR__ . '/../utils/dbManager.php';
 class UserController
 {
     private $conn;
-    private $db;
 
     public function __construct()
     {
-        $this->db = new dbManager();
-        $this->conn = $this->db->getConnection();
+        $this->conn = dbManager::getInstance()->getConnection();
     }
 
     public function register()
