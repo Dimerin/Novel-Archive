@@ -1,11 +1,13 @@
 <?php
 
 class dbManager {
+    private static $instance = null;
     private $host;
     private $user;
     private $password;
     private $dbname;
     private $conn;
+
 
     private function _initVar(){
         $this->host = getenv('DB_HOST');
@@ -14,7 +16,7 @@ class dbManager {
         $this->dbname = getenv('DB_NAME');
     }
 
-    public function __construct() {
+    private function __construct() {
         
         $this->_initVar();
 
@@ -23,6 +25,13 @@ class dbManager {
         if ($this->conn->connect_error) {
             die("Connection failed: " . $this->conn->connect_error);
         }
+    }
+
+    public static function getInstance() {
+        if (self::$instance == null) {
+            self::$instance = new dbManager();
+        }
+        return self::$instance;
     }
 
     public function getConnection() {

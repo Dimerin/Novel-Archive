@@ -12,9 +12,11 @@ class Logger {
 
     // FIXME: cambia il percorso del file di log e i permessi di scrittura
     // Singleton: ottiene l'unica istanza del logger
-    public static function getInstance($filePath = "/../logs/app_log.txt") {
+    public static function getInstance() {
         if (self::$instance === null) {
-            self::$instance = new self(__DIR__ . $filePath);
+            $logDir = getenv('LOG_PATH') ?: __DIR__ . '/../logs';
+            $logFile = $logDir . '/app_log.txt';
+            self::$instance = new self($logFile);
         }
         return self::$instance;
     }
