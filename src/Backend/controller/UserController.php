@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../utils/dbManager.php';
+require_once __DIR__ . '/../utils/PostMan.php';
 
 class UserController
 {
@@ -20,6 +21,7 @@ class UserController
         if(!isset($_POST['username']) || !isset($_POST['email']) || !isset($_POST['password'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
+        
         $username = $_POST['username'];
         $email = $_POST['email'];
         $password = $_POST['password'];
@@ -36,38 +38,73 @@ class UserController
         }
         $stmt->close();
 
+        // Generate an otp
+        $otp = bin2hex(random_bytes(32));
+        $expires_at = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
         // Registra il nuovo utente
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $email, $hashedPassword);
+        $stmt = $this->conn->prepare("INSERT INTO tmp_users (username, email, password, otp) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE password = VALUES(password), otp = VALUES(otp)");
+        $stmt->bind_param("ssss", $username, $email, $hashedPassword, $otp);
+        $check = $stmt->execute(); 
 
-        if ($stmt->execute()) {
+        if ($check == false) {
             $stmt->close();
-            return $this->sendResponse(['status' => 'success', 'message' => 'User registered successfully.'], 201);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
         } 
+        // Send an email with the OTP
+        $postman = new PostMan();
+        $to = $email;
+        $subject = 'Verify your email address';
+        $message = "link for Otp: https://localhost/api/verify_user?email=".$email."&otp=".$otp;
+        
+        $postman->send($email, $subject, $message);
+
         $stmt->close();
-        return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
+        return $this->sendResponse(['status' => 'success', 'message' => 'User registered successfully.'], 201);
     }
-    public function verify_user()
+
+    public function verifyUser()
     {
-        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        if($_SERVER['REQUEST_METHOD'] !== 'GET') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
-        if(!isset($_POST['otp'])) {
+        if(!isset($_GET['otp']) || !isset($_GET['email']) ) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
-        $recive_otp = $_POST['otp'];
-
-
+        $recive_otp = $_GET['otp'];
+        $email = $_GET['email'];
+        
         // get the otp from the database
-        $stmt = $this->conn->prepare("SELECT id FROM tmp_users WHERE otp = ?");
-        $stmt->bind_param("s", $recive_otp);
+        $true_created_at = date('Y-m-d H:i:s', strtotime('-1 hour'));
+        $stmt = $this->conn->prepare("SELECT id FROM tmp_users WHERE otp = ? AND email = ? AND created_at > ?");
+        $stmt->bind_param("sss", $recive_otp, $email, $true_created_at);
         $stmt->execute();
         $stmt->store_result();
 
+        # If the user is not found or the OTP is expired the authentication fails
+        if ($stmt->num_rows == 0) {
+            $stmt->close();
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
+        }
 
+        # Get the id of the user
+        $stmt->bind_result($id);
+        $stmt->fetch();
 
+        # Transfert the data from tmp_users to users
+        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password) SELECT username, email, password FROM tmp_users WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        # Delete the user from tmp_users
+        $stmt = $this->conn->prepare("DELETE FROM tmp_users WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+
+        $stmt->close();
+        return $this->sendResponse(['status' => 'success', 'message' => 'User verificated successfully. id = '.$id], 201);
     }
 
     public function login()

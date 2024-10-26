@@ -11,8 +11,8 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
-require '../vendor/autoload.php';
-require '../config/Config.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../config/config.php';
 class PostMan {
     // Proprietà della classe
     private $postman;
