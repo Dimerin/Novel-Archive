@@ -48,6 +48,27 @@ class UserController
         $stmt->close();
         return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
     }
+    public function verify_user()
+    {
+        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
+        if(!isset($_POST['otp'])) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+        }
+
+        $recive_otp = $_POST['otp'];
+
+
+        // get the otp from the database
+        $stmt = $this->conn->prepare("SELECT id FROM tmp_users WHERE otp = ?");
+        $stmt->bind_param("s", $recive_otp);
+        $stmt->execute();
+        $stmt->store_result();
+
+
+
+    }
 
     public function login()
     {   
