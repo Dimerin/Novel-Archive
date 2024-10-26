@@ -12,26 +12,25 @@ use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
 require '../vendor/autoload.php';
-require '../config/Config.php';
+
 class PostMan {
     // Proprietà della classe
     private $postman;
 
     public function __construct() {
         $this->postman = new PHPMailer(true);
-        $config = Config::getInstance();
-        
+
         //Postman settings
         $this->postman->isSMTP();                                           //Send using SMTP
         $this->postman->Host       = 'smtp.gmail.com';                      //Set the SMTP server to send through
         $this->postman->SMTPAuth   = true;                                  //Enable SMTP authentication
-        $this->postman->Username   = $config->get('MAIL_USER');             //SMTP username
-        $this->postman->Password   = $config->get('MAIL_PASSWORD');         //SMTP password
+        $this->postman->Username   = getenv('MAIL_USER');             //SMTP username
+        $this->postman->Password   = getenv('MAIL_PASSWORD');         //SMTP password
         $this->postman->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;        //Enable implicit TLS encryption
         $this->postman->Port       = 587;                                   //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
         //Recipients
-        $this->postman->setFrom($config->get('MAIL_USER'), 'NovelArchive');   
+        $this->postman->setFrom(getenv('MAIL_USER'), 'NovelArchive');   
         //Content
         $this->postman->isHTML(true);                                  //Set email format to HTML
 
@@ -52,4 +51,3 @@ class PostMan {
         }
     }
 }
-?>

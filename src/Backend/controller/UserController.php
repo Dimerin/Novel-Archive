@@ -133,6 +133,8 @@ class UserController
 
         $offset = ($page - 1) * $limit;
 
+        $limit++; // To check if there are more pages
+
         $stmt = $this->conn->prepare("SELECT id, username, email, role FROM users Where role != 'admin' LIMIT ?, ?");
         $stmt->bind_param("ii", $offset, $limit);
 
@@ -140,15 +142,22 @@ class UserController
         $result = $stmt->get_result();
 
         $users = [];
+        $isLastPage = true;
+
         if($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $users[] = $row;
+            }
+
+            if (count($users) == $limit) {
+                $isLastPage = false;
+                array_pop($users);
             }
         }
 
         $stmt->close();
 
-        return $this->sendResponse(['status' => 'success', 'data' => $users], 200);
+        return $this->sendResponse(['status' => 'success', 'data' => $users, 'last-page' => $isLastPage], 200);
 
     }
 
