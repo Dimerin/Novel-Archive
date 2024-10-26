@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   php_apache:
     container_name: php_8.2_apache_container
@@ -10,6 +9,7 @@ services:
       - "443:443"
     volumes:
       - "./src:/var/www/html"
+      - "./logs:/var/www/logs/novel_archive"
     depends_on:
       - mysql
     environment:
@@ -19,6 +19,7 @@ services:
       DB_NAME: ${DB_NAME}
       MAIL_USER: ${MAIL_USER}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+      LOG_PATH: ${LOG_PATH}
 
   mysql:
     image: mysql:8.1.0

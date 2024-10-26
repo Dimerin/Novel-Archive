@@ -5,12 +5,10 @@ require_once __DIR__ . '/../utils/dbManager.php';
 class FileController
 {
     private $conn;
-    private $db;
 
     public function __construct()
     {
-        $this->db = new dbManager();
-        $this->conn = $this->db->getConnection();
+        $this->conn = dbManager::getInstance()->getConnection();
     }
 
     public function upload()
@@ -55,7 +53,9 @@ class FileController
     // get user visibility
     private function uploadFile()
     {
-        if( session_status() == PHP_SESSION_NONE ){
+
+        if(session_status() == PHP_SESSION_NONE) {
+
             session_start();
         }
 
@@ -70,7 +70,7 @@ class FileController
         $novel_category = $_POST['novel_category'];
 
         // get user visibility
-        #$user_id = 1; //TODO: when not testing, comment this line
+        //$user_id = 1; //TODO: when not testing, comment this line
         $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         // FIXME: passare user_id o ricavarlo da sessione dentro la funzione? 
         $userVisibility = $this->getUserVisibility();
@@ -100,7 +100,9 @@ class FileController
 
     private function uploadText()
     {
-        if( session_status() == PHP_SESSION_NONE ){
+
+        if(session_status() == PHP_SESSION_NONE){
+
             session_start();
         }
 
@@ -118,7 +120,7 @@ class FileController
 
 
         // get user visibility
-        #$user_id = 1; //TODO: when not testing, comment this line
+        //$user_id = 1; //TODO: when not testing, comment this line
         $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         $userVisibility = $this->getUserVisibility();
 
