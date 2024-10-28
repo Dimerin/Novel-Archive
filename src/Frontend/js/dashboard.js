@@ -8,13 +8,11 @@ class Dashboard {
         this.novelsPerPage = 6;
         this.novels = [];
         this.users = [];
-        this.previousContent = '';
-        // Capture the original content at initialization
-        //this.originalContent = this.mainContent ? this.mainContent.innerHTML : '';
+        this.isLastUserPage = false;
+        this.isLastCataloguePage = false;
     }
 
     loadUploadFileContent() {
-        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -51,13 +49,13 @@ class Dashboard {
                 </form>
             </div>
         `;
+        this.ensureUploadScript();
         init(); // Reinitialize event listeners
         this.ensureToastScript();
         this.updateLinkClasses(document.getElementById('uploadFileLink'));
     }
 
     async loadAdminPageContent() {
-        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -81,7 +79,7 @@ class Dashboard {
                             <!-- User rows will be inserted here -->
                         </tbody>
                     </table>
-                    <div class="w3-center w3-padding-16">
+                    <div class="w3-center w3-padding-16 w3-animate-bottom">
                         <button class="w3-button w3-black" id="prevUserPageBtn">Previous</button>
                         <span id="usersPageInfo"></span>
                         <button class="w3-button w3-black" id="nextUserPageBtn">Next</button>
@@ -90,35 +88,15 @@ class Dashboard {
             </div>
         `;
 
-        // Fetch user data
-        try {
-            const response = await fetch('/api/show_users', {
-                method: 'GET'
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const result = await response.json();
-            
-            // Assuming the users data is inside `result.data`
-            if (result.status === 'success' && result.data) {
-                this.users = result.data;
-                this.renderUserList();
-            } else {
-                console.error('Cannot retrieve users:', result.message);
-            }
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
-        }
+        await this.fetchUsers(this.userPage);
 
         this.ensureToastScript();
         this.updateLinkClasses(document.getElementById('adminPageLink'));
 
         // Add event listeners for pagination buttons
-        document.getElementById('prevUserPageBtn').addEventListener('click', () => this.prevPage());
-        document.getElementById('nextUserPageBtn').addEventListener('click', () => this.nextPage());
+        document.getElementById('prevUserPageBtn').addEventListener('click', () => this.changePage('users', 'prev'));
+        document.getElementById('nextUserPageBtn').addEventListener('click', () => this.changePage('users', 'next'));
+
 
         // Add event listener for role change using event delegation
         document.getElementById('userTableBody').addEventListener('change', (event) => {
@@ -132,13 +110,9 @@ class Dashboard {
     }
 
     renderUserList() {
-        const start = (this.userPage - 1) * this.usersPerPage;
-        const end = start + this.usersPerPage;
-        const paginatedUsers = this.users.slice(start, end);
-
         let userHtml = '';
 
-        paginatedUsers.forEach(user => {
+        this.users.forEach(user => {
             userHtml += `
                 <tr>
                     <td class="w3-bold">${user.id}</td>
@@ -159,7 +133,6 @@ class Dashboard {
         this.updatePageInfo();
     }
     async loadCatalogueContent() {
-        this.toggleBackgroundImage(false);
         this.mainContent.innerHTML = `
             <div class="toast-container">
                 <ul class="notifications"></ul>
@@ -193,11 +166,16 @@ class Dashboard {
         document.getElementById('latestBtn').addEventListener('click', (event) => this.handleButtonClick(event, ''));
         document.getElementById('pdfBtn').addEventListener('click', (event) => this.handleButtonClick(event, 'pdf'));
         document.getElementById('txtBtn').addEventListener('click', (event) => this.handleButtonClick(event, 'txt'));
-        this.fetchCatalogueContent();
+        document.getElementById('prevCataloguePageBtn').addEventListener('click', () => this.changePage('catalogue', 'prev'));
+        document.getElementById('nextCataloguePageBtn').addEventListener('click', () => this.changePage('catalogue', 'next'));
+        await this.fetchCatalogueContent(this.cataloguePage);
+
     }
+
     handleButtonClick(event, fileType) {
         this.updateButtonClasses(event.target);
-        this.fetchCatalogueContent(fileType);
+        this.cataloguePage = 1;
+        this.fetchCatalogueContent(this.cataloguePage,fileType);
     }
     
     updateButtonClasses(activeButton) {
@@ -210,10 +188,10 @@ class Dashboard {
         activeButton.classList.add('w3-white');
     }
     
-    async fetchCatalogueContent(fileType = '') {
+    async fetchCatalogueContent(page,fileType = '') {
         try {
             const queryParams = new URLSearchParams({
-                page: this.currentPage,
+                page: page,
                 limit: this.novelsPerPage,
             });
     
@@ -232,7 +210,10 @@ class Dashboard {
             const result = await response.json();
             if (result.status === 'success' && Array.isArray(result.files)) {
                 this.novels = result.files;
+                this.isLastCataloguePage = result['last-page'];
+                this.cataloguePage = page;
                 this.renderCards(this.novels);
+                this.updatePageInfo();
             } else {
                 console.error('Cannot retrieve novels:', result.message);
             }
@@ -243,6 +224,56 @@ class Dashboard {
         this.updateLinkClasses(document.getElementById('catalogueLink'));
         this.ensureToastScript();
     }
+
+    async fetchUsers(page) {
+        try {
+            const queryParams = new URLSearchParams({
+                page: page,
+                limit: this.usersPerPage,
+            });
+
+            const response = await fetch(`/api/show_users?${queryParams.toString()}`, {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const result = await response.json();
+            if (result.status === 'success' && Array.isArray(result.data)) {
+                this.users = result.data;
+                this.isLastUserPage = result['last-page'];
+                this.userPage = page;
+                this.renderUserList();
+                this.updatePageInfo();
+            } else {
+                console.error('Cannot retrieve users:', result.message);
+            }
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
+    }
+
+    async changePage(type, direction) {
+        if (type === 'users') {
+            if (direction === 'next' && !this.isLastUserPage) {
+                this.userPage++;
+            } else if (direction === 'prev' && this.userPage > 1) {
+                this.userPage--;
+            }
+            await this.fetchUsers(this.userPage);
+        } else if (type === 'catalogue') {
+            if (direction === 'next' && !this.isLastCataloguePage) {
+                this.cataloguePage++;
+            } else if (direction === 'prev' && this.cataloguePage > 1) {
+                this.cataloguePage--;
+            }
+            await this.fetchCatalogueContent(this.cataloguePage);
+        }
+        this.updatePageInfo();
+    }
+
 
 
     renderCards(files) {
@@ -463,15 +494,13 @@ class Dashboard {
     updatePageInfo() {
         const cataloguePageInfo = document.getElementById('cataloguePageInfo');
         const usersPageInfo = document.getElementById('usersPageInfo');
-        const totalUsersPages = Math.ceil(this.users.length / this.usersPerPage);
-        const totalCataloguePages = Math.ceil(this.novels.length / this.novelsPerPage);
     
         if (usersPageInfo) {
-            usersPageInfo.textContent = `Page ${this.userPage} of ${totalUsersPages}`;
+            usersPageInfo.textContent = `Page ${this.userPage}`;
         }
     
         if (cataloguePageInfo) {
-            cataloguePageInfo.textContent = `Page ${this.cataloguePage} of ${totalCataloguePages}`;
+            cataloguePageInfo.textContent = `Page ${this.cataloguePage}`;
         }
     
         // Disable buttons and hide span if not enough novels for pagination
@@ -479,19 +508,8 @@ class Dashboard {
         const nextCataloguePageBtn = document.getElementById('nextCataloguePageBtn');
     
         if (prevCataloguePageBtn && nextCataloguePageBtn) {
-            if (totalCataloguePages <= 1) {
-                prevCataloguePageBtn.disabled = true;
-                nextCataloguePageBtn.disabled = true;
-                if (cataloguePageInfo) {
-                    cataloguePageInfo.style.display = 'none';
-                }
-            } else {
-                prevCataloguePageBtn.disabled = this.cataloguePage === 1;
-                nextCataloguePageBtn.disabled = this.cataloguePage === totalCataloguePages;
-                if (cataloguePageInfo) {
-                    cataloguePageInfo.style.display = 'inline';
-                }
-            }
+            prevCataloguePageBtn.disabled = this.cataloguePage === 1;
+            nextCataloguePageBtn.disabled = this.isLastCataloguePage;
         }
     
         // Disable buttons and hide span if not enough users for pagination
@@ -499,45 +517,10 @@ class Dashboard {
         const nextUserPageBtn = document.getElementById('nextUserPageBtn');
     
         if (prevUserPageBtn && nextUserPageBtn) {
-            if (totalUsersPages <= 1) {
-                prevUserPageBtn.disabled = true;
-                nextUserPageBtn.disabled = true;
-                if (usersPageInfo) {
-                    usersPageInfo.style.display = 'none';
-                }
-            } else {
-                prevUserPageBtn.disabled = this.userPage === 1;
-                nextUserPageBtn.disabled = this.userPage === totalUsersPages;
-                if (usersPageInfo) {
-                    usersPageInfo.style.display = 'inline';
-                }
-            }
+            prevUserPageBtn.disabled = this.userPage === 1;
+            nextUserPageBtn.disabled = this.isLastUserPage;
         }
     }
-
-    toggleBackgroundImage(add) {
-        if (add) {
-            this.mainContent.classList.remove('bgimg-1');
-            this.mainContent.classList.add('bgnovel');
-        } else {
-            this.mainContent.className = this.originalClasses;
-        }
-    }
-    prevPage() {
-        if (this.userPage > 1) {
-            this.userPage--;
-            this.renderUserList();
-        }
-    }
-
-    nextPage() {
-        const totalPages = Math.ceil(this.users.length / this.usersPerPage);
-        if (this.userPage < totalPages) {
-            this.userPage++;
-            this.renderUserList();
-        }
-    }
-    
 
     ensureToastScript() {
         // Check if toast.js is already loaded
@@ -550,7 +533,17 @@ class Dashboard {
             initNotifications();
         }
     }
-
+    ensureUploadScript() {
+        // Check if upload_file.js is already loaded
+        if (!document.querySelector('script[src="./Frontend/js/upload_file.js"]')) {
+            var script = document.createElement('script');
+            script.src = './Frontend/js/upload_file.js';
+            document.head.appendChild(script);
+        } else {
+            // Reinitialize event listeners if upload_file.js is already loaded
+            init();
+        }
+    }
     updateLinkClasses(activeLink) {
         const sidebarLinks = document.querySelectorAll('.w3-bar-item');
         sidebarLinks.forEach(link => {
