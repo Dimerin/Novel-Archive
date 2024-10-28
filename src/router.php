@@ -84,11 +84,14 @@ class Router
             case 'verify_user':
                 $this->uc->verifyUser();
                 break;
-            case 'reset_pwd':
-                //TODO: implementare
+            case 'init_reset_pwd':
+                $this->uc->initResetPassword();
                 break;
-            case 'verify_reset_pwd':
-                //TODO: implementare
+            case 'validate_reset_pwd':
+                $this->uc->validateResetPassword();
+                break;
+            case 'reset_pwd':
+                $this->uc->changePassword();
                 break;
             case 'forgot_pwd':
                 //TODO: implementare
