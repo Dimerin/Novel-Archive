@@ -88,7 +88,7 @@ class Router
                 $this->uc->initResetPassword();
                 break;
             case 'reset_pwd':
-                $this->uc->changePassword();
+                $this->uc->resetPassword();
                 break;
            
             default:
@@ -130,6 +130,18 @@ class Router
             case '/logout':
                 $this->current_page = 'logout';
                 require "{$this->pages_path}/logout.php";
+                break;
+            case '/verify_user':
+                $this->current_page = 'verify_user';
+                require "{$this->pages_path}/verify_user.php";
+                break;
+            case '/forgot_password':
+                $this->current_page = 'forgot_password';
+                require "{$this->pages_path}/forgot_password.php";
+                break;
+            case '/reset_password':
+                $this->current_page = 'reset_password';
+                require "{$this->pages_path}/reset_password.php";
                 break;
             default:
                 require "{$this->pages_path}/404.php";

@@ -17,16 +17,21 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="../css/main.css">
-    <script src="./Frontend/js/forgot_password.js"></script>
+    <link rel="stylesheet" href="./Frontend/css/main.css">
+    <script src="./Frontend/js/forgot_pwd.js"></script>
+    <script src="./Frontend/js/toast.js"></script>
+    <link rel="stylesheet" href="./Frontend/css/toast.css">
 </head>
 <style>
     .bgimg-1 {
-        background-image: url('../imgs/fpsw.jpg');
+        background-image: url('./Frontend/imgs/fpsw.jpg');
     }
 </style>
 <body>
-    <?php include '../includes/navbar.php'; ?>
+    <div class="toast-container">
+        <ul class="notifications"></ul>
+    </div>
+    <?php require __DIR__ . '/../includes/navbar.php';?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
         <div class="w3-display-left w3-text-white" style="padding:48px">
             <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-">Reset your password</span><br>

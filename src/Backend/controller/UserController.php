@@ -7,8 +7,8 @@ require_once __DIR__ . '/../utils/UserService.php';
 const ACTIVE = 1;
 const INACTIVE = 0;
 
-const URL_PSW_RST_PAGE = 'https://localhost/api/reset_pwd';
-const URL_REGISTER_PAGE = 'https://localhost/api/verify_user';
+const URL_PSW_RST_PAGE = 'https://localhost/reset_password';
+const URL_REGISTER_PAGE = 'https://localhost/verify_user';
 
 class UserController
 {
@@ -167,7 +167,7 @@ class UserController
         }
         
         // Hash the password
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
 
         // Update the password
         $stmt = $this->conn->prepare("UPDATE users SET password = ? WHERE email = ?");
@@ -186,7 +186,7 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
 
-        return $this->sendResponse(['status' => 'success', 'message' => 'Token is valid'], 200);
+       // return $this->sendResponse(['status' => 'success', 'message' => 'Token is valid'], 200);
     }  
 
     public function login()
