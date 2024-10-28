@@ -81,8 +81,17 @@ class Router
             case 'change_role':
                 $this->uc->changeUserRole();
                 break;
+            case 'verify_user':
+                $this->uc->verifyUser();
+                break;
+            case 'init_reset_pwd':
+                $this->uc->initResetPassword();
+                break;
+            case 'validate_reset_pwd':
+                $this->uc->validateResetPassword();
+                break;
             case 'reset_pwd':
-                //TODO: implementare
+                $this->uc->changePassword();
                 break;
             case 'forgot_pwd':
                 //TODO: implementare

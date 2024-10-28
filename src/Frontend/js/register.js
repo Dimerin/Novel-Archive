@@ -22,11 +22,11 @@ class Register {
             });
 
             if (response.ok) {
-                const result = await response.json();
+                const result = await response.text();
                 showToast('success', result.message);
                 this.showOtpForm();
             } else {
-                const error = await response.json();
+                const error = await response.text();
                 showToast('error', error.message);
             }
         } catch (error) {
@@ -58,7 +58,7 @@ class Register {
         formData.append('otp', otpCode);
 
         try {
-            const response = await fetch('/api/verify_otp', {
+            const response = await fetch('/api/verify_user', {
                 method: 'POST',
                 body: formData
             });

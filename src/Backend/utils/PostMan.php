@@ -12,7 +12,6 @@ use PHPMailer\PHPMailer\Exception;
 
 //Load Composer's autoloader
 require '../vendor/autoload.php';
-
 class PostMan {
     // Proprietà della classe
     private $postman;
