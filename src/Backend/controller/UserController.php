@@ -93,7 +93,7 @@ class UserController
         $email = $_POST['email'];
         $password = $_POST['password'];
         
-        if($this->checkUserExistence($email) == false)
+        if($this->checkUserExistence($email))
             return $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
 
         // Generate token
@@ -106,7 +106,7 @@ class UserController
         $check = $stmt->execute();
         
         // Store the token in the tokens table
-        if(storeToken($token, $email) == false) {
+        if($this->storeToken($token, $email) == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
         }
 
@@ -141,7 +141,7 @@ class UserController
 
         // Update the user's status to verified
         try{
-            $this->switchUserStatus($email);
+            $this->setUserStatus($email, ACTIVE);
         } catch (Exception $e) {
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
@@ -167,7 +167,7 @@ class UserController
     
         // Check if the user exists
         if($this->checkUserExistence($email) == false)
-            return $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
+            return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 409);
     
         // Generate token
         $token = $this->generate_token(100);
