@@ -93,9 +93,6 @@ class Router
             case 'reset_pwd':
                 $this->uc->changePassword();
                 break;
-            case 'forgot_pwd':
-                //TODO: implementare
-                break;
            
             default:
                 http_response_code(404);
