@@ -1,84 +1,28 @@
 <?php
 require_once __DIR__ . '/../utils/dbManager.php';
 require_once __DIR__ . '/../utils/PostMan.php';
+require_once __DIR__ . '/../utils/TokenService.php';
+require_once __DIR__ . '/../utils/UserService.php';
 
 const ACTIVE = 1;
 const INACTIVE = 0;
 
+const URL_PSW_RST_PAGE = 'https://localhost/api/reset_pwd';
+const URL_REGISTER_PAGE = 'https://localhost/api/verify_user';
+
 class UserController
 {
-    private $conn;
+    private $conn, $postman;
+    private $token_service, $user_service;
+    private $psw_rst_page_url, $register_page_url;
 
     public function __construct()
     {
         $this->conn = dbManager::getInstance()->getConnection();
-    }
-
-    private function generate_token(int $n_bytes = 32)
-    {
-        return bin2hex(random_bytes($n_bytes));
-    }
-
-    private function checkUserExistence($email)
-    {
-        $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-        $rows_check = $stmt->num_rows > 0;
-        $stmt->close();
-
-        // If the user is found, return true; otherwise, return false
-        return $rows_check;
-    }
-
-    private function storeToken($token, $email, $purpose = 'register')
-    {
-        $stmt = $this->conn->prepare("INSERT INTO tokens (email, token, purpose) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $email, $token, $purpose);
-        $executed = $stmt->execute();
-        $stmt->close();
-        
-        return $executed;
-    }
-
-    private function deleteToken($email, $purpose)
-    {
-        $stmt = $this->conn->prepare("DELETE FROM tokens WHERE email = ? AND purpose = ?");
-        $stmt->bind_param("ss", $email, $purpose);
-        $executed = $stmt->execute();
-        $stmt->close();
-
-        return $executed;
-    }
-
-    private function checkToken($token, $email, $purpose)
-    {
-        $true_created_at = date('Y-m-d H:i:s', strtotime('-1 hour'));
-        $stmt = $this->conn->prepare("SELECT * FROM tokens WHERE token = ? AND email = ? AND purpose = ? AND created_at > ?");
-        $stmt->bind_param("ssss", $token, $email, $purpose, $true_created_at);
-        $executed = $stmt->execute();
-        $stmt->store_result();
-        $rows_check = $stmt->num_rows >= 0;
-        $stmt->close();
-
-        return $executed && $rows_check;
-    }
-
-    private function setUserStatus($email, $status)
-    {
-        // Aggiorna lo stato dell'utente
-        $stmt = $this->conn->prepare("UPDATE users SET active = ? WHERE email = ?");
-        $stmt->bind_param("is", $status, $email);
-        $executed = $stmt->execute();
-        $stmt->store_result();
-        
-        $rows_check = $stmt->affected_rows === 1;   
-        $stmt->close();
-
-        return $rows_check && $executed;
-    }
-    
+        $this->postman = new PostMan();
+        $this->token_service = new TokenService($this->conn);
+        $this->user_service = new UserService($this->conn);
+    }    
 
     public function register()
     {
@@ -93,11 +37,11 @@ class UserController
         $email = $_POST['email'];
         $password = $_POST['password'];
         
-        if($this->checkUserExistence($email))
+        if($this->user_service->checkUserExistence($email))
             return $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
 
         // Generate token
-        $token = $this->generate_token(100);
+        $token = $this->token_service->generateToken(100);
 
         // Registra il nuovo utente
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
@@ -106,17 +50,16 @@ class UserController
         $check = $stmt->execute();
         
         // Store the token in the tokens table
-        if($this->storeToken($token, $email) == false) {
+        if($this->token_service->storeToken($token, $email) == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
         }
 
         // Send an email with the OTP
-        $postman = new PostMan();
         $to = $email;
         $subject = 'Verify your email address';
-        $message = "link for Otp: https://localhost/api/verify_user?email=".$email."&token=".$token;
+        $message = "link for Otp: ".URL_REGISTER_PAGE."?email=".$email."&token=".$token;
         
-        $postman->send($email, $subject, $message);
+        $this->postman->send($email, $subject, $message);
 
         $stmt->close();
         return $this->sendResponse(['status' => 'success', 'message' => 'User registered successfully.'], 201);
@@ -135,19 +78,19 @@ class UserController
         $email = $_GET['email'];
         
         // get the token from the database
-        if($this->checkToken($receive_token, $email, 'register') == false) {
+        if($this->token_service->checkToken($receive_token, $email, 'register') == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
         }
 
         // Update the user's status to verified
         try{
-            $this->setUserStatus($email, ACTIVE);
+            $this->user_service->setUserStatus($email, ACTIVE);
         } catch (Exception $e) {
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
             
         // Delete the token from the tokens table
-        if($this->deleteToken($email, 'register') == false) {
+        if($this->token_service->deleteToken($email, 'register') == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
 
@@ -166,78 +109,63 @@ class UserController
         $email = $_POST['email'];
     
         // Check if the user exists
-        if($this->checkUserExistence($email) == false)
+        if($this->user_service->checkUserExistence($email) == false)
             return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 409);
     
         // Generate token
-        $token = $this->generate_token(100);
+        $token = $this->token_service->generateToken(100);
 
         // Store the token in the tokens table
-        if ($this->storeToken($token, $email, 'reset') == false) {
+        if ($this->token_service->storeToken($token, $email, 'reset') == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to initiate password reset.'], 500);
         }
 
         //Disable the user
         try {
-            $this->setUserStatus($email, INACTIVE);
+            $this->user_service->setUserStatus($email, INACTIVE);
         } catch (Exception $e) {
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
         
         // Send email with token
-        $postman = new PostMan();
         $to = $email;
         $subject = 'Password Reset Request';
-        $message = "Your OTP for password reset: https://localhost/api/validate_reset_pwd?email=".$email."&token=".$token;
+        $message = "Your OTP for password reset:".URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
     
-        $postman->send($to, $subject, $message);
+        $this->postman->send($to, $subject, $message);
     
         return $this->sendResponse(['status' => 'success', 'message' => 'OTP sent to your email.'], 200);
     }
     
-    public function validateResetPassword()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-    
-        if (!isset($_GET['token']) || !isset($_GET['email'])) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-    
-        $receive_otp = $_GET['token'];
-        $email = $_GET['email'];
-    
-        // Check if the token is valid
-        if ($this->checkToken($receive_otp, $email, 'reset') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
-        }
-
-        // Delete the token from the tokens table
-        if($this->deleteToken($email, 'reset') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
-        }
-
-        return $this->sendResponse(['status' => 'success', 'message' => 'Token is valid'], 200);
-    }
-
-    public function changePassword()
+    public function resetPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
-    
-        if (!isset($_POST['email']) || !isset($_POST['password'])) {
+        if (!isset($_POST['token']) || !isset($_POST['email']) ||
+            !isset($_POST['new_password']) || !isset($_POST['conf_new_password'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
     
+        $receive_token = $_POST['token'];
         $email = $_POST['email'];
-        $password = $_POST['password'];
+        $new_password = $_POST['new_password'];
+        $conf_new_password = $_POST['conf_new_password'];
     
+        // Check if the token is valid
+        if ($this->token_service->checkToken($receive_token, $email, 'reset') == false) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
+        }
+
         // Check if the user exists
-        if ($this->checkUserExistence($email) == false)
+        if ($this->user_service->checkUserExistence($email) == false)
             return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 404);
-    
+
+        // Check if the new password and confirm new password match
+        if ($new_password !== $conf_new_password) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Passwords do not match.'], 400);
+        }
+        
         // Hash the password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
@@ -246,14 +174,20 @@ class UserController
         $stmt->bind_param("ss", $hashedPassword, $email);
         $executed = $stmt->execute();
         $stmt->close();
-
+ 
         if ($executed == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Password reset failed.'], 500);
         }
-        
+         
         return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
-    }
-    
+        
+        // Delete the token from the tokens table
+        if($this->token_service->deleteToken($email, 'reset') == false) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
+        }
+
+        return $this->sendResponse(['status' => 'success', 'message' => 'Token is valid'], 200);
+    }  
 
     public function login()
     {   

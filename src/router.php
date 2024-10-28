@@ -87,9 +87,6 @@ class Router
             case 'init_reset_pwd':
                 $this->uc->initResetPassword();
                 break;
-            case 'validate_reset_pwd':
-                $this->uc->validateResetPassword();
-                break;
             case 'reset_pwd':
                 $this->uc->changePassword();
                 break;
