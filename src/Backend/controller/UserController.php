@@ -216,7 +216,7 @@ class UserController
         $password = $_POST['password'];
 
         // Controlla se l'utente esiste
-        $stmt = $this->conn->prepare( "SELECT id, username, password, role FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare( "SELECT id, username, password, role, active FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
@@ -227,9 +227,13 @@ class UserController
 
         }
 
-        $stmt->bind_result($id, $username, $hashedPassword, $role);
+        $stmt->bind_result($id, $username, $hashedPassword, $role, $status);
         $stmt->fetch();
         $stmt->close();
+
+        if ($status == INACTIVE) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'User is inactive.'], 401);
+        }
 
         // Verifica la password
         if (password_verify($password, $hashedPassword)) {
