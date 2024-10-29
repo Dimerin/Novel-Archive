@@ -178,15 +178,19 @@ class UserController
         if ($executed == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Password reset failed.'], 500);
         }
-         
-        return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
         
         // Delete the token from the tokens table
         if($this->token_service->deleteToken($email, 'reset') == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
-
-       // return $this->sendResponse(['status' => 'success', 'message' => 'Token is valid'], 200);
+        
+        //ENABLE the user
+        try {
+            $this->user_service->setUserStatus($email, ACTIVE);
+        } catch (Exception $e) {
+            return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+       return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
     }  
 
     public function login()

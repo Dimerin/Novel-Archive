@@ -16,7 +16,8 @@ class TokenService
 
     public function storeToken($token, $email, $purpose = 'register')
     {
-        $stmt = $this->conn->prepare("INSERT INTO tokens (email, token, purpose) VALUES (?, ?, ?)");
+        $stmt = $this->conn->prepare("INSERT INTO tokens (email, token, purpose) VALUES (?, ?, ?)
+        ON DUPLICATE KEY UPDATE token = VALUES(token)");
         $stmt->bind_param("sss", $email, $token, $purpose);
         $executed = $stmt->execute();
         $stmt->close();
