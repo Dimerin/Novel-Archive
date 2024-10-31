@@ -22,7 +22,23 @@ class UserController
         $this->postman = new PostMan();
         $this->token_service = new TokenService($this->conn);
         $this->user_service = new UserService($this->conn);
-    }    
+    }
+    
+    private function checkPasswordFormat($password)
+    {
+        // Check Password length and format
+        // Password must be at least 16 characters long and contain at least one uppercase letter, one lowercase letter, and one number
+        if (strlen($password) < 16) {
+            return 'Password must be at least 16 characters long.';
+        } elseif (!preg_match('/[A-Z]/', $password)) {
+            return 'Password must contain at least one uppercase letter.';
+        } elseif (!preg_match('/[a-z]/', $password)) {
+            return 'Password must contain at least one lowercase letter.';
+        } elseif (!preg_match('/[0-9]/', $password)) {
+            return 'Password must contain at least one number.';
+        }
+        return false;
+    }
 
     public function register()
     {
@@ -36,7 +52,19 @@ class UserController
         $username = $_POST['username'];
         $email = $_POST['email'];
         $password = $_POST['password'];
+
+        // Check the email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
+        }
+
+        // Check the password format
+        $passwordError = $this->checkPasswordFormat($password);
+        if ($passwordError !== false) {
+            return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
+        }
         
+        // Check if the user already exists
         if($this->user_service->checkUserExistence($email))
             return $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
 
@@ -77,6 +105,12 @@ class UserController
         $receive_token = $_GET['token'];
         $email = $_GET['email'];
         
+        // Check the email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
+        }
+
+        
         // get the token from the database
         if($this->token_service->checkToken($receive_token, $email, 'register') == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
@@ -107,6 +141,11 @@ class UserController
         }
     
         $email = $_POST['email'];
+        // Check the email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
+        }
+        
     
         // Check if the user exists
         if($this->user_service->checkUserExistence($email) == false)
@@ -151,6 +190,17 @@ class UserController
         $email = $_POST['email'];
         $new_password = $_POST['new_password'];
         $conf_new_password = $_POST['conf_new_password'];
+
+        // Check the email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
+        }
+        
+        // Check the password format
+        $passwordError = $this->checkPasswordFormat($new_password);
+        if ($passwordError !== false) {
+            return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
+        }
     
         // Check if the token is valid
         if ($this->token_service->checkToken($receive_token, $email, 'reset') == false) {
@@ -214,6 +264,11 @@ class UserController
 
         $email = $_POST['email'];
         $password = $_POST['password'];
+
+        // Check the email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
+        }
 
         // Controlla se l'utente esiste
         $stmt = $this->conn->prepare( "SELECT id, username, password, role, active FROM users WHERE email = ?");
