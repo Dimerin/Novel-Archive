@@ -245,15 +245,6 @@ class UserController
 
     public function login()
     {   
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        // Regenerate session ID upon login to prevent session fixation
-        if (!isset($_SESSION['initiated'])) {
-            session_regenerate_id(true);
-            $_SESSION['initiated'] = true;
-        }
-
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
@@ -305,9 +296,6 @@ class UserController
     }
     public function logout()
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             // Destroy the session
             session_unset();
@@ -319,9 +307,6 @@ class UserController
 
     public function showUsers()
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
         // TODO: ora non è attivo perchè in fase di test
         //if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         //    return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
@@ -366,9 +351,6 @@ class UserController
 
     public function changeUserRole()
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
         /* TODO: ora non è attivo perchè in fase di test
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);

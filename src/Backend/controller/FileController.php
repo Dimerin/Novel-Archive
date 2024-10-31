@@ -33,10 +33,6 @@ class FileController
 
     private function getUserVisibility()
     {
-        if( session_status() == PHP_SESSION_NONE ){
-            session_start();
-        }
-
         //$user_id = 1; //TODO: when not testing, comment this line
         $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
         $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
@@ -53,11 +49,6 @@ class FileController
     // get user visibility
     private function uploadFile()
     {
-
-        if(session_status() == PHP_SESSION_NONE) {
-
-            session_start();
-        }
 
         if (!isset($_FILES['file'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Nessun file caricato.'], 400);
@@ -100,11 +91,6 @@ class FileController
 
     private function uploadText()
     {
-
-        if(session_status() == PHP_SESSION_NONE){
-
-            session_start();
-        }
 
         if (!isset($_POST['text_content'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Nessun testo fornito.'], 400);
@@ -152,9 +138,7 @@ class FileController
     
     public function downloadFile()
     {
-        if( session_status() == PHP_SESSION_NONE ){
-            session_start();
-        }
+        
         //FIXME: con questa funzione downloadFile chiunque entri in possesso del file_id può scaricare il file,
         // bisogna aggiungere un controllo per vedere se l'utente ha i permessi per scaricare il file
         if (!isset($_GET['file_id'])) {
@@ -198,10 +182,7 @@ class FileController
     }
 
     public function showFiles(){
-        if( session_status() == PHP_SESSION_NONE ){
-            session_start();
-        }
-
+        
         if( $_SERVER["REQUEST_METHOD"] != "GET" ){
             return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
         }

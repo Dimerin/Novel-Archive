@@ -18,6 +18,8 @@ class Router
 
     private function __construct()
     {
+        $this->initSecureSession();
+
         $this->request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $this->method = $_SERVER['REQUEST_METHOD'];
 
@@ -100,7 +102,19 @@ class Router
 
     // Gestisce le richieste delle pagine
     private function handlePageRequest()
-    {
+    {   
+        $auth_unavailable_path= ['', '/', '/login', '/register', '/forgot_password', '/reset_password', '/verify_user' ];
+        if(in_array($this->request, $auth_unavailable_path) && $this->isAuthenticated()){
+            header('Location: /dashboard');
+            exit();
+        }
+        
+        $unauth_unavailable_path = ['/dashboard', '/logout'];
+        if(in_array($this->request, $unauth_unavailable_path) && !$this->isAuthenticated() ){
+            header("Location: /login");
+            exit();
+        }
+
         switch ($this->request) {
             case '/':
             case '':
@@ -114,14 +128,6 @@ class Router
             case '/register':
                 $this->current_page = 'register';
                 require "{$this->pages_path}/register.php";
-                break;
-            case '/upload_file':
-                $this->current_page = 'upload_file';
-                require "{$this->pages_path}/upload_file.php";
-                break;
-            case '/download_file':
-                $this->current_page = 'download_file';
-                require "{$this->pages_path}/download_file.php";
                 break;
             case '/dashboard':
                 $this->current_page = 'dashboard';
@@ -146,6 +152,24 @@ class Router
             default:
                 require "{$this->pages_path}/404.php";
                 break;
+        }
+    }
+
+    private function isAuthenticated()
+    {
+        return isset($_SESSION['username']);
+    }
+
+    private function initSecureSession(){
+        if( session_status() == PHP_SESSION_NONE ){
+            session_start(
+                [
+                    'cookie_lifetime' => 0, // La sessione scade alla chiusura del browser
+                    'cookie_httponly' => true,
+                    'cookie_secure' => true, // Solo su HTTPS
+                    'cookie_samesite' => 'Lax',
+                ]
+            );
         }
     }
 
