@@ -28,3 +28,10 @@ CREATE TABLE IF NOT EXISTS tokens (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     purpose ENUM('register', 'reset') DEFAULT 'register'
 );
+
+CREATE TABLE login_attempts (
+    email VARCHAR(100) PRIMARY KEY,
+    attempts INT DEFAULT 0,
+    last_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

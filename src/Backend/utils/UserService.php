@@ -1,5 +1,7 @@
 <?php
 
+const MAX_LOGIN_ATTEMPTS = 3;
+
 class UserService
 {
     private $conn;
@@ -47,6 +49,31 @@ class UserService
         $executed = $stmt->execute();
         $stmt->close();
         return $executed;
+    }
+
+    public function trackLoginAttempts($email)
+    {
+
+
+        // Check if the user has reached the maximum number of login attempts
+        $stmt = $this->conn->prepare("SELECT attemps, last_attempt FROM login_attempts WHERE email = ?");
+        $stmt->bind_param("ss", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($attempts, $last_attempt);
+        $stmt->close();
+
+        if ($attempts>= MAX_LOGIN_ATTEMPTS && strtotime($last_attempt) > strtotime('-2 minute'))
+            throw new TooManyLoginAttemptsException("Too many login attempts.");
+        else
+            // Update the login attempts
+            $stmt = $this->conn->prepare("INSERT INTO login_attempts (email, attemps, last_attempt) VALUES (?, 1, NOW())
+                                            ON DUPLICATE KEY UPDATE attemps = attemps + 1, last_attempt = NOW()");
+            $stmt->bind_param("s", $email);
+            $executed = $stmt->execute();
+            $stmt->close();
+            if (!$executed)
+            throw new DatabaseException("Error updating login attempts.");
     }
 
 
