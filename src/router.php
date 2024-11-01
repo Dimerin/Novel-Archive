@@ -6,7 +6,6 @@ class Router
 {
     private static $instance = null;
     private $request;
-    private $method;
     private $base_path;
     private $api_path;
     private $pages_path;
@@ -18,8 +17,9 @@ class Router
 
     private function __construct()
     {
+        $this->initSecureSession();
+
         $this->request = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $this->method = $_SERVER['REQUEST_METHOD'];
 
         // Define the paths
         $this->base_path = __DIR__;
@@ -55,97 +55,114 @@ class Router
     {
         // Rimuove il prefisso /api/ per ottenere l'endpoint
         $apiRequest = str_replace('/api/', '', $this->request);
-
-        switch ($apiRequest) {
-            case 'upload_file':
-                $this->fc->upload();
-                break;
-            case 'download_file':
-                $this->fc->downloadFile();
-                break;
-            case 'show_files':
-                $this->fc->showFiles();
-                break;
-            case 'login':
-                $this->uc->login();
-                break;
-            case 'register':
-                $this->uc->register();
-                break;
-            case 'logout':
-                $this->uc->logout();
-                break;
-            case 'show_users':
-                $this->uc->showUsers();
-                break;
-            case 'change_role':
-                $this->uc->changeUserRole();
-                break;
-            case 'verify_user':
-                $this->uc->verifyUser();
-                break;
-            case 'init_reset_pwd':
-                $this->uc->initResetPassword();
-                break;
-            case 'reset_pwd':
-                $this->uc->resetPassword();
-                break;
-           
-            default:
-                http_response_code(404);
-                echo json_encode(['error' => 'API not found']);
-                break;
+        
+        // Mappatura degli endpoint API ai metodi corrispondenti e ai permessi richiesti
+        $apiEndpoints = [
+            'upload_file' => ['handler' => [$this->fc, 'upload'], 'auth' => 'authenticated'],
+            'download_file' => ['handler' => [$this->fc, 'downloadFile'], 'auth' => 'authenticated'],
+            'show_files' => ['handler' => [$this->fc, 'showFiles'], 'auth' => 'authenticated'],
+            'login' => ['handler' => [$this->uc, 'login'], 'auth' => 'unauthenticated'],
+            'register' => ['handler' => [$this->uc, 'register'], 'auth' => 'unauthenticated'],
+            'logout' => ['handler' => [$this->uc, 'logout'], 'auth' => 'authenticated'],
+            'show_users' => ['handler' => [$this->uc, 'showUsers'], 'auth' => 'admin'],
+            'change_role' => ['handler' => [$this->uc, 'changeUserRole'], 'auth' => 'admin'],
+            'verify_user' => ['handler' => [$this->uc, 'verifyUser'], 'auth' => 'unauthenticated'],
+            'forgot_pwd' => ['handler' => [$this->uc, 'forgotPassword'], 'auth' => 'unauthenticated'],
+            'reset_pwd' => ['handler' => [$this->uc, 'resetPassword'], 'auth' => 'unauthenticated'],
+        ];
+    
+        // Controlla se l'endpoint esiste nella mappatura
+        if (!array_key_exists($apiRequest, $apiEndpoints)) {
+            http_response_code(404);
+            echo json_encode(['error' => 'API not found']);
+            return;
         }
+    
+        // Recupera le informazioni sull'endpoint
+        $endpoint = $apiEndpoints[$apiRequest];
+        
+        // Verifica i permessi dell'endpoint
+        if ($endpoint['auth'] === 'admin' && !$this->isAdmin()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+        if ($endpoint['auth'] === 'authenticated' && !$this->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+        if ($endpoint['auth'] === 'unauthenticated' && $this->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+    
+        // Chiama il metodo corrispondente all'endpoint
+        call_user_func($endpoint['handler']);
     }
 
     // Gestisce le richieste delle pagine
     private function handlePageRequest()
+    {   
+        // Mappatura dei percorsi alle pagine e requisiti di autenticazione
+        $pages = [
+            '' => ['page' => 'homepage', 'auth' => 'unauthenticated'],
+            '/' => ['page' => 'homepage', 'auth' => 'unauthenticated'],
+            '/login' => ['page' => 'login', 'auth' => 'unauthenticated'],
+            '/register' => ['page' => 'register', 'auth' => 'unauthenticated'],
+            '/dashboard' => ['page' => 'dashboard', 'auth' => 'authenticated'],
+            '/logout' => ['page' => 'logout', 'auth' => 'unauthenticated'], // chi ci puo accedere alla pagina?
+            '/verify_user' => ['page' => 'verify_user', 'auth' => 'unauthenticated'],
+            '/forgot_password' => ['page' => 'forgot_password', 'auth' => 'unauthenticated'],
+            '/reset_password' => ['page' => 'reset_password', 'auth' => 'unauthenticated'],
+        ];
+
+        // Controllo se il percorso non esiste nella mappatura
+        if (!array_key_exists($this->request, $pages)) {
+            // Carica la pagina 404 se il percorso non esiste
+            require "{$this->pages_path}/404.php";
+            return;
+        }
+
+        $pageInfo = $pages[$this->request];
+
+        // Controllo dei requisiti di autenticazione
+        if ($pageInfo['auth'] === 'authenticated' && !$this->isAuthenticated()) {
+            header("Location: /login");
+            exit();
+        }
+
+        if ($pageInfo['auth'] === 'unauthenticated' && $this->isAuthenticated()) {
+            header('Location: /dashboard');
+            exit();
+        }
+
+        // Imposta la pagina corrente e richiede il file della pagina
+        $this->current_page = $pageInfo['page'];
+        require "{$this->pages_path}/{$this->current_page}.php";
+    }
+
+    private function isAuthenticated()
     {
-        switch ($this->request) {
-            case '/':
-            case '':
-                $this->current_page = 'homepage';
-                require "{$this->pages_path}/homepage.php";
-                break;
-            case '/login':
-                $this->current_page = 'login';
-                require "{$this->pages_path}/login.php";
-                break;
-            case '/register':
-                $this->current_page = 'register';
-                require "{$this->pages_path}/register.php";
-                break;
-            case '/upload_file':
-                $this->current_page = 'upload_file';
-                require "{$this->pages_path}/upload_file.php";
-                break;
-            case '/download_file':
-                $this->current_page = 'download_file';
-                require "{$this->pages_path}/download_file.php";
-                break;
-            case '/dashboard':
-                $this->current_page = 'dashboard';
-                require "{$this->pages_path}/dashboard.php";
-                break;
-            case '/logout':
-                $this->current_page = 'logout';
-                require "{$this->pages_path}/logout.php";
-                break;
-            case '/verify_user':
-                $this->current_page = 'verify_user';
-                require "{$this->pages_path}/verify_user.php";
-                break;
-            case '/forgot_password':
-                $this->current_page = 'forgot_password';
-                require "{$this->pages_path}/forgot_password.php";
-                break;
-            case '/reset_password':
-                $this->current_page = 'reset_password';
-                require "{$this->pages_path}/reset_password.php";
-                break;
-            default:
-                require "{$this->pages_path}/404.php";
-                break;
+        return isset($_SESSION['username']);
+    }
+
+    private function isAdmin()
+    {
+        return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+    }
+
+    private function initSecureSession(){
+        if( session_status() == PHP_SESSION_NONE ){
+            session_start(
+                [
+                    'cookie_lifetime' => 0, // La sessione scade alla chiusura del browser
+                    'cookie_httponly' => true,
+                    'cookie_secure' => true, // Solo su HTTPS
+                    'cookie_samesite' => 'Lax',
+                ]
+            );
         }
     }
 

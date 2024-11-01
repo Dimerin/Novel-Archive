@@ -14,7 +14,7 @@ class ForgotPassword {
         const formData = new FormData(this.forgotPwdForm);
 
         try {
-            const response = await fetch('/api/init_reset_pwd', {
+            const response = await fetch('/api/forgot_pwd', {
                 method: 'POST',
                 body: formData
             });
