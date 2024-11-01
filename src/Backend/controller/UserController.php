@@ -206,56 +206,51 @@ class UserController
             session_regenerate_id(true);
             $_SESSION['initiated'] = true;
         }
+        try {
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['email']) || !isset($_POST['password']))
+                throw new InvalidRequestException('Invalid request.');
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
-        if (!isset($_POST['email']) || !isset($_POST['password'])) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-
-        // Check the email format
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
-        }
-
-        // Controlla se l'utente esiste
-        $stmt = $this->conn->prepare( "SELECT id, username, password, role, active FROM users WHERE email = ?");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->store_result();
-
-        if ($stmt->num_rows == 0) {
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+    
+            // Check the email format
+            $this->checkEmailFormat($email);    
+            // Controlla se l'utente esiste
+            $stmt = $this->conn->prepare( "SELECT id, username, password, role, active FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->store_result();
+    
+            if ($stmt->num_rows == 0) {
+                $stmt->close();
+                throw new UserNotFoundException('Invalid email or password.');
+    
+            }
+            $stmt->bind_result($id, $username, $hashedPassword, $role, $status);
+            $stmt->fetch();
             $stmt->close();
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
+    
+            if ($status == INACTIVE)
+                throw new UserNotFoundException('User is not verified.');
+    
+            // Verifica la password
+            if (password_verify($password, $hashedPassword)) {
+                // Regenerate session ID to prevent fixation after successful login
+                session_regenerate_id(true);
+                $_SESSION['username'] = $username;
+                $_SESSION['role'] = $role;
+                $_SESSION['user_id'] = $id;
+    
+                return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
+    
+            }
+            
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);    
 
+        } catch (Exception $e) {
+            throw $e; // Lascia che ErrorHandler gestisca l'eccezione
         }
-
-        $stmt->bind_result($id, $username, $hashedPassword, $role, $status);
-        $stmt->fetch();
-        $stmt->close();
-
-        if ($status == INACTIVE) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'User is inactive.'], 401);
-        }
-
-        // Verifica la password
-        if (password_verify($password, $hashedPassword)) {
-            // Regenerate session ID to prevent fixation after successful login
-            session_regenerate_id(true);
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $role;
-            $_SESSION['user_id'] = $id;
-
-            return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
-
-        } 
-        return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
-    }
+ }
     public function logout()
     {
         if (session_status() == PHP_SESSION_NONE) {

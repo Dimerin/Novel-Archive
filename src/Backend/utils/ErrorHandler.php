@@ -5,9 +5,8 @@ class UserNotFoundException extends Exception {}
 class InvalidTokenException extends Exception {}
 class RegistrationException extends Exception {}
 class FailedTokenDeletionException extends Exception {}
-
+class UserInactiveException extends Exception {}
 class PasswordMismatchException extends Exception {}
-class PasswordUnsecureException extends Exception {}
 class DatabaseException extends Exception {}
 
 class ErrorHandler {
@@ -46,7 +45,7 @@ class ErrorHandler {
                 break;
             
             case UserNotFoundException::class:
-                $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
+                $this->sendResponse(['status' => 'error', 'message' => $exception->getMessage()], 409);
                 break;
             
             case InvalidTokenException::class:
@@ -67,6 +66,10 @@ class ErrorHandler {
             
             case PasswordMismatchException::class:
                 $this->sendResponse(['status' => 'error', 'message' => $exception->getMessage()], 400);
+                break;
+            
+            case UserInactiveException::class:
+                $this->sendResponse(['status' => 'error', 'message' => $exception->getMessage()], 401);
                 break;
 
             default:
