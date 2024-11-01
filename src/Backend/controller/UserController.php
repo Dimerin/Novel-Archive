@@ -131,7 +131,7 @@ class UserController
         return $this->sendResponse(['status' => 'success', 'message' => 'User verificated successfully.'], 201);
     }
 
-    public function initResetPassword()
+    public function forgotPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
