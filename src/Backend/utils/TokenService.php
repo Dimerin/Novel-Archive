@@ -21,7 +21,9 @@ class TokenService
         $stmt->bind_param("sss", $email, $token, $purpose);
         $executed = $stmt->execute();
         $stmt->close();
-        
+        if($executed == false) {
+            throw new InvalidTokenException;
+        }
         return $executed;
     }
 
@@ -31,7 +33,9 @@ class TokenService
         $stmt->bind_param("ss", $email, $purpose);
         $executed = $stmt->execute();
         $stmt->close();
-        return $executed;
+        if(!$executed) {
+            throw new FailedTokenDeletionException('Failed to verify user.');
+        }
     }
 
     public function checkToken($token, $email, $purpose)
@@ -43,6 +47,9 @@ class TokenService
         $stmt->store_result();
         $rows_check = $stmt->num_rows > 0;
         $stmt->close();
-        return $rows_check;
+
+        if (!$rows_check) {
+            throw new InvalidTokenException;
+        }
     }
 }

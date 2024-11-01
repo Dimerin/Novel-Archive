@@ -3,6 +3,9 @@ require_once __DIR__ . '/../utils/dbManager.php';
 require_once __DIR__ . '/../utils/PostMan.php';
 require_once __DIR__ . '/../utils/TokenService.php';
 require_once __DIR__ . '/../utils/UserService.php';
+require_once __DIR__ . '/../utils/ErrorHandler.php';
+
+$errorHandler = new ErrorHandler();
 
 const ACTIVE = 1;
 const INACTIVE = 0;
@@ -28,219 +31,169 @@ class UserController
     {
         // Check Password length and format
         // Password must be at least 16 characters long and contain at least one uppercase letter, one lowercase letter, and one number
+        $password_error = false;
         if (strlen($password) < 16) {
-            return 'Password must be at least 16 characters long.';
+            $password_error = 'Password must be at least 16 characters long.';
         } elseif (!preg_match('/[A-Z]/', $password)) {
-            return 'Password must contain at least one uppercase letter.';
+            $password_error =  'Password must contain at least one uppercase letter.';
         } elseif (!preg_match('/[a-z]/', $password)) {
-            return 'Password must contain at least one lowercase letter.';
+            $password_error = 'Password must contain at least one lowercase letter.';
         } elseif (!preg_match('/[0-9]/', $password)) {
-            return 'Password must contain at least one number.';
+            $password_error = 'Password must contain at least one number.';
         }
+
+        if ($password_error !== false)
+            throw new InvalidRequestException($password_error);
         return false;
+    }
+    private function checkEmailFormat($email)
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidRequestException('Invalid email format.');
+        }
     }
 
     public function register()
     {
-        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-        if(!isset($_POST['username']) || !isset($_POST['email']) || !isset($_POST['password'])) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
+        try {
+            if($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['username']) || !isset($_POST['email']) || !isset($_POST['password'])) {
+                throw new InvalidRequestException('Invalid request.');
+            }
+            $username = $_POST['username'];
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+
+            // Check the email format
+            $this->checkEmailFormat($email);
+            
+            // Check the password format
+            $this->checkPasswordFormat($password);
+            // Check if the user already exists
+            $this->user_service->checkUserExistence($email, true);
+            // Generate token
+            $token = $this->token_service->generateToken(100);
+            // Registra il nuovo utente
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $this->conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $username, $email, $hashedPassword);
+            $check = $stmt->execute();
+            // Store the token in the tokens table
+            $this->token_service->storeToken($token, $email);
+            // Send an email with the OTP
+            $to = $email;
+            $subject = 'Verify your email address';
+            $message = "link for Otp: ".URL_REGISTER_PAGE."?email=".$email."&token=".$token;           
+            $this->postman->send($email, $subject, $message);
+            $stmt->close();
+
+            return $this->sendResponse(['status' => 'success', 'message' => 'User registered successfully.'], 201);
         
-        $username = $_POST['username'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-
-        // Check the email format
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
+        } catch (InvalidTokenException $e) {
+            throw new RegistrationException;
+            throw $e; // Lascia che ErrorHandler gestisca l'eccezione
+        }catch (Exception $e) {
+            throw $e; // Lascia che ErrorHandler gestisca l'eccezione
         }
-
-        // Check the password format
-        $passwordError = $this->checkPasswordFormat($password);
-        if ($passwordError !== false) {
-            return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
-        }
-        
-        // Check if the user already exists
-        if($this->user_service->checkUserExistence($email))
-            return $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
-
-        // Generate token
-        $token = $this->token_service->generateToken(100);
-
-        // Registra il nuovo utente
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $email, $hashedPassword);
-        $check = $stmt->execute();
-        
-        // Store the token in the tokens table
-        if($this->token_service->storeToken($token, $email) == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
-        }
-
-        // Send an email with the OTP
-        $to = $email;
-        $subject = 'Verify your email address';
-        $message = "link for Otp: ".URL_REGISTER_PAGE."?email=".$email."&token=".$token;
-        
-        $this->postman->send($email, $subject, $message);
-
-        $stmt->close();
-        return $this->sendResponse(['status' => 'success', 'message' => 'User registered successfully.'], 201);
-    }
+      }
 
     public function verifyUser()
     {
-        if($_SERVER['REQUEST_METHOD'] !== 'GET') {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-        if(!isset($_GET['token']) || !isset($_GET['email']) ) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
-        $receive_token = $_GET['token'];
-        $email = $_GET['email'];
-        
-        // Check the email format
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
-        }
-
-        
-        // get the token from the database
-        if($this->token_service->checkToken($receive_token, $email, 'register') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
-        }
-
-        // Update the user's status to verified
         try{
-            $this->user_service->setUserStatus($email, ACTIVE);
-        } catch (Exception $e) {
-            return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
-        }
-            
-        // Delete the token from the tokens table
-        if($this->token_service->deleteToken($email, 'register') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
-        }
+            if($_SERVER['REQUEST_METHOD'] !== 'GET' || !isset($_GET['token']) || !isset($_GET['email']))
+                throw new InvalidRequestException('Invalid request.');
 
-        return $this->sendResponse(['status' => 'success', 'message' => 'User verificated successfully.'], 201);
+            $receive_token = $_GET['token'];
+            $email = $_GET['email'];
+            
+            // Check the email format
+            $this->checkEmailFormat($email);
+            // get the token from the database
+            $this->token_service->checkToken($receive_token, $email, 'register');
+            // Update the user's status to verified
+            $this->user_service->setUserStatus($email, ACTIVE); 
+            // Delete the token from the tokens table
+            $this->token_service->deleteToken($email, 'register');
+
+            return $this->sendResponse(['status' => 'success', 'message' => 'User verificated successfully.'], 201);
+        }catch (Exception $e) {
+            throw $e; // Lascia che ErrorHandler gestisca l'eccezione
+        }  
     }
 
     public function initResetPassword()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-        if (!isset($_POST['email'])) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Email is required.'], 400);
-        }
-    
-        $email = $_POST['email'];
-        // Check the email format
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
-        }
-        
-    
-        // Check if the user exists
-        if($this->user_service->checkUserExistence($email) == false)
-            return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 409);
-    
-        // Generate token
-        $token = $this->token_service->generateToken(100);
-
-        // Store the token in the tokens table
-        if ($this->token_service->storeToken($token, $email, 'reset') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to initiate password reset.'], 500);
-        }
-
-        //Disable the user
         try {
-            $this->user_service->setUserStatus($email, INACTIVE);
-        } catch (Exception $e) {
-            return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
-        }
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['email']))
+                throw new InvalidRequestException('Invalid request.');
+            
+            $email = $_POST['email'];
+            // Check the email format
+            $this->checkEmailFormat($email);
+            // Check if the user already exists
+            $this->user_service->checkUserExistence($email, true);
+            // Generate token
+            $token = $this->token_service->generateToken(100);
+            // Store the token in the tokens table
+            $this->token_service->storeToken($token, $email, 'reset');
+            //Disable the user
+            $this->user_service->setUserStatus($email, INACTIVE);            
+            // Send email with token
+            $to = $email;
+            $subject = 'Password Reset Request';
+            $message = "Your OTP for password reset:".URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
         
-        // Send email with token
-        $to = $email;
-        $subject = 'Password Reset Request';
-        $message = "Your OTP for password reset:".URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
-    
-        $this->postman->send($to, $subject, $message);
-    
-        return $this->sendResponse(['status' => 'success', 'message' => 'OTP sent to your email.'], 200);
+            $this->postman->send($to, $subject, $message);
+        
+            return $this->sendResponse(['status' => 'success', 'message' => 'OTP sent to your email.'], 200);
+        } catch (Exception $e) {
+            throw $e; // Lascia che ErrorHandler gestisca l'eccezione
+        }
     }
     
     public function resetPassword()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-        if (!isset($_POST['token']) || !isset($_POST['email']) ||
+        try{
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['token']) || !isset($_POST['email']) ||
             !isset($_POST['new_password']) || !isset($_POST['conf_new_password'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
+            }
     
-        $receive_token = $_POST['token'];
-        $email = $_POST['email'];
-        $new_password = $_POST['new_password'];
-        $conf_new_password = $_POST['conf_new_password'];
+            $receive_token = $_POST['token'];
+            $email = $_POST['email'];
+            $new_password = $_POST['new_password'];
+            $conf_new_password = $_POST['conf_new_password'];
 
-        // Check the email format
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
-        }
-        
-        // Check the password format
-        $passwordError = $this->checkPasswordFormat($new_password);
-        if ($passwordError !== false) {
-            return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
-        }
+            // Check the email format
+            $this->checkEmailFormat($email);
+            // Check the password format
+            $this->checkPasswordFormat($new_password);
+            $this->token_service->checkToken($receive_token, $email, 'reset');
+            // Check if the user exists
+            $this->user_service->checkUserExistence($email);
+            // Check if the new password and confirm new password match
+            if ($new_password !== $conf_new_password)
+                throw new PasswordMismatchException('Passwords do not match.');
+            // Hash the password
+            $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
+            // Update the password
+            $stmt = $this->conn->prepare("UPDATE users SET password = ? WHERE email = ?");
+            $stmt->bind_param("ss", $hashedPassword, $email);
+            $executed = $stmt->execute();
+            $stmt->close();
     
-        // Check if the token is valid
-        if ($this->token_service->checkToken($receive_token, $email, 'reset') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
-        }
-
-        // Check if the user exists
-        if ($this->user_service->checkUserExistence($email) == false)
-            return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 404);
-
-        // Check if the new password and confirm new password match
-        if ($new_password !== $conf_new_password) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Passwords do not match.'], 400);
-        }
-        
-        // Hash the password
-        $hashedPassword = password_hash($new_password, PASSWORD_DEFAULT);
-
-        // Update the password
-        $stmt = $this->conn->prepare("UPDATE users SET password = ? WHERE email = ?");
-        $stmt->bind_param("ss", $hashedPassword, $email);
-        $executed = $stmt->execute();
-        $stmt->close();
- 
-        if ($executed == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Password reset failed.'], 500);
-        }
-        
-        // Delete the token from the tokens table
-        if($this->token_service->deleteToken($email, 'reset') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
-        }
-        
-        //ENABLE the user
-        try {
+            if ($executed == false) {
+                return $this->sendResponse(['status' => 'error', 'message' => 'Password reset failed.'], 500);
+            }
+            // Delete the token from the tokens table
+            $this->token_service->deleteToken($email, 'reset');
+            //ENABLE the user
             $this->user_service->setUserStatus($email, ACTIVE);
+
+            return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
         } catch (Exception $e) {
-            return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
+            throw $e; // Lascia che ErrorHandler gestisca l'eccezione
         }
-       return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
+        
     }  
 
     public function login()

@@ -9,7 +9,8 @@ class UserService
         $this->conn = $conn;
     }
 
-    public function checkUserExistence($email)
+    // Return error if the user is not found, if reversed is true return error if the user is found
+    public function checkUserExistence($email, $reversed = false)
     {
         $stmt = $this->conn->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
@@ -18,8 +19,10 @@ class UserService
         $rows_check = $stmt->num_rows > 0;
         $stmt->close();
 
-        // If the user is found, return true; otherwise, return false
-        return $rows_check;
+        if ($reversed && $rows_check)
+            throw new UserNotFoundException("User already exists.");
+        else if (!$reversed && !$rows_check)
+            throw new UserNotFoundException("User not found.");
     }
 
     public function setUserStatus($email, $status)
@@ -33,7 +36,8 @@ class UserService
         $rows_check = $stmt->affected_rows === 1;   
         $stmt->close();
 
-        return $rows_check && $executed;
+        if (!$rows_check || !$executed)
+            throw new DatabaseException("Error updating user status.");
     }
 
     public function updateUserRole($id, $newRole)
@@ -44,4 +48,6 @@ class UserService
         $stmt->close();
         return $executed;
     }
+
+
 }
