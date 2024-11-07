@@ -8,6 +8,7 @@ class FailedTokenDeletionException extends Exception {}
 class UserInactiveException extends Exception {}
 class PasswordMismatchException extends Exception {}
 class DatabaseException extends Exception {}
+class TooManyLoginAttemptsException extends Exception {}
 
 class ErrorHandler {
     public function __construct() {

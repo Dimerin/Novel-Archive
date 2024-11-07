@@ -3,6 +3,7 @@ CREATE DATABASE IF NOT EXISTS novel_archive;
 
 USE novel_archive;
 
+DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
@@ -12,6 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
     active BOOLEAN DEFAULT FALSE
 );
 
+DROP TABLE IF EXISTS files;
 CREATE TABLE IF NOT EXISTS files (
     id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
@@ -22,6 +24,7 @@ CREATE TABLE IF NOT EXISTS files (
         visibility TINYINT(1) NOT NULL DEFAULT 0
 );
 
+DROP TABLE IF EXISTS tokens;
 CREATE TABLE IF NOT EXISTS tokens (
     email VARCHAR(100) PRIMARY KEY,
     token VARCHAR(255) DEFAULT NULL,
@@ -29,9 +32,12 @@ CREATE TABLE IF NOT EXISTS tokens (
     purpose ENUM('register', 'reset') DEFAULT 'register'
 );
 
+DROP TABLE IF EXISTS login_attempts;
 CREATE TABLE login_attempts (
     email VARCHAR(100) PRIMARY KEY,
-    attempts INT DEFAULT 0,
+    first_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    attempts INT DEFAULT 0,
+    timeouted BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (email) REFERENCES users(email) ON DELETE CASCADE
 );

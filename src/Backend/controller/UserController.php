@@ -232,6 +232,9 @@ class UserController
     
             if ($status == INACTIVE)
                 throw new UserNotFoundException('User is not verified.');
+
+            //Check if the user is timeouted
+            $this->user_service->checkLoginAttempts($email);
     
             // Verifica la password
             if (password_verify($password, $hashedPassword)) {
@@ -248,6 +251,9 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);    
 
         } catch (Exception $e) {
+            // Login failed, update the login attempts
+            $this->user_service->updateLoginAttempts($email);
+            //if the user is timeouted, the function will throw an exception and return, so the previous exception will not be thrown
             throw $e; // Lascia che ErrorHandler gestisca l'eccezione
         }
  }
