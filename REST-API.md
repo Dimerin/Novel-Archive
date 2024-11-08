@@ -31,7 +31,8 @@ Endpoint per il login di un utente. Questo endpoint richiede che l'utente invii 
   {
     "email": "utente@example.com",
     "password": "SicuraPassword123!"
-  }```
+  }
+  ```
 - **Response Body:**
   ```json
   {
