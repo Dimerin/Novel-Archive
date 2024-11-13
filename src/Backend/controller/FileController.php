@@ -27,12 +27,13 @@ class FileController
             $filetype = pathinfo($file["name"], PATHINFO_EXTENSION);
             $title = pathinfo( $file["name"], PATHINFO_FILENAME);
             $title = preg_replace('/[^\w\-\.]/', '_', $title);
+            $title = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
             $filedata = file_get_contents($file['tmp_name']);
         } elseif ($_POST['upload_type'] == 'text' && isset($_POST['text_content'])) {
             $title = $_POST['title'];
-            $title = htmlspecialchars($title);
+            $title = htmlspecialchars($title,ENT_QUOTES, 'UTF-8');
             $filedata = $_POST['text_content'];
-            $filedata = htmlspecialchars($filedata);
+            $filedata = htmlspecialchars($filedata, ENT_QUOTES, 'UTF-8');
             $filetype = 'txt';
         } else {
             return $this->sendResponse(['status' => 'error', 'message' => 'Nessun file o testo fornito.'], 400);
