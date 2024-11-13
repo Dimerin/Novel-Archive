@@ -18,96 +18,35 @@ class FileController
         }
 
         // Controlla se il tipo di upload non è specificato
-        if (!isset($_POST['upload_type'])) {
+        if (!isset($_POST['upload_type']) || !isset($_POST['novel_category']) || !is_string($_POST["novel_category"])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Tipo di upload non specificato.'], 400);
         }
-
+        
         if ($_POST['upload_type'] == 'file' && isset($_FILES['file'])) {
-            return $this->uploadFile();
+            $file = $_FILES['file'];
+            $filetype = pathinfo($file["name"], PATHINFO_EXTENSION);
+            $title = pathinfo( $file["name"], PATHINFO_FILENAME);
+            $title = preg_replace('/[^\w\-\.]/', '_', $title);
+            $filedata = file_get_contents($file['tmp_name']);
         } elseif ($_POST['upload_type'] == 'text' && isset($_POST['text_content'])) {
-            return $this->uploadText();
+            $title = $_POST['title'];
+            $title = htmlspecialchars($title);
+            $filedata = $_POST['text_content'];
+            $filedata = htmlspecialchars($filedata);
+            $filetype = 'txt';
         } else {
             return $this->sendResponse(['status' => 'error', 'message' => 'Nessun file o testo fornito.'], 400);
         }
-    }
 
-    private function getUserVisibility()
-    {
-        //$user_id = 1; //TODO: when not testing, comment this line
-        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
-        $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
-        $stmt->bind_param('i', $user_id);
-        $stmt->execute();
-        $stmt->bind_result($role);
-        $stmt->fetch();
-        $stmt->close();
-
-        $visibility = $role == 'free' ? 0 : 1;
-        return $visibility;
-    }
-    // FIXME: le due funzioni uploadFile e uploadText sono molto simili, si potrebbe fare una funzione generica
-    // get user visibility
-    private function uploadFile()
-    {
-
-        if (!isset($_FILES['file'])) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Nessun file caricato.'], 400);
-        }
-
-        $file = $_FILES['file'];
-        $title = basename($file['name']);
-        $filetype = pathinfo($title, PATHINFO_EXTENSION);
-        $filedata = file_get_contents($file['tmp_name']);
-        $novel_category = $_POST['novel_category'];
-
-        // get user visibility
-        //$user_id = 1; //TODO: when not testing, comment this line
-        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
-        // FIXME: passare user_id o ricavarlo da sessione dentro la funzione? 
-        $userVisibility = $this->getUserVisibility();
-
-        $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
-
-        if($userVisibility < $selectedVisibility){
-            return $this->sendResponse(['status' => 'error', 'message' => 'Non hai i permessi per caricare questo contenuto.'], 403);
-        }
-
-        $query = '
-            INSERT INTO files (title, filetype, filedata, user_id, visibility)
-            VALUES (?, ?, ?, ?, ?)
-        ';
-
-        $stmt = $this->conn->prepare( $query);
-        $stmt->bind_param("sssii", $title, $filetype, $filedata, $user_id, $selectedVisibility);
-
-        if ($stmt->execute()) {
-            $stmt->close();
-            return $this->sendResponse(['status' => 'success', 'message' => 'File caricato con successo.'], 201);
-        } else {
-            $stmt->close();
-            return $this->sendResponse(['status' => 'error', 'message' => 'Caricamento del file fallito.'], 500);
-        }
-    }
-
-    private function uploadText()
-    {
-
-        if (!isset($_POST['text_content'])) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Nessun testo fornito.'], 400);
+        if(!in_array($filetype, ["txt","pdf"])){
+            return $this->sendResponse(["status"=>"error", "message" => "Tipo di upload non supportato"]);
         }
         
-        $text = $_POST['text_content'];
-        $title = $_POST['title'];
         $novel_category = $_POST['novel_category'];
-        // FIXME: non ricordo che campi si passano dal frontend, modificare i campi in base a quelli passati
-        //$title = 'testo_inserito.txt';
-        $filetype = 'txt';
-        $filedata = $text;
-
-
-        // get user visibility
-        //$user_id = 1; //TODO: when not testing, comment this line
-        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        if(!in_array($novel_category, ["free", "pro"])){
+            return $this->sendResponse(["status"=>"error", "message" => "Tipo di upload non supportato"]);
+        }
+        $user_id = $_SESSION['user_id'];
         $userVisibility = $this->getUserVisibility();
 
         $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
@@ -130,12 +69,26 @@ class FileController
         if ($stmt->execute()) {
             $stmt->close();
             return $this->sendResponse(['status' => 'success', 'message' => 'Testo caricato con successo.'], 201);
-        } else {
-            $stmt->close();
-            return $this->sendResponse(['status' => 'error', 'message' => 'Caricamento del testo fallito.'], 500);
         }
+        $stmt->close();
+        return $this->sendResponse(['status' => 'error', 'message' => 'Caricamento del testo fallito.'], 500);
     }
-    
+
+    private function getUserVisibility()
+    {
+        //$user_id = 1; //TODO: when not testing, comment this line
+        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
+        $stmt->bind_param('i', $user_id);
+        $stmt->execute();
+        $stmt->bind_result($role);
+        $stmt->fetch();
+        $stmt->close();
+
+        $visibility = $role == 'free' ? 0 : 1;
+        return $visibility;
+    }
+        
     public function downloadFile()
     {
         
