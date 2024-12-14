@@ -32,25 +32,65 @@ class EmailConfirmationPage {
     }
 
     renderSuccessMessage() {
-        this.mainContent.innerHTML = `
-            <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-animate-delay-1">Confirmation Successful</span><br>
-            <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1">Confirmation Successful</span><br>
-            <span class="w3-xlarge w3-animate-bottom w3-animate-delay-2">You have successfully registered, you will be redirected to the homepage in <span id="countdown">3</span> seconds.</span>
-        `;
+        // Clear existing content
+        while (this.mainContent.firstChild) {
+            this.mainContent.removeChild(this.mainContent.firstChild);
+        }
+
+        // Create and append new elements
+        const span1 = document.createElement('span');
+        span1.className = 'w3-jumbo w3-hide-small w3-animate-bottom w3-animate-delay-1';
+        span1.textContent = 'Confirmation Successful';
+        this.mainContent.appendChild(span1);
+        this.mainContent.appendChild(document.createElement('br'));
+
+        const span2 = document.createElement('span');
+        span2.className = 'w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1';
+        span2.textContent = 'Confirmation Successful';
+        this.mainContent.appendChild(span2);
+        this.mainContent.appendChild(document.createElement('br'));
+
+        const span3 = document.createElement('span');
+        span3.className = 'w3-xlarge w3-animate-bottom w3-animate-delay-2';
+        span3.textContent = 'You have successfully registered, you will be redirected to the homepage in ';
+        const countdownSpan = document.createElement('span');
+        countdownSpan.id = 'countdown';
+        countdownSpan.textContent = '3';
+        span3.appendChild(countdownSpan);
+        span3.appendChild(document.createTextNode(' seconds.'));
+        this.mainContent.appendChild(span3);
+
         this.startCountdown();
     }
 
     renderErrorMessage(message) {
-        this.mainContent.innerHTML = `
-            <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-animate-delay-1">Confirmation Failed</span><br>
-            <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1">Confirmation Failed</span><br>
-            <span class="w3-xlarge w3-animate-bottom w3-animate-delay-2">${message}</span>
-        `;
+        // Clear existing content
+        while (this.mainContent.firstChild) {
+            this.mainContent.removeChild(this.mainContent.firstChild);
+        }
+
+        // Create and append new elements
+        const span1 = document.createElement('span');
+        span1.className = 'w3-jumbo w3-hide-small w3-animate-bottom w3-animate-delay-1';
+        span1.textContent = 'Confirmation Failed';
+        this.mainContent.appendChild(span1);
+        this.mainContent.appendChild(document.createElement('br'));
+
+        const span2 = document.createElement('span');
+        span2.className = 'w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1';
+        span2.textContent = 'Confirmation Failed';
+        this.mainContent.appendChild(span2);
+        this.mainContent.appendChild(document.createElement('br'));
+
+        const span3 = document.createElement('span');
+        span3.className = 'w3-xlarge w3-animate-bottom w3-animate-delay-2';
+        span3.textContent = message;
+        this.mainContent.appendChild(span3);
     }
 
     startCountdown() {
         let countdownElement = document.getElementById('countdown');
-        let countdown = 4;
+        let countdown = 3;
         const interval = setInterval(() => {
             countdown--;
             countdownElement.textContent = countdown;

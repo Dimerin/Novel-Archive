@@ -34,14 +34,36 @@ class ForgotPassword {
 
     showResetPwdForm() {
         const homeDiv = document.getElementById('home');
-        homeDiv.innerHTML = `
-                <div class="w3-display-left w3-text-white" style="padding: 48px">
-                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">Check your email inbox.</span><br>
-                    <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Check your email inbox.</span><br>
-                    <span class="w3-large w3-animate-bottom">An email has been sent to your email address to reset your password.</span>
-                </div>
-        `;
+        // Clear existing content
+        while (homeDiv.firstChild) {
+            homeDiv.removeChild(homeDiv.firstChild);
+        }
+
+        // Create and append new elements
+        const div = document.createElement('div');
+        div.className = 'w3-display-left w3-text-white';
+        div.style.padding = '48px';
+
+        const span1 = document.createElement('span');
+        span1.className = 'w3-jumbo w3-hide-small w3-animate-bottom';
+        span1.textContent = 'Check your email inbox.';
+        div.appendChild(span1);
+        div.appendChild(document.createElement('br'));
+
+        const span2 = document.createElement('span');
+        span2.className = 'w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom';
+        span2.textContent = 'Check your email inbox.';
+        div.appendChild(span2);
+        div.appendChild(document.createElement('br'));
+
+        const span3 = document.createElement('span');
+        span3.className = 'w3-large w3-animate-bottom';
+        span3.textContent = 'An email has been sent to your email address to reset your password.';
+        div.appendChild(span3);
+
+        homeDiv.appendChild(div);
     }
+
     ensureToastScript() {
         // Check if toast.js is already loaded
         if (!document.querySelector('script[src="./Frontend/js/toast.js"]')) {
@@ -54,8 +76,6 @@ class ForgotPassword {
         }
     }
 }
-
-
 
 document.addEventListener('DOMContentLoaded', () => {
     new ForgotPassword('forgotPwdForm');

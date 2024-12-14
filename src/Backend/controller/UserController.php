@@ -81,11 +81,13 @@ class UserController
         if($this->token_service->storeToken($token, $email) == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
         }
+        $htmlTemplate = file_get_contents(__DIR__ . '/../utils/confirmationEmail.html');
 
+        // Replace placeholder with the actual link
+        $actionLink = URL_REGISTER_PAGE."?email=".$email."&token=".$token;
+        $message = str_replace('{{ACTION_LINK}}', $actionLink, $htmlTemplate);
         // Send an email with the OTP
-        $to = $email;
-        $subject = 'Verify your email address';
-        $message = "link for Otp: ".URL_REGISTER_PAGE."?email=".$email."&token=".$token;
+        $subject = 'Verify your email address for Novel Archive';
         
         $this->postman->send($email, $subject, $message);
 
@@ -169,7 +171,7 @@ class UserController
         // Send email with token
         $to = $email;
         $subject = 'Password Reset Request';
-        $message = "Your OTP for password reset:".URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
+        $message = "<h2>Your link for password reset:</h2>".URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
     
         $this->postman->send($to, $subject, $message);
     
