@@ -22,7 +22,8 @@ class ForgotPassword {
             if (response.ok) {
                 const result = await response.json();
                 showToast('success', result.message);
-                this.showResetPwdForm();
+                setTimeout(() =>
+                    this.showSuccessMessage(), 2000);
             } else {
                 const error = await response.json();
                 showToast('error', error.message);
@@ -32,7 +33,7 @@ class ForgotPassword {
         }
     }
 
-    showResetPwdForm() {
+    showSuccessMessage() {
         const homeDiv = document.getElementById('home');
         // Clear existing content
         while (homeDiv.firstChild) {
