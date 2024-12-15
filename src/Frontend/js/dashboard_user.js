@@ -595,8 +595,7 @@ class Dashboard {
         const chapterTitle = document.createElement('h2');
         chapterTitle.className = 'chapter-title';
         chapterTitle.textContent = title;
-        const fileDataParagraph = document.createElement('p');
-        fileDataParagraph.textContent = fileData;
+        const fileDataParagraph = document.createTextNode(fileData);
         article.appendChild(chapterTitle);
         article.appendChild(fileDataParagraph);
     

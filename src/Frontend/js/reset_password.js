@@ -88,31 +88,6 @@ class ResetPswPage {
         document.getElementById('resetpswForm').addEventListener('submit', (event) => this.sendForm(event));
     }
 
-    renderErrorMessage(message) {
-        // Clear existing content
-        while (this.mainContent.firstChild) {
-            this.mainContent.removeChild(this.mainContent.firstChild);
-        }
-
-        // Create and append new elements
-        const span1 = document.createElement('span');
-        span1.className = 'w3-jumbo w3-hide-small w3-animate-bottom w3-animate-delay-1';
-        span1.textContent = 'Reset Password Failed';
-        this.mainContent.appendChild(span1);
-        this.mainContent.appendChild(document.createElement('br'));
-
-        const span2 = document.createElement('span');
-        span2.className = 'w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1';
-        span2.textContent = 'Reset Password Failed';
-        this.mainContent.appendChild(span2);
-        this.mainContent.appendChild(document.createElement('br'));
-
-        const span3 = document.createElement('span');
-        span3.className = 'w3-xlarge w3-animate-bottom w3-animate-delay-2';
-        span3.textContent = message;
-        this.mainContent.appendChild(span3);
-    }
-
     async sendForm(event) {
         event.preventDefault();
         const formData = new FormData(document.getElementById('resetpswForm'));
@@ -125,11 +100,11 @@ class ResetPswPage {
             if (response.ok) {
                 const result = await response.json();
                 showToast('success', result.message);
-                this.renderSuccessMessage();
+                setTimeout(() => {
+                this.renderSuccessMessage();}, 2000);
             } else {
                 const error = await response.json();
                 showToast('error', error.message);
-                this.renderErrorMessage(error.message);
             }
         } catch (error) {
             showToast('error', error.message);
@@ -138,6 +113,7 @@ class ResetPswPage {
     }
 
     renderSuccessMessage() {
+
         // Clear existing content
         while (this.mainContent.firstChild) {
             this.mainContent.removeChild(this.mainContent.firstChild);

@@ -108,7 +108,7 @@ class FileController
                 users.username 
             FROM 
                 files 
-            JOIN 
+            INNER JOIN 
                 users 
             ON 
                 files.user_id = users.id 
