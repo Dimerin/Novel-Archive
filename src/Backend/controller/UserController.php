@@ -262,7 +262,7 @@ class UserController
         }
 
         // Controlla se l'utente esiste
-        $stmt = $this->conn->prepare( "SELECT id, username, password, role, active FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare( "SELECT id, username, password, role, active, first_attempt, last_attempt, timeouted, attempts FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
@@ -273,12 +273,24 @@ class UserController
 
         }
 
-        $stmt->bind_result($id, $username, $hashedPassword, $role, $status);
+        $stmt->bind_result($id, $username, $hashedPassword, $role, $status, $first_attempt, $last_attempt, $timeouted, $attempts);
         $stmt->fetch();
         $stmt->close();
 
         if ($status == INACTIVE) {
             return $this->sendResponse(['status' => 'error', 'message' => 'User is inactive.'], 401);
+        }
+        //Check if the user is timeouted
+        if($timeouted)
+        {
+            $timeout_time =  $this->user_service->differenceInMinutes(new DateTime(), new DateTime($last_attempt));
+            if($timeout_time >= $this->user_service->timeout_time)
+            {
+                $this->user_service->resetAttempts($email);
+                $timeouted = false;
+            }
+            else
+                return $this->sendResponse(['status' => 'error', 'message' => 'User is timeouted.'], 401);
         }
 
         // Verifica la password
@@ -291,7 +303,8 @@ class UserController
 
             return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
 
-        } 
+        }
+        $this->user_service->updateLoginAttempts($email, $first_attempt, $timeouted, $attempts);
         return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
     }
     public function logout()

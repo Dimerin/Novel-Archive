@@ -9,7 +9,11 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     role ENUM('free', 'pro', 'admin') DEFAULT 'free',
-    active BOOLEAN DEFAULT FALSE
+    active BOOLEAN DEFAULT FALSE,
+    first_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_attempt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    attempts INT DEFAULT 0,
+    timeouted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS files (

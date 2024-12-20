@@ -3,6 +3,8 @@
 class UserService
 {
     private $conn;
+    public $max_attempts = 3;
+    public $timeout_time = 1; // minutes
 
     public function __construct($conn)
     {
@@ -43,5 +45,47 @@ class UserService
         $executed = $stmt->execute();
         $stmt->close();
         return $executed;
+    }
+
+    public function differenceInMinutes($first_dt, $second_dt)
+    {
+        $interval = $first_dt->diff($second_dt);
+        $interval_seconds = $interval->i * 60 + $interval->s; // Convert the difference to seconds
+        return $interval_seconds / 60; // Convert the difference to minutes
+    }
+
+    public function resetAttempts($email)
+    {
+        $stmt = $this->conn->prepare("UPDATE users SET attempts = 0, timeouted = 0, first_attempt = NOW() ,last_attempt = NOW() WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $executed = $stmt->execute();
+        $stmt->close();
+        return $executed;
+    }
+
+    public function updateLoginAttempts($email, $first_attempt, $timeouted, $attempts)
+    {
+        if($timeouted)
+            return;
+        // Update the login attempts
+        //Se sono passati più di 5 minuti dall'ultimo tentativo, resetta il contatore degli errori
+        $now = new DateTime();
+        $minutes = $this->differenceInMinutes(new DateTime($first_attempt), $now);
+        if($minutes > $this->timeout_time)
+        {
+            $this->resetAttempts($email);
+            return;
+        }
+        $attempts += 1;
+
+
+        // If the user has reached the maximum number of attempts, set the timeouted flag to 1
+        if($attempts >= $this->max_attempts)
+            $timeouted = 1;
+
+        $stmt = $this->conn->prepare("UPDATE users SET timeouted = ?, attempts = ?, last_attempt = NOW() WHERE email = ?");
+        $stmt->bind_param("iis", $timeouted ,$attempts, $email);
+        $executed = $stmt->execute();
+        $stmt->close();
     }
 }
