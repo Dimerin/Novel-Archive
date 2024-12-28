@@ -9,13 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./Frontend/css/main.css">
     <link rel="stylesheet" href="./Frontend/css/toast.css">
-    <link rel="icon" href="./Frontend/imgs/icon.ico">
-    <style>
-        .bgimg-1 {
-            background-image: url('./Frontend/imgs/register.jpg');
-        }
+    <link rel="stylesheet" href="./Frontend/css/register.css">
 
-    </style>
+    <link rel="icon" href="./Frontend/imgs/icon.ico">
+
     <script src="./Frontend/js/register.js"></script>
 </head>
  
@@ -25,7 +22,7 @@
     </div>
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
-    <div class="w3-display-left w3-text-white" style="padding: 48px">
+    <div class="w3-display-left w3-text-white padding48">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom">Registration</span><br>
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Registration</span><br>
         <span class="w3-large w3-animate-bottom">Insert your credentials to create your account.</span>

@@ -9,22 +9,19 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./Frontend/css/main.css">
+    <link rel="stylesheet" href="./Frontend/css/forgot_password.css">
     <script src="./Frontend/js/forgot_pwd.js"></script>
     <script src="./Frontend/js/toast.js"></script>
     <link rel="stylesheet" href="./Frontend/css/toast.css">
 </head>
-<style>
-    .bgimg-1 {
-        background-image: url('./Frontend/imgs/fpsw.jpg');
-    }
-</style>
+
 <body>
     <div class="toast-container">
         <ul class="notifications"></ul>
     </div>
     <?php require __DIR__ . '/../includes/navbar.php';?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
-        <div class="w3-display-left w3-text-white" style="padding:48px">
+        <div class="w3-display-left w3-text-white padding48">
             <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-">Reset your password</span><br>
             <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Login</span><br>
             <span class="w3-large w3-animate-bottom">Please, insert your email to reset your password.</span>

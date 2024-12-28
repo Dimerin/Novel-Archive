@@ -11,6 +11,7 @@
         <link rel="stylesheet" href="./Frontend/css/main.css">
         <link rel="stylesheet" href="./Frontend/css/toast.css">
         <link rel="stylesheet" href="./Frontend/css/book.css">
+        <link rel="stylesheet" href="./Frontend/css/dashboard.css">
         <script src="./Frontend/js/menu.js"></script>
         <script src="./Frontend/js/logout.js"></script>
         <script src="./Frontend/js/upload_file.js"></script>
@@ -19,12 +20,7 @@
         <?php else : ?>
             <script src="./Frontend/js/dashboard_user.js"></script>
         <?php endif; ?>
-        <style>
-                .bgimg-1 {
-                    background-image: url('./Frontend/imgs/dash.jpg');
-                }
-            
-        </style>
+
     </head>
 
 <body>

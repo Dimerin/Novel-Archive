@@ -736,4 +736,36 @@ document.addEventListener('DOMContentLoaded', function() {
             dashboard.loadCatalogueContent();
         });
     dashboard.loadCatalogueContent();
+        
+    // Aggiungi event listener per il logout
+    const logoutBtn = document.getElementById('log2');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            logoutUser();
+        });
+    }
+    const logoutBtn1 = document.getElementById('log1');
+    if (logoutBtn1) {
+        logoutBtn1.addEventListener('click', function(event) {
+            event.preventDefault();
+            logoutUser();
+        });
+    }
+
+    // Aggiungi event listener per chiudere la sidebar
+    const catalogueLinkMobile = document.getElementById('catalogueLink-mobile');
+    if (catalogueLinkMobile) {
+        catalogueLinkMobile.addEventListener('click', w3_close);
+    }
+
+    const uploadFileLinkMobile = document.getElementById('uploadFileLink-mobile');
+    if (uploadFileLinkMobile) {
+        uploadFileLinkMobile.addEventListener('click', w3_close);
+    }
+
+    const adminPageLinkMobile = document.getElementById('adminPageLink-mobile');
+    if (adminPageLinkMobile) {
+        adminPageLinkMobile.addEventListener('click', w3_close);
+    }
 });

@@ -46,7 +46,7 @@
                         if ($_SESSION['role'] === 'admin') {
                             echo '<a href="#" class="w3-bar-item w3-button" id="adminPageLink"><i class="fa fa-users fa-fw" aria-hidden="true"></i> MANAGE USERS</a>';
                         }
-                        echo '<a href="#" class="w3-bar-item w3-button" onclick="logoutUser()"><i class="fa fa-sign-out fa-fw"></i> LOGOUT</a>';
+                        echo '<a href="#" id="log2" class="w3-bar-item w3-button"><i class="fa fa-sign-out fa-fw"></i> LOGOUT</a>';
                     break;
                     case 'login':
                             echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>
@@ -103,12 +103,12 @@
                         break;
                 }
                 echo '</b></a>
-                      <a href="#" onclick="w3_close()" class="w3-bar-item w3-button" id="catalogueLink-mobile"><i class="fa fa-th-list fa-fw"></i> CATALOGUE</a>
-                      <a href="#" onclick="w3_close()" class="w3-bar-item w3-button" id="uploadFileLink-mobile"><i class="fa fa-upload fa-fw"></i> UPLOAD NOVEL</a>';
+                      <a href="#" class="w3-bar-item w3-button" id="catalogueLink-mobile"><i class="fa fa-th-list fa-fw"></i> CATALOGUE</a>
+                      <a href="#" class="w3-bar-item w3-button" id="uploadFileLink-mobile"><i class="fa fa-upload fa-fw"></i> UPLOAD NOVEL</a>';
                 if ($_SESSION['role'] === 'admin') {
-                    echo '<a href="#" onclick="w3_close()" class="w3-bar-item w3-button" id="adminPageLink-mobile"><i class="fa fa-users fa-fw" aria-hidden="true"></i> MANAGE USERS</a>';
+                    echo '<a href="#" class="w3-bar-item w3-button" id="adminPageLink-mobile"><i class="fa fa-users fa-fw" aria-hidden="true"></i> MANAGE USERS</a>';
                 }
-                echo '<a href="#" class="w3-bar-item w3-button" onclick="logoutUser()"><i class="fa fa-sign-out fa-fw"></i> LOGOUT</a>';
+                echo '<a href="#" id = "log1"class="w3-bar-item w3-button" ><i class="fa fa-sign-out fa-fw"></i> LOGOUT</a>';
             break;
             case 'login':
                     echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>

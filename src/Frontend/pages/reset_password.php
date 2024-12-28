@@ -11,19 +11,16 @@
     <link rel="stylesheet" href="./Frontend/css/main.css">
     <script src="./Frontend/js/reset_password.js"></script>
     <link rel="stylesheet" href="./Frontend/css/toast.css">
+    <link rel="stylesheet" href="./Frontend/css/reset_password.css">
 </head>
-<style>
-    .bgimg-1 {
-        background-image: url('./Frontend/imgs/reset_password.jpg');
-    }
-</style>
+
 <body>
     <div class="toast-container">
         <ul class="notifications"></ul>
     </div>
     <?php require __DIR__ . '/../includes/navbar.php';?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
-    <div class="w3-display-left w3-text-white" id="ResetPswContentId" style="padding:48px">
+    <div class="w3-display-left w3-text-white padding48" id="ResetPswContentId">
     
     </div>
     </header>

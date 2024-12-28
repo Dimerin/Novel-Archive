@@ -4,25 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="./Frontend/imgs/icon.ico">
+    <link rel="stylesheet" href="./Frontend/css/404.css">
     <title>404 Not Found</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            text-align: center;
-        }
-        video {
-            max-width: 100%;
-            height: auto;
-        }
-    </style>
 </head>
 <body>
     <div class="container">

@@ -9,17 +9,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./Frontend/css/main.css">
-    <style>
-    
-    .bgimg-1 {
-        background-image: url('./Frontend/imgs/confirmation.jpg');
-    }
-    </style>
+    <link rel="stylesheet" href="./Frontend/css/verify_user.css">
 </head>
 <body>
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
-    <div class="w3-display-left w3-text-white" id="confirmationContentId" style="padding:48px">
+    <div class="w3-display-left w3-text-white padding48" id="confirmationContentId">
     </div>
     </header>
     <script src="./Frontend/js/verify_user.js"></script>

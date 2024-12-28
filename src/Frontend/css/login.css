@@ -1,0 +1,9 @@
+/* Stile per il contenitore del testo di login */
+.padding48 {
+    padding: 48px;
+}
+
+/* Stile per il background dell'header */
+.bgimg-1 {
+    background-image: url('../imgs/login.jpg');
+}
