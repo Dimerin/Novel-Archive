@@ -14,7 +14,11 @@
         <script src="./Frontend/js/menu.js"></script>
         <script src="./Frontend/js/logout.js"></script>
         <script src="./Frontend/js/upload_file.js"></script>
-        <script src="./Frontend/js/dashboard.js"></script>
+        <?php if ($_SESSION['role'] == 'admin') : ?>
+            <script src="./Frontend/js/dashboard_admin.js"></script>
+        <?php else : ?>
+            <script src="./Frontend/js/dashboard_user.js"></script>
+        <?php endif; ?>
         <style>
                 .bgimg-1 {
                     background-image: url('./Frontend/imgs/dash.jpg');

@@ -94,11 +94,13 @@ class UserController
         if($this->token_service->storeToken($token, $email) == false) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
         }
+        $htmlTemplate = file_get_contents(__DIR__ . '/../utils/confirmationEmail.html');
 
+        // Replace placeholder with the actual link
+        $actionLink = URL_REGISTER_PAGE."?email=".$email."&token=".$token;
+        $message = str_replace('{{ACTION_LINK}}', $actionLink, $htmlTemplate);
         // Send an email with the OTP
-        $to = $email;
-        $subject = 'Verify your email address';
-        $message = "link for Otp: ".URL_REGISTER_PAGE."?email=".$email."&token=".$token;
+        $subject = 'Verify your email address for Novel Archive';
         
         $this->postman->send($email, $subject, $message);
 
@@ -126,7 +128,7 @@ class UserController
         
         // get the token from the database
         if($this->token_service->checkToken($receive_token, $email, 'register') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid Token.'], 401);
         }
 
         // Update the user's status to verified
@@ -141,7 +143,7 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
 
-        return $this->sendResponse(['status' => 'success', 'message' => 'User verificated successfully.'], 201);
+        return $this->sendResponse(['status' => 'success', 'message' => 'User verified successfully.'], 201);
     }
 
     public function forgotPassword()
@@ -179,14 +181,17 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
         
-        // Send email with token
-        $to = $email;
-        $subject = 'Password Reset Request';
-        $message = "Your OTP for password reset:".URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
-    
-        $this->postman->send($to, $subject, $message);
-    
-        return $this->sendResponse(['status' => 'success', 'message' => 'OTP sent to your email.'], 200);
+        $htmlTemplate = file_get_contents(__DIR__ . '/../utils/resetEmail.html');
+
+        // Replace placeholder with the actual link
+        $actionLink = URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
+        $message = str_replace('{{ACTION_LINK}}', $actionLink, $htmlTemplate);
+        // Send an email with the OTP
+        $subject = 'Reset your password account for Novel Archive';
+        
+        $this->postman->send($email, $subject, $message);
+        // Send email with token  
+        return $this->sendResponse(['status' => 'success', 'message' => 'An email has been sent to reset your password.'], 200);
     }
     
     public function resetPassword()
@@ -217,7 +222,7 @@ class UserController
     
         // Check if the token is valid
         if ($this->token_service->checkToken($receive_token, $email, 'reset') == false) {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid OTP.'], 401);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Token expired, make a new request.'], 401);
         }
 
         // Check if the user exists
