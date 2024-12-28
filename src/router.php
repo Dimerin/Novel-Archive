@@ -163,6 +163,12 @@ class Router
                     'cookie_samesite' => 'Lax',
                 ]
             );
+            
+            // Force XSS browser protection if present
+            header("X-XSS-Protection: 1; mode=block");
+            // Content-Security Policy
+            header("Content-Security-Policy: default-src 'self' https://cdnjs.cloudflare.com  https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://fonts.googleapis.com https://www.w3schools.com; script-src 'self' 'unsafe-inline' https://apis.google.com  ; media-src 'self' https://favicon.ico; frame-ancestors 'none'");
+
         }
     }
 
