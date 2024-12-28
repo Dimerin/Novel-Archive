@@ -161,8 +161,13 @@ class Router
                     'cookie_httponly' => true,
                     'cookie_secure' => true, // Solo su HTTPS
                     'cookie_samesite' => 'Lax',
+                    
                 ]
             );
+            // Anti-CTRF token creation
+            if (!isset($_SESSION['csrf_token'])) {
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            }
             
             // Force XSS browser protection if present
             header("X-XSS-Protection: 1; mode=block");

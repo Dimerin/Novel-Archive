@@ -58,7 +58,7 @@ class UserController
         if($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
-        if(!isset($_POST['username']) || !isset($_POST['email']) || !isset($_POST['password'])) {
+        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['username']) || !isset($_POST['email']) || !isset($_POST['password'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         
@@ -151,7 +151,7 @@ class UserController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
-        if (!isset($_POST['email'])) {
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['email'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Email is required.'], 400);
         }
     
@@ -199,7 +199,7 @@ class UserController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
-        if (!isset($_POST['token']) || !isset($_POST['email']) ||
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['token']) || !isset($_POST['email']) ||
             !isset($_POST['new_password']) || !isset($_POST['conf_new_password'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
@@ -267,7 +267,7 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
-        if (!isset($_POST['email']) || !isset($_POST['password'])) {
+        if ( !isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['email']) || !isset($_POST['password'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
@@ -391,7 +391,7 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
-        if (!isset($_POST['id']) || !isset($_POST['new_role']) || !isset($_POST['actual_role'])) {
+        if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['id']) || !isset($_POST['new_role']) || !isset($_POST['actual_role'])) {
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 

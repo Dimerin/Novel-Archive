@@ -27,6 +27,7 @@
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Registration</span><br>
         <span class="w3-large w3-animate-bottom">Insert your credentials to create your account.</span>
         <form id="registerForm" class="w3-animate-bottom">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="text" class="w3-input w3-border" name="username" placeholder="Username" required><br>
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
             <input type="password"  class="w3-input w3-border" name="password" placeholder="Password" required><br>

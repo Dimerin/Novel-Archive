@@ -26,6 +26,7 @@
             <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Login</span><br>
             <span class="w3-large w3-animate-bottom">Please, insert your email to reset your password.</span>
         <form id="forgotPwdForm">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="email" class="w3-input w3-border w3-animate-bottom" name="email" placeholder="Email" required><br>
             <button type="submit" class="w3-button w3-black w3-animate-bottom"><i class="fa fa-envelope"></i> Send Reset Link</button>
         </form>

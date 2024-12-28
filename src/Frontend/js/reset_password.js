@@ -44,6 +44,12 @@ class ResetPswPage {
         form.id = 'resetpswForm';
         form.className = 'w3-animate-bottom';
 
+        const csrfTokenInput = document.createElement('input');
+        csrfTokenInput.type = 'hidden';
+        csrfTokenInput.name = 'csrf_token';
+        csrfTokenInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        form.appendChild(csrfTokenInput);
+
         const emailInput = document.createElement('input');
         emailInput.type = 'hidden';
         emailInput.name = 'email';

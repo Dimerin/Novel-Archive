@@ -26,6 +26,7 @@
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Login</span><br>
         <span class="w3-large w3-animate-bottom">Insert you email and password to access.</span>
         <form id="loginForm" class="w3-animate-bottom">
+            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
             <input type="password"  class="w3-input w3-border" name="password" placeholder="Password" required><br>
             <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-sign-in"></i> LOGIN</button>
