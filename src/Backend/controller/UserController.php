@@ -3,6 +3,8 @@ require_once __DIR__ . '/../utils/dbManager.php';
 require_once __DIR__ . '/../utils/PostMan.php';
 require_once __DIR__ . '/../utils/TokenService.php';
 require_once __DIR__ . '/../utils/UserService.php';
+require_once __DIR__.'/../../vendor/autoload.php';
+use ZxcvbnPhp\Zxcvbn;
 
 const ACTIVE = 1;
 const INACTIVE = 0;
@@ -24,12 +26,12 @@ class UserController
         $this->user_service = new UserService($this->conn);
     }
     
-    private function checkPasswordFormat($password)
+    private function checkPasswordFormat($password, $userData = [])
     {
         // Check Password length and format
-        // Password must be at least 16 characters long and contain at least one uppercase letter, one lowercase letter, and one number
-        if (strlen($password) < 16) {
-            return 'Password must be at least 16 characters long.';
+        // Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number
+        if (strlen($password) < 8) {
+            return 'Password must be at least 8 characters long.';
         } elseif (!preg_match('/[A-Z]/', $password)) {
             return 'Password must contain at least one uppercase letter.';
         } elseif (!preg_match('/[a-z]/', $password)) {
@@ -37,6 +39,17 @@ class UserController
         } elseif (!preg_match('/[0-9]/', $password)) {
             return 'Password must contain at least one number.';
         }
+        $zxcvbn = new Zxcvbn();
+        $sec_level = $zxcvbn->passwordStrength($password, $userData);
+        $feedback = '';
+        if (isset($sec_level['feedback']['suggestions'][0]))
+            $feedback = $sec_level['feedback']['suggestions'][0];
+        if ($sec_level['score'] < 2)
+            $feedback = $sec_level['feedback']['warning'] . '. ' . $feedback;
+        
+        if($sec_level['score'] < 4)
+            return 'Password is too weak!' . $feedback;
+
         return false;
     }
 
