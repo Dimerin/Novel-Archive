@@ -22,3 +22,17 @@
         document.getElementById("mySidebar").style.display = "none";
         document.getElementById("myOverlay").style.display = "none";
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aggiungi event listener per aprire la sidebar
+        const openSidebarBtn = document.querySelector('.w3-bar-item.w3-button.w3-right.w3-hide-large');
+        if (openSidebarBtn) {
+            openSidebarBtn.addEventListener('click', w3_open);
+        }
+    
+        // Aggiungi event listener per chiudere la sidebar
+        const closeSidebarBtn = document.querySelector('.w3-bar-item.w3-button.w3-large.w3-padding-16');
+        if (closeSidebarBtn) {
+            closeSidebarBtn.addEventListener('click', w3_close);
+        }
+    });

@@ -17,5 +17,26 @@
             }
         }
     }
-  
+
+    // Aggiungi event listener per il tasto freccia in basso
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aggiungi event listener per tutte le icone di scroll
+        const scrollArrows = document.querySelectorAll('.scroll-arrows .fa-arrow-down');
+        scrollArrows.forEach(function(scrollArrow) {
+            scrollArrow.addEventListener('click', function() {
+                scrollToSection('down');
+            });
+        });
+    });
+
+    // Aggiungi event listener per il tasto freccia in alto
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aggiungi event listener per tutte le icone di scroll
+        const scrollArrows = document.querySelectorAll('.scroll-arrows .fa-arrow-up');
+        scrollArrows.forEach(function(scrollArrow) {
+            scrollArrow.addEventListener('click', function() {
+                scrollToSection('up');
+            });
+        });
+    });
     

@@ -3,11 +3,13 @@
     $current_page = Router::getInstance()->getCurrentPage();
 
 ?>
-
+<head>
+<link rel="stylesheet" href="./Frontend/css/navbar.css">
+</head>
 <div class="w3-top">
     <div class="w3-bar w3-black w3-card w3-animate-bottom" id="myNavbar">
         <a href="/" class="w3-bar-item w3-button w3-wide" id="HomeLink">
-            <img src="./Frontend/imgs/icon.png" alt="Icon" style="width:30px; height:30px; vertical-align:middle; margin-right:5px;">
+            <img src="./Frontend/imgs/icon.png" alt="Icon">
             Novel Archive
         </a>
         <div class="w3-right w3-hide-medium w3-hide-small">
@@ -26,16 +28,16 @@
                               <a href="#" class="w3-button w3-bar-item" id="role"><b>';
                         switch ($_SESSION['role']) {
                             case 'free':
-                                echo '<span style="color: lightgreen;">Free Plan</span>';
+                                echo '<span class="free">Free Plan</span>';
                                 break;
                             case 'pro':
-                                echo '<span style="color: yellow;">Pro Plan</span>';
+                                echo '<span class="pro">Pro Plan</span>';
                                 break;
                             case 'admin':
-                                echo '<span style="color: red;">Admin</span>';
+                                echo '<span class="admin">Admin</span>';
                                 break;
                             default:
-                                echo '<span style="color: black;">Unknown Role</span>';
+                                echo '<span >Unknown Role</span>';
                                 break;
                         }
                         echo '</b></a>
@@ -66,13 +68,13 @@
             
             ?>
         </div>
-        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large" onclick="w3_open()">
+        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large">
             <i class="fa fa-bars"></i>
         </a>
     </div>
 </div>
-<nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-large" style="display:none" id="mySidebar">
-<a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
+<nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-large" id="mySidebar">
+<a href="javascript:void(0)" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
     <?php
         switch($current_page) {
             case 'homepage':
@@ -88,16 +90,16 @@
                       <a href="#" class="w3-button w3-bar-item" id="role"><b>';
                 switch ($_SESSION['role']) {
                     case 'free':
-                        echo '<span style="color: lightgreen;">Free Plan</span>';
+                        echo '<span class="free">Free Plan</span>';
                         break;
                     case 'pro':
-                        echo '<span style="color: yellow;">Pro Plan</span>';
+                        echo '<span class="pro">Pro Plan</span>';
                         break;
                     case 'admin':
-                        echo '<span style="color: red;">Admin User</span>';
+                        echo '<span class="admin">Admin User</span>';
                         break;
                     default:
-                        echo '<span style="color: black;">Unknown Role</span>';
+                        echo '<span>Unknown Role</span>';
                         break;
                 }
                 echo '</b></a>

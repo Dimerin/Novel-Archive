@@ -9,34 +9,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./Frontend/css/main.css">
-    <style>
-    
-    .bgimg-1 {
-        background-image: url('./Frontend/imgs/bg.jpg');
-    }
-    .bgimg-2 {
-        background-image: url('./Frontend/imgs/pricing.jpg');
-        color: white;
-    }
-    .bgimg-3 {       
-        background-image: url('./Frontend/imgs/team.jpg');
-    }  
-    #home .scroll-arrows .fa {
-        color: white;
-    }
-    @media (max-width: 768px) {
-        .scroll-arrows {
-            display: none;
-        }
-    }
-   
-</style>
-
+    <link rel="stylesheet" href="./Frontend/css/homepage.css">
 </head>
 <body>
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
-    <div class="w3-display-left w3-text-white" style="padding:48px">
+    <div class="w3-display-left w3-text-white padding48">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-animate-delay-1">Novel Archive</span><br>
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-animate-delay-1">Novel Archive</span><br>
         <span class="w3-xlarge w3-animate-bottom w3-animate-delay-2">A place to inspire and be inspired</span>
@@ -46,14 +24,14 @@
         </p>
     </div>
     <div class="scroll-arrows">
-        <i class="fa fa-arrow-down" onclick="scrollToSection('down')"></i>
+        <i class="fa fa-arrow-down" ></i>
     </div>
   </header>
     <!-- Pricing Section -->
-    <div class="w3-container w3-center bgimg-2" style="padding:128px 16px; position: relative;" id="pricing">
+    <div class="w3-container w3-center bgimg-2" id="pricing">
         <h3>PRICING</h3>
         <p class="w3-large">Choose a pricing plan that fits your needs.</p>
-        <div class="w3-row-padding w3-center" style="margin-top:46px">
+        <div class="w3-row-padding w3-center margin-top-46">
             <div class="w3-half w3-padding-small">
                 <ul class="w3-ul w3-white w3-hover-shadow w3-margin">
                     <li class="w3-khaki w3-xlarge w3-padding-32">Free</li>
@@ -86,18 +64,18 @@
             </div>
         </div>
         <div class="scroll-arrows">
-            <i class="fa fa-arrow-up" onclick="scrollToSection('up')"></i>
-            <i class="fa fa-arrow-down" onclick="scrollToSection('down')"></i>
+            <i class="fa fa-arrow-up" ></i>
+            <i class="fa fa-arrow-down" ></i>
         </div>
     </div>
 <!-- Team Section -->
-<div class="w3-container bgimg-3" style="padding:128px 16px; position: relative;" id="team">
+<div class="w3-container bgimg-3" id="team">
         <h3 class="w3-center">THE TEAM</h3>
         <p class="w3-center w3-large">The ones who developed this project</p>
-        <div class="w3-row-padding w3-grayscale" style="margin-top:64px">
+        <div class="w3-row-padding w3-grayscale margin-top-64">
             <div class="w3-third w3-margin-bottom w3-center">
                 <div class="w3-card">
-                    <img src="./Frontend/imgs/tommaso.png" alt="Tommaso" style="width:60%">
+                    <img src="./Frontend/imgs/tommaso.png" alt="Tommaso">
                     <div class="w3-container">
                         <h3 class="w3-center">Tommaso Califano</h3>
                         <p class="w3-opacity w3-center">Computer engineering student</p>
@@ -106,7 +84,7 @@
             </div>
             <div class="w3-third w3-margin-bottom w3-center">
                 <div class="w3-card">
-                    <img src="./Frontend/imgs/nicola.png" alt="Nicola" style="width:60%">
+                    <img src="./Frontend/imgs/nicola.png" alt="Nicola">
                     <div class="w3-container">
                         <h3 class="w3-center">Nicola Ramacciotti</h3>
                         <p class="w3-opacity w3-center">Computer engineering student</p>
@@ -115,7 +93,7 @@
             </div>
             <div class="w3-third w3-margin-bottom w3-center">
                 <div class="w3-card">
-                    <img src="./Frontend/imgs/gabriele.png" alt="Gabriele" style="width:60%">
+                    <img src="./Frontend/imgs/gabriele.png" alt="Gabriele">
                     <div class="w3-container">
                         <h3 class="w3-center">Gabriele Suma</h3>
                         <p class="w3-opacity w3-center">Computer engineering student</p>
@@ -124,15 +102,15 @@
             </div>
         </div>
         <div class="scroll-arrows">
-            <i class="fa fa-arrow-up" onclick="scrollToSection('up')"></i>
-            <i class="fa fa-arrow-down" onclick="scrollToSection('down')"></i>
+            <i class="fa fa-arrow-up" ></i>
+            <i class="fa fa-arrow-down" ></i>
         </div>
     </div>
 <!-- Footer -->
 <footer class="w3-center w3-black w3-padding-64" id="footer">
   <a href="#home" class="w3-button w3-light-grey"><i class="fa fa-arrow-up w3-margin-right"></i>To the top</a>
   <div class="w3-xlarge w3-section">
-    <img src="./Frontend/imgs/cherubino_white.png" alt="cherubino" style="width:100px; height:100px; vertical-align:middle; margin-right:5px;">
+    <img src="./Frontend/imgs/cherubino_white.png" alt="cherubino">
   </div>
   <p>Powered by <a href="https://www.ing.unipi.it/it/" title="DII" target="_blank" class="w3-hover-text-green">Università di Pisa</a></p>
 </footer>
