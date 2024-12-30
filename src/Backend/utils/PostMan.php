@@ -46,7 +46,7 @@ class PostMan {
             $this->postman->send();
             //echo 'Message has been sent';
         } catch (Exception $e) {
-            echo "Message could not be sent. Mailer Error: {$this->postman->ErrorInfo}";
+            throw new Exception("Message could not be sent. Mailer Error: {$this->postman->ErrorInfo}");
         }
     }
 }

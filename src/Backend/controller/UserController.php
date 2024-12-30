@@ -111,8 +111,20 @@ class UserController
         $message = str_replace('{{ACTION_LINK}}', $actionLink, $htmlTemplate);
         // Send an email with the OTP
         $subject = 'Verify your email address for Novel Archive';
-        
-        $this->postman->send($email, $subject, $message);
+
+        try {
+            $this->postman->send($email, $subject, $message);
+        } catch (Exception $e) {
+            $this->logger->error('register', 'Failed to send email.', 500);
+            $stmt = $this->conn->prepare("DELETE FROM users WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->close();
+            while($this->token_service->deleteToken($email, 'register') == false) {
+                $this->logger->error('register', 'Failed to remove register token after failed email send', 500);
+            }
+            return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
+        }
 
         $stmt->close();
         $this->logger->info('register', 'User registered successfully.', 201);
@@ -215,7 +227,15 @@ class UserController
         // Send an email with the OTP
         $subject = 'Reset your password account for Novel Archive';
         
-        $this->postman->send($email, $subject, $message);
+        try {
+            $this->postman->send($email, $subject, $message);
+        } catch (Exception $e) {
+            $stmt = $this->conn->prepare("DELETE FROM tokens WHERE email = ? AND type = 'reset'");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->close();
+            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to initiate password reset.'], 500);
+        }
         $this->logger->info('forgotPassword', 'Password reset email sent.', 200);
         // Send email with token  
         return $this->sendResponse(['status' => 'success', 'message' => 'An email has been sent to reset your password.'], 200);
