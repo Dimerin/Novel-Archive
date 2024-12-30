@@ -3,6 +3,7 @@ require_once __DIR__ . '/../utils/dbManager.php';
 require_once __DIR__ . '/../utils/PostMan.php';
 require_once __DIR__ . '/../utils/TokenService.php';
 require_once __DIR__ . '/../utils/UserService.php';
+require_once __DIR__ . '/../utils/Logger.php';
 require_once __DIR__.'/../../vendor/autoload.php';
 use ZxcvbnPhp\Zxcvbn;
 
@@ -17,6 +18,7 @@ class UserController
     private $conn, $postman;
     private $token_service, $user_service;
     private $psw_rst_page_url, $register_page_url;
+    private $logger;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class UserController
         $this->postman = new PostMan();
         $this->token_service = new TokenService($this->conn);
         $this->user_service = new UserService($this->conn);
+        $this->logger = Logger::getInstance();
     }
     
     private function checkPasswordFormat($password, $userData = [])
@@ -56,9 +59,11 @@ class UserController
     public function register()
     {
         if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->logger->error('register', 'Invalid request method.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['username']) || !isset($_POST['email']) || !isset($_POST['password'])) {
+            $this->logger->error('register', 'Invalid request parameters.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         
@@ -68,18 +73,22 @@ class UserController
 
         // Check the email format
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->logger->error('register', 'Invalid email format.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
         }
 
         // Check the password format
         $passwordError = $this->checkPasswordFormat($password);
         if ($passwordError !== false) {
+            $this->logger->error('register', 'Weak password.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
         }
         
         // Check if the user already exists
-        if($this->user_service->checkUserExistence($email))
+        if($this->user_service->checkUserExistence($email)) {
+            $this->logger->error('register', 'User already exists.', 409);
             return $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
+        }
 
         // Generate token
         $token = $this->token_service->generateToken(100);
@@ -92,6 +101,7 @@ class UserController
         
         // Store the token in the tokens table
         if($this->token_service->storeToken($token, $email) == false) {
+            $this->logger->error('register', 'Failed to store token.', 500);
             return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
         }
         $htmlTemplate = file_get_contents(__DIR__ . '/../utils/confirmationEmail.html');
@@ -105,15 +115,18 @@ class UserController
         $this->postman->send($email, $subject, $message);
 
         $stmt->close();
+        $this->logger->info('register', 'User registered successfully.', 201);
         return $this->sendResponse(['status' => 'success', 'message' => 'User registered successfully.'], 201);
     }
 
     public function verifyUser()
     {
         if($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            $this->logger->error('verifyUser', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         if(!isset($_GET['token']) || !isset($_GET['email']) ) {
+            $this->logger->error('verifyUser', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
@@ -122,12 +135,14 @@ class UserController
         
         // Check the email format
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->logger->error('verifyUser', 'Invalid email format.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
         }
 
         
         // get the token from the database
         if($this->token_service->checkToken($receive_token, $email, 'register') == false) {
+            $this->logger->error('verifyUser', 'Invalid Token.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid Token.'], 401);
         }
 
@@ -135,42 +150,52 @@ class UserController
         try{
             $this->user_service->setUserStatus($email, ACTIVE);
         } catch (Exception $e) {
+            $this->logger->error('verifyUser', 'User Staus not updated', 400);
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
             
         // Delete the token from the tokens table
         if($this->token_service->deleteToken($email, 'register') == false) {
+            $this->logger->error('verifyUser', 'Failed to delete token', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
-
+        $this->logger->info('verifyUser', 'User verified successfully.', 201);
         return $this->sendResponse(['status' => 'success', 'message' => 'User verified successfully.'], 201);
     }
 
     public function forgotPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->logger->error('forgotPassword', 'Invalid request method.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['email'])) {
+            $this->logger->error('forgotPassword', 'Invalid request parameters.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Email is required.'], 400);
         }
     
         $email = $_POST['email'];
         // Check the email format
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->logger->error('forgotPassword', 'Invalid email format.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
         }
         
     
         // Check if the user exists
         if($this->user_service->checkUserExistence($email) == false)
+        {
+            $this->logger->warning('forgotPassword', 'User not Found', 409);
             return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 409);
+        }
+        
     
         // Generate token
         $token = $this->token_service->generateToken(100);
 
         // Store the token in the tokens table
         if ($this->token_service->storeToken($token, $email, 'reset') == false) {
+            $this->logger->error('forgotPassword', 'Failed to initiate password reset.', 500);
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to initiate password reset.'], 500);
         }
 
@@ -178,6 +203,7 @@ class UserController
         try {
             $this->user_service->setUserStatus($email, INACTIVE);
         } catch (Exception $e) {
+            $this->logger->error('forgotPassword', 'Failed to initiate password reset.', 500);
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
         
@@ -190,6 +216,7 @@ class UserController
         $subject = 'Reset your password account for Novel Archive';
         
         $this->postman->send($email, $subject, $message);
+        $this->logger->info('forgotPassword', 'Password reset email sent.', 200);
         // Send email with token  
         return $this->sendResponse(['status' => 'success', 'message' => 'An email has been sent to reset your password.'], 200);
     }
@@ -197,10 +224,12 @@ class UserController
     public function resetPassword()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->logger->error('resetPassword', 'Invalid request method.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['token']) || !isset($_POST['email']) ||
             !isset($_POST['new_password']) || !isset($_POST['conf_new_password'])) {
+            $this->logger->error('resetPassword', 'Invalid request parameters.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
     
@@ -211,26 +240,32 @@ class UserController
 
         // Check the email format
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->logger->error('resetPassword', 'Invalid email format.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
         }
         
         // Check the password format
         $passwordError = $this->checkPasswordFormat($new_password);
         if ($passwordError !== false) {
+            $this->logger->error('resetPassword', 'Weak password.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
         }
     
         // Check if the token is valid
         if ($this->token_service->checkToken($receive_token, $email, 'reset') == false) {
+            $this->logger->error('resetPassword', 'Token expired.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Token expired, make a new request.'], 401);
         }
 
         // Check if the user exists
-        if ($this->user_service->checkUserExistence($email) == false)
+        if ($this->user_service->checkUserExistence($email) == false) {
+            $this->logger->error('resetPassword', 'User not found.', 404);
             return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 404);
+        }
 
         // Check if the new password and confirm new password match
         if ($new_password !== $conf_new_password) {
+            $this->logger->error('resetPassword', 'Passwords do not match.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Passwords do not match.'], 400);
         }
         
@@ -244,11 +279,13 @@ class UserController
         $stmt->close();
  
         if ($executed == false) {
+            $this->logger->error('resetPassword', 'Password reset failed.', 500);
             return $this->sendResponse(['status' => 'error', 'message' => 'Password reset failed.'], 500);
         }
         
         // Delete the token from the tokens table
         if($this->token_service->deleteToken($email, 'reset') == false) {
+            $this->logger->error('resetPassword', 'Failed to delete token.', 500);
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
         
@@ -256,18 +293,22 @@ class UserController
         try {
             $this->user_service->setUserStatus($email, ACTIVE);
         } catch (Exception $e) {
+            $this->logger->error('resetPassword', 'Failed to enable user.', 500);
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
+        $this->logger->info('resetPassword', 'Password reset successfully.', 200);
        return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
     }  
 
     public function login()
     {   
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->logger->error('login', 'Invalid request method.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
         if ( !isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['email']) || !isset($_POST['password'])) {
+            $this->logger->error('login', 'Invalid request parameters.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
@@ -276,6 +317,7 @@ class UserController
 
         // Check the email format
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->logger->error('login', 'Invalid email format.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
         }
 
@@ -287,6 +329,7 @@ class UserController
 
         if ($stmt->num_rows == 0) {
             $stmt->close();
+            $this->logger->error('login', 'Invalid email or password.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
 
         }
@@ -296,6 +339,7 @@ class UserController
         $stmt->close();
 
         if ($status == INACTIVE) {
+            $this->logger->error('login', 'User is inactive.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'User is inactive.'], 401);
         }
         //Check if the user is timeouted
@@ -307,8 +351,10 @@ class UserController
                 $this->user_service->resetAttempts($email);
                 $timeouted = false;
             }
-            else
+            else {
+                $this->logger->error('login', 'User is timeouted.', 401);
                 return $this->sendResponse(['status' => 'error', 'message' => 'User is timeouted.'], 401);
+            }
         }
 
         // Verifica la password
@@ -319,10 +365,12 @@ class UserController
             $_SESSION['role'] = $role;
             $_SESSION['user_id'] = $id;
 
+            $this->logger->info('login', 'Login successful.', 200);
             return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
 
         }
         $this->user_service->updateLoginAttempts($email, $first_attempt, $timeouted, $attempts);
+        $this->logger->error('login', 'Invalid email or password.', 401);
         return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
     }
     public function logout()
@@ -331,8 +379,10 @@ class UserController
             // Destroy the session
             session_unset();
             session_destroy();
+            $this->logger->info('logout', 'Logout successful.', 200);
             return $this->sendResponse(['status' => 'success', 'message' => 'Logout successful.'], 200);
         }
+        $this->logger->error('logout', 'Invalid request method.', 400);
         return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
     }
 
@@ -344,6 +394,7 @@ class UserController
         //}
 
         if ($_SERVER['REQUEST_METHOD']!== 'GET') {
+            $this->logger->error('showUsers', 'Invalid request method.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
@@ -375,7 +426,7 @@ class UserController
         }
 
         $stmt->close();
-
+        $this->logger->info('showUsers', 'Users retrieved successfully.', 200);
         return $this->sendResponse(['status' => 'success', 'data' => $users, 'last-page' => $isLastPage], 200);
 
     }
@@ -388,38 +439,46 @@ class UserController
         }*/
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->logger->error('changeUserRole', 'Invalid request method.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
         if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token'] || !isset($_POST['id']) || !isset($_POST['new_role']) || !isset($_POST['actual_role'])) {
+            $this->logger->error('changeUserRole', 'Invalid request parameters.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
         //$email = $_POST['email'];
         $id = $_POST['id'];
         if(!is_numeric($id)) {
+            $this->logger->error('changeUserRole', 'Invalid request parameters.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         $newRole = $_POST['new_role'];
         $actualRole = $_POST['actual_role'];
 
         if ($newRole !== 'free' && $newRole !== 'admin' && $newRole !== 'pro') {
+            $this->logger->error('changeUserRole', 'Invalid role.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid role.'], 400);
         }
 
         if ($actualRole !== 'free'&& $actualRole !== 'admin' && $actualRole !== 'pro') {
+            $this->logger->error('changeUserRole', 'Invalid role.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid role.'], 400);
         }
 
         if ($actualRole === 'admin') {
+            $this->logger->error('changeUserRole', 'Unauthorized.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
 
         if ( $actualRole ===  $newRole ){
+            $this->logger->error('changeUserRole', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
 
         if ( $newRole === 'admin' ){ // TODO: è utile?
+            $this->logger->error('changeUserRole', 'Unauthorized.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
 
@@ -430,6 +489,7 @@ class UserController
         //$stmt->close();
         
         if($stmt->num_rows == 0) {
+            $this->logger->error('changeUserRole', 'User not found.', 404);
             return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 404);
         }
         $stmt->bind_result($role);
@@ -437,14 +497,17 @@ class UserController
         $stmt->close();
 
         if($role === 'admin') {
+            $this->logger->error('changeUserRole', 'Unauthorized.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
 
         if($role === $newRole) {
+            $this->logger->error('changeUserRole', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         
         if($role !== $actualRole) {
+            $this->logger->error('changeUserRole', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
         
@@ -453,10 +516,12 @@ class UserController
 
         if ($stmt->execute()) {
             $stmt->close();
+            $this->logger->info('changeUserRole', 'Role changed successfully.', 200);
             return $this->sendResponse(['status' => 'success', 'message' => 'Role changed successfully.'], 200);
         }
 
         $stmt->close();
+        $this->logger->error('changeUserRole', 'Role change failed.', 500);
         return $this->sendResponse(['status' => 'error', 'message' => 'Role change failed.'], 500);   
     }
 

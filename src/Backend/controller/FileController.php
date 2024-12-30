@@ -1,24 +1,28 @@
 <?php
-
 require_once __DIR__ . '/../utils/dbManager.php';
+require_once __DIR__ . '/../utils/Logger.php';
 
 class FileController
 {
     private $conn;
+    private $logger;
 
     public function __construct()
     {
         $this->conn = dbManager::getInstance()->getConnection();
+        $this->logger = Logger::getInstance();
     }
 
     public function upload()
     {
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            $this->logger->error('upload', 'Metodo non consentito.', 405);
             return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
         }
 
         // Controlla se il tipo di upload non è specificato
         if (!isset($_POST['upload_type']) || !isset($_POST['novel_category']) || !is_string($_POST["novel_category"])) {
+            $this->logger->error('upload', 'Tipo di upload non specificato.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Tipo di upload non specificato.'], 400);
         }
         
@@ -40,11 +44,13 @@ class FileController
         }
 
         if(!in_array($filetype, ["txt","pdf"])){
+            $this->logger->error('upload', 'Tipo di upload non supportato.', 400);
             return $this->sendResponse(["status"=>"error", "message" => "Tipo di upload non supportato"]);
         }
         
         $novel_category = $_POST['novel_category'];
         if(!in_array($novel_category, ["free", "pro"])){
+            $this->logger->error('upload', 'Tipo di upload non supportato.', 400);
             return $this->sendResponse(["status"=>"error", "message" => "Tipo di upload non supportato"]);
         }
         $user_id = $_SESSION['user_id'];
@@ -53,6 +59,7 @@ class FileController
         $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
 
         if($userVisibility < $selectedVisibility){
+            $this->logger->error('upload', 'Non hai i permessi per caricare questo contenuto.', 403);
             return $this->sendResponse(['status' => 'error', 'message' => 'Non hai i permessi per caricare questo contenuto.'], 403);
         }
         
@@ -69,9 +76,11 @@ class FileController
         $stmt->bind_param("sssii", $title, $filetype, $filedata, $user_id, $selectedVisibility);
         if ($stmt->execute()) {
             $stmt->close();
+            $this->logger->info('upload', 'Testo caricato con successo.', 201);
             return $this->sendResponse(['status' => 'success', 'message' => 'Testo caricato con successo.'], 201);
         }
         $stmt->close();
+        $this->logger->error('upload', 'Caricamento del testo fallito.', 500);
         return $this->sendResponse(['status' => 'error', 'message' => 'Caricamento del testo fallito.'], 500);
     }
 
@@ -92,10 +101,10 @@ class FileController
         
     public function downloadFile()
     {
-        
         //FIXME: con questa funzione downloadFile chiunque entri in possesso del file_id può scaricare il file,
         // bisogna aggiungere un controllo per vedere se l'utente ha i permessi per scaricare il file
         if (!isset($_GET['file_id'])) {
+            $this->logger->error('downloadFile', 'ID del file non fornito.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'ID del file non fornito.'], 400);
         }
 
@@ -121,9 +130,11 @@ class FileController
         $stmt->close();
 
         if (!$title || !$filedata) {
+            $this->logger->error('downloadFile', 'File non trovato.', 404);
             return $this->sendResponse(['status' => 'error', 'message' => 'File non trovato.'], 404);
         }
 
+        $this->logger->info('downloadFile', 'File scaricato con successo.', 200);
         $response = [
             'status' => 'success',
             'title' => $title,
@@ -138,6 +149,7 @@ class FileController
     public function showFiles(){
         
         if( $_SERVER["REQUEST_METHOD"] != "GET" ){
+            $this->logger->error('showFiles', 'Metodo non consentito.', 405);
             return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
         }
 
@@ -189,6 +201,7 @@ class FileController
         }
 
         $stmt->close();
+        $this->logger->info('showFiles', 'Files retrieved successfully.', 200);
         return $this->sendResponse(['status'=> 'success','files'=> $files, 'last-page' => $isLastPage],200);
     }
 
