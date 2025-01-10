@@ -32,6 +32,5 @@
         </form>
         </div>
     </header>
-    <script src="../js/menu.js"></script>
 </body>
 </html>
