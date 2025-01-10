@@ -12,6 +12,7 @@
     <script src="./Frontend/js/reset_password.js"></script>
     <link rel="stylesheet" href="./Frontend/css/toast.css">
     <link rel="stylesheet" href="./Frontend/css/reset_password.css">
+    <script src="./Frontend/js/menu.js"></script>
 </head>
 
 <body>
@@ -24,6 +25,5 @@
     
     </div>
     </header>
-    <script src="../js/menu.js"></script>
 </body>
 </html>
