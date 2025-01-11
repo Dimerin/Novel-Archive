@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . '/../utils/dbManager.php';
 require_once __DIR__ . '/../utils/PostMan.php';
-require_once __DIR__ . '/../utils/TokenService.php';
-require_once __DIR__ . '/../utils/UserService.php';
+require_once __DIR__ . '/../service/TokenService.php';
+require_once __DIR__ . '/../service/UserService.php';
 require_once __DIR__ . '/../utils/Logger.php';
 require_once __DIR__.'/../../vendor/autoload.php';
 use ZxcvbnPhp\Zxcvbn;
