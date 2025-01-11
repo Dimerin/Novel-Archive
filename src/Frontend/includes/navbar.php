@@ -74,8 +74,8 @@
     </div>
 </div>
 <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-large" id="mySidebar">
-<a href="javascript:void(0)" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
-    <?php
+<a href="javascript:void(0)" class="w3-bar-item w3-button w3-large w3-padding-12" id="closeSidebarBtn">Close ×</a> 
+   <?php
         switch($current_page) {
             case 'homepage':
                 echo '<a href="/" class="w3-bar-item w3-button"><i class="fa fa-home"></i> HOME</a>

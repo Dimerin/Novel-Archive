@@ -115,6 +115,6 @@
   <p>Powered by <a href="https://www.ing.unipi.it/it/" title="DII" target="_blank" class="w3-hover-text-green">Università di Pisa</a></p>
 </footer>
     <script src="./Frontend/js/index.js"></script>
-    <script src="./Frontend/js/menu.js"></script>
+    <script src="./Frontend/js/navbar.js"></script>
 </body>
 </html>

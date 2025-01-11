@@ -13,7 +13,7 @@
     <script src="./Frontend/js/forgot_pwd.js"></script>
     <script src="./Frontend/js/toast.js"></script>
     <link rel="stylesheet" href="./Frontend/css/toast.css">
-    <script src="./Frontend/js/menu.js"></script>
+    <script src="./Frontend/js/navbar.js"></script>
 </head>
 
 <body>

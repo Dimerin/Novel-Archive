@@ -12,7 +12,7 @@
     <script src="./Frontend/js/reset_password.js"></script>
     <link rel="stylesheet" href="./Frontend/css/toast.css">
     <link rel="stylesheet" href="./Frontend/css/reset_password.css">
-    <script src="./Frontend/js/menu.js"></script>
+    <script src="./Frontend/js/navbar.js"></script>
 </head>
 
 <body>

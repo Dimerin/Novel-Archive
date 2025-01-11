@@ -23,7 +23,7 @@
        
   </div> 
   </header>
-  <script src="./Frontend/js/menu.js"></script>
+  <script src="./Frontend/js/navbar.js"></script>
   <script src="./Frontend/js/logout_timer.js"></script>
 </body>
 </html>

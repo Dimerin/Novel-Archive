@@ -12,7 +12,7 @@
         <link rel="stylesheet" href="./Frontend/css/toast.css">
         <link rel="stylesheet" href="./Frontend/css/book.css">
         <link rel="stylesheet" href="./Frontend/css/dashboard.css">
-        <script src="./Frontend/js/menu.js"></script>
+        <script src="./Frontend/js/navbar.js"></script>
         <script src="./Frontend/js/logout.js"></script>
         <script src="./Frontend/js/upload_file.js"></script>
         <?php if ($_SESSION['role'] == 'admin') : ?>

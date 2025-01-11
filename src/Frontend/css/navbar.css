@@ -27,3 +27,10 @@
 #role span.admin {
     color: red;
 }
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}

@@ -35,11 +35,25 @@ const createToast = (type, message) => {
   const text = message || defaultText;
   const toast = document.createElement("li");
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<div class="column">
-                         <i class="fa-solid ${icon}"></i>
-                         <span>${text}</span>
-                      </div>
-                      <i class="fa-solid fa-xmark" onclick="removeToast(this.parentElement)"></i>`;
+
+  const columnDiv = document.createElement("div");
+  columnDiv.className = "column";
+
+  const iconElement = document.createElement("i");
+  iconElement.className = `fa-solid ${icon}`;
+
+  const textSpan = document.createElement("span");
+  textSpan.textContent = text;
+
+  const closeIcon = document.createElement("i");
+  closeIcon.className = "fa-solid fa-xmark";
+  closeIcon.addEventListener('click', () => removeToast(toast));
+
+  columnDiv.appendChild(iconElement);
+  columnDiv.appendChild(textSpan);
+  toast.appendChild(columnDiv);
+  toast.appendChild(closeIcon);
+
   notifications.appendChild(toast);
   toast.timeoutId = setTimeout(() => removeToast(toast), toastDetails.timer);
 };
