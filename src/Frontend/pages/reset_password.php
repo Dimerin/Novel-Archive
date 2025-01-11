@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./Frontend/css/toast.css">
     <link rel="stylesheet" href="./Frontend/css/reset_password.css">
     <script src="./Frontend/js/navbar.js"></script>
+    <script src="./Frontend/js/toast.js"></script>
 </head>
 
 <body>
@@ -21,8 +22,8 @@
     </div>
     <?php require __DIR__ . '/../includes/navbar.php';?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
+    <input type="hidden" name="csrf" id="csrf" value="<?php echo $_SESSION['csrf_token']; ?>">
     <div class="w3-display-left w3-text-white padding48" id="ResetPswContentId">
-    
     </div>
     </header>
 </body>

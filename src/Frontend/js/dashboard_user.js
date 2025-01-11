@@ -12,13 +12,6 @@ class Dashboard {
         // Clear the main content
         this.clearMainContent();
     
-        // Create the toast container
-        const toastContainer = document.createElement('div');
-        toastContainer.className = 'toast-container';
-        const notificationsList = document.createElement('ul');
-        notificationsList.className = 'notifications';
-        toastContainer.appendChild(notificationsList);
-    
         // Create the main container
         const mainContainer = document.createElement('div');
         mainContainer.className = 'w3-display-center w3-text-black w3-padding-bottom-64 w3-margin-top';
@@ -42,6 +35,12 @@ class Dashboard {
         const form = document.createElement('form');
         form.id = 'uploadForm';
         form.className = 'w3-animate-bottom';
+
+        const csrfTokenInput = document.createElement('input');
+        csrfTokenInput.type = 'hidden';
+        csrfTokenInput.name = 'csrf_token';
+        csrfTokenInput.value = document.getElementById('csrf').value;
+        form.appendChild(csrfTokenInput);
     
         // Create the radio buttons for upload type
         const uploadFileRadio = document.createElement('input');
@@ -187,7 +186,6 @@ class Dashboard {
         mainContainer.appendChild(headerContainer);
         mainContainer.appendChild(form);
     
-        this.mainContent.appendChild(toastContainer);
         this.mainContent.appendChild(mainContainer);
     
         this.ensureUploadScript();
@@ -199,13 +197,6 @@ class Dashboard {
     async loadCatalogueContent() {
         // Clear the main content
         this.clearMainContent();
-    
-        // Create the toast container
-        const toastContainer = document.createElement('div');
-        toastContainer.className = 'toast-container';
-        const notificationsList = document.createElement('ul');
-        notificationsList.className = 'notifications';
-        toastContainer.appendChild(notificationsList);
     
         // Create the main container
         const mainContainer = document.createElement('div');
@@ -296,7 +287,6 @@ class Dashboard {
         mainContainer.appendChild(paginationContainer);
     
         // Append the toast container and main container to the main content
-        this.mainContent.appendChild(toastContainer);
         this.mainContent.appendChild(mainContainer);
     
         // Add event listeners for buttons

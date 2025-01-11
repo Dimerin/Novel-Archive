@@ -5,6 +5,7 @@
 ?>
 <head>
 <link rel="stylesheet" href="./Frontend/css/navbar.css">
+<script src="./Frontend/js/logout.js"></script>
 </head>
 <div class="w3-top">
     <div class="w3-bar w3-black w3-card w3-animate-bottom" id="myNavbar">
@@ -68,13 +69,13 @@
             
             ?>
         </div>
-        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large">
+        <a href="#" class="w3-bar-item w3-button w3-right w3-hide-large">
             <i class="fa fa-bars"></i>
         </a>
     </div>
 </div>
 <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-large" id="mySidebar">
-<a href="javascript:void(0)" class="w3-bar-item w3-button w3-large w3-padding-12" id="closeSidebarBtn">Close ×</a> 
+<a href="#" class="w3-bar-item w3-button w3-large w3-padding-12" id="closeSidebarBtn">Close ×</a> 
    <?php
         switch($current_page) {
             case 'homepage':
