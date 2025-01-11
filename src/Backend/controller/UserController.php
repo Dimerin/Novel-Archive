@@ -408,10 +408,9 @@ class UserController
 
     public function showUsers()
     {
-        // TODO: ora non è attivo perchè in fase di test
-        //if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-        //    return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
-        //}
+        if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+            return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
+        }
 
         if ($_SERVER['REQUEST_METHOD']!== 'GET') {
             $this->logger->error('showUsers', 'Invalid request method.', 400);
@@ -453,10 +452,9 @@ class UserController
 
     public function changeUserRole()
     {
-        /* TODO: ora non è attivo perchè in fase di test
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
-        }*/
+        }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->logger->error('changeUserRole', 'Invalid request method.', 400);

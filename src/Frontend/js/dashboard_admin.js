@@ -16,13 +16,6 @@ class Dashboard {
         // Clear the main content
         this.clearMainContent();
     
-        // Create the toast container
-        const toastContainer = document.createElement('div');
-        toastContainer.className = 'toast-container';
-        const notificationsList = document.createElement('ul');
-        notificationsList.className = 'notifications';
-        toastContainer.appendChild(notificationsList);
-    
         // Create the main container
         const mainContainer = document.createElement('div');
         mainContainer.className = 'w3-display-center w3-text-black w3-padding-bottom-64 w3-margin-top';
@@ -46,6 +39,12 @@ class Dashboard {
         const form = document.createElement('form');
         form.id = 'uploadForm';
         form.className = 'w3-animate-bottom';
+
+        const csrfTokenInput = document.createElement('input');
+        csrfTokenInput.type = 'hidden';
+        csrfTokenInput.name = 'csrf_token';
+        csrfTokenInput.value = document.getElementById('csrf').value;
+        form.appendChild(csrfTokenInput);
     
         // Create the radio buttons for upload type
         const uploadFileRadio = document.createElement('input');
@@ -191,7 +190,7 @@ class Dashboard {
         mainContainer.appendChild(headerContainer);
         mainContainer.appendChild(form);
     
-        this.mainContent.appendChild(toastContainer);
+    
         this.mainContent.appendChild(mainContainer);
     
         this.ensureUploadScript();
@@ -203,13 +202,6 @@ class Dashboard {
     async loadAdminPageContent() {
         // Clear the main content
         this.clearMainContent();
-    
-        // Create the toast container
-        const toastContainer = document.createElement('div');
-        toastContainer.className = 'toast-container';
-        const notificationsList = document.createElement('ul');
-        notificationsList.className = 'notifications';
-        toastContainer.appendChild(notificationsList);
     
         // Create the main container
         const mainContainer = document.createElement('div');
@@ -280,7 +272,6 @@ class Dashboard {
         mainContainer.appendChild(headerContainer);
         mainContainer.appendChild(tableContainer);
         mainContainer.appendChild(paginationContainer);
-        this.mainContent.appendChild(toastContainer);
         this.mainContent.appendChild(mainContainer);
     
         // Fetch user data
@@ -362,13 +353,6 @@ class Dashboard {
     async loadCatalogueContent() {
         // Clear the main content
         this.clearMainContent();
-    
-        // Create the toast container
-        const toastContainer = document.createElement('div');
-        toastContainer.className = 'toast-container';
-        const notificationsList = document.createElement('ul');
-        notificationsList.className = 'notifications';
-        toastContainer.appendChild(notificationsList);
     
         // Create the main container
         const mainContainer = document.createElement('div');
@@ -459,7 +443,6 @@ class Dashboard {
         mainContainer.appendChild(paginationContainer);
     
         // Append the toast container and main container to the main content
-        this.mainContent.appendChild(toastContainer);
         this.mainContent.appendChild(mainContainer);
     
         // Add event listeners for buttons
@@ -848,6 +831,7 @@ class Dashboard {
             formData.append('id', userId);
             formData.append('new_role', newRole);
             formData.append('actual_role', actualRole);
+            formData.append('csrf_token', document.getElementById('csrf').value);
             const response = await fetch('/api/change_role', {
                 method: 'POST',
                 body: formData
@@ -940,14 +924,30 @@ class Dashboard {
 
 document.addEventListener('DOMContentLoaded', function() {
     const dashboard = new Dashboard('mainContent');
+    const logoutBtn = document.getElementById('log2');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            logoutUser();
+        });
+    }
+    const logoutBtn1 = document.getElementById('log1');
+    if (logoutBtn1) {
+        logoutBtn1.addEventListener('click', function(event) {
+            event.preventDefault();
+            logoutUser();
+        });
+    }
 
     const uploadFileLink = document.getElementById('uploadFileLink');
+    
     if (uploadFileLink) {
         uploadFileLink.addEventListener('click', function(event) {
             event.preventDefault();
             dashboard.loadUploadFileContent();
         });
     }
+
     const uploadFileLink_mobile = document.getElementById('uploadFileLink-mobile');
     if(uploadFileLink_mobile){
         uploadFileLink_mobile.addEventListener('click', function(event) {

@@ -27,14 +27,11 @@ async function handleLogin(event){
             // Redirecting to the home page
         } else {
             const error = await response.json();
-            //console.error('Login failed:', error);
-            //alert(error.message);
             showToast('error', error.message);
             // Handle login error (e.g., display error message)
         }
     } catch (error) {
-        //console.error('Error:', error);
-        alert(error);
-        // Handle network or other errors
+        showToast('error', error.message);
+
     }
 }
