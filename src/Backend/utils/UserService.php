@@ -1,14 +1,16 @@
 <?php
+require_once __DIR__ . '/../utils/PostMan.php';
 
 class UserService
 {
-    private $conn;
+    private $conn, $postman;
     public $max_attempts = 3;
     public $timeout_time = 1; // minutes
 
     public function __construct($conn)
     {
         $this->conn = $conn;
+        $this->postman = new Postman();
     }
 
     public function checkUserExistence($email)
@@ -56,16 +58,16 @@ class UserService
 
     public function resetAttempts($email)
     {
-        $stmt = $this->conn->prepare("UPDATE users SET attempts = 0, timeouted = 0, first_attempt = NOW() ,last_attempt = NOW() WHERE email = ?");
+        $stmt = $this->conn->prepare("UPDATE users SET attempts = 0, timedout = 0, first_attempt = NOW() ,last_attempt = NOW() WHERE email = ?");
         $stmt->bind_param("s", $email);
         $executed = $stmt->execute();
         $stmt->close();
         return $executed;
     }
 
-    public function updateLoginAttempts($email, $first_attempt, $timeouted, $attempts)
+    public function updateLoginAttempts($email, $first_attempt, $timedout, $attempts)
     {
-        if($timeouted)
+        if($timedout)
             return;
         // Update the login attempts
         //Se sono passati più di 5 minuti dall'ultimo tentativo, resetta il contatore degli errori
@@ -79,12 +81,18 @@ class UserService
         $attempts += 1;
 
 
-        // If the user has reached the maximum number of attempts, set the timeouted flag to 1
+        // If the user has reached the maximum number of attempts, set the timedout flag to 1
         if($attempts >= $this->max_attempts)
-            $timeouted = 1;
+        {
+            $timedout = 1;
+            // Send an email with the OTP
+            $subject = "Someone tried to access your account";
+            $message = file_get_contents(__DIR__ . '/../template/emailTimeout.html');
+            $this->postman->send($email, $subject, $message);
+        }
 
-        $stmt = $this->conn->prepare("UPDATE users SET timeouted = ?, attempts = ?, last_attempt = NOW() WHERE email = ?");
-        $stmt->bind_param("iis", $timeouted ,$attempts, $email);
+        $stmt = $this->conn->prepare("UPDATE users SET timedout = ?, attempts = ?, last_attempt = NOW() WHERE email = ?");
+        $stmt->bind_param("iis", $timedout ,$attempts, $email);
         $executed = $stmt->execute();
         $stmt->close();
     }

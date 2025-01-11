@@ -104,7 +104,7 @@ class UserController
             $this->logger->error('register', 'Failed to store token.', 500);
             return $this->sendResponse(['status' => 'error', 'message' => 'Registration failed.'], 500);
         }
-        $htmlTemplate = file_get_contents(__DIR__ . '/../utils/confirmationEmail.html');
+        $htmlTemplate = file_get_contents(__DIR__ . '/../template/confirmationEmail.html');
 
         // Replace placeholder with the actual link
         $actionLink = URL_REGISTER_PAGE."?email=".$email."&token=".$token;
@@ -219,7 +219,7 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
         
-        $htmlTemplate = file_get_contents(__DIR__ . '/../utils/resetEmail.html');
+        $htmlTemplate = file_get_contents(__DIR__ . '/../template/resetEmail.html');
 
         // Replace placeholder with the actual link
         $actionLink = URL_PSW_RST_PAGE."?email=".$email."&token=".$token;
@@ -342,7 +342,7 @@ class UserController
         }
 
         // Controlla se l'utente esiste
-        $stmt = $this->conn->prepare( "SELECT id, username, password, role, active, first_attempt, last_attempt, timeouted, attempts FROM users WHERE email = ?");
+        $stmt = $this->conn->prepare( "SELECT id, username, password, role, active, first_attempt, last_attempt, timedout, attempts FROM users WHERE email = ?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $stmt->store_result();
@@ -354,7 +354,7 @@ class UserController
 
         }
 
-        $stmt->bind_result($id, $username, $hashedPassword, $role, $status, $first_attempt, $last_attempt, $timeouted, $attempts);
+        $stmt->bind_result($id, $username, $hashedPassword, $role, $status, $first_attempt, $last_attempt, $timedout, $attempts);
         $stmt->fetch();
         $stmt->close();
 
@@ -362,18 +362,18 @@ class UserController
             $this->logger->error('login', 'User is inactive.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'User is inactive.'], 401);
         }
-        //Check if the user is timeouted
-        if($timeouted)
+        //Check if the user is timedout
+        if($timedout)
         {
             $timeout_time =  $this->user_service->differenceInMinutes(new DateTime(), new DateTime($last_attempt));
             if($timeout_time >= $this->user_service->timeout_time)
             {
                 $this->user_service->resetAttempts($email);
-                $timeouted = false;
+                $timedout = false;
             }
             else {
-                $this->logger->error('login', 'User is timeouted.', 401);
-                return $this->sendResponse(['status' => 'error', 'message' => 'User is timeouted.'], 401);
+                $this->logger->error('login', 'User is timed out.', 401);
+                return $this->sendResponse(['status' => 'error', 'message' => 'User is timed out.'], 401);
             }
         }
 
@@ -389,7 +389,7 @@ class UserController
             return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
 
         }
-        $this->user_service->updateLoginAttempts($email, $first_attempt, $timeouted, $attempts);
+        $this->user_service->updateLoginAttempts($email, $first_attempt, $timedout, $attempts);
         $this->logger->error('login', 'Invalid email or password.', 401);
         return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
     }
