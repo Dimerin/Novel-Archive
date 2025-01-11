@@ -3,11 +3,11 @@
 <head>
     <title>Homepage</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="./Frontend/imgs/icon.ico">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="./Frontend/imgs/icon.ico">
     <link rel="stylesheet" href="./Frontend/css/main.css">
     <link rel="stylesheet" href="./Frontend/css/homepage.css">
 </head>
@@ -115,6 +115,6 @@
   <p>Powered by <a href="https://www.ing.unipi.it/it/" title="DII" target="_blank" class="w3-hover-text-green">Università di Pisa</a></p>
 </footer>
     <script src="./Frontend/js/index.js"></script>
-    <script src="./Frontend/js/menu.js"></script>
+    <script src="./Frontend/js/navbar.js"></script>
 </body>
 </html>

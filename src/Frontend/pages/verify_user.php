@@ -18,6 +18,6 @@
     </div>
     </header>
     <script src="./Frontend/js/verify_user.js"></script>
-    <script src="./Frontend/js/menu.js"></script>
+    <script src="./Frontend/js/navbar.js"></script>
 </body>
 </html>

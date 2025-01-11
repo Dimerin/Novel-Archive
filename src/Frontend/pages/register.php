@@ -35,7 +35,7 @@
         </form>
     </div>
     </header>
-    <script src="./Frontend/js/menu.js"></script>
+    <script src="./Frontend/js/navbar.js"></script>
     <script src="./Frontend/js/toast.js"></script>
 </body>
 </html>

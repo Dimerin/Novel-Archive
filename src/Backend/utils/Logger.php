@@ -3,7 +3,7 @@
 class Logger {
     private static $instance = null; // Unica istanza del logger
     private $logFile;
-    private $sensitiveFields = ['password'];//, 'csfr_token'];
+    private $sensitiveFields = ['password','new_password', 'conf_new_password', 'csrf_token', 'token'];
 
     // Costruttore privato per prevenire l'uso diretto di "new"
     private function __construct($filePath) {

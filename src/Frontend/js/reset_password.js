@@ -47,7 +47,7 @@ class ResetPswPage {
         const csrfTokenInput = document.createElement('input');
         csrfTokenInput.type = 'hidden';
         csrfTokenInput.name = 'csrf_token';
-        csrfTokenInput.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        csrfTokenInput.value = document.getElementById('csrf').value;
         form.appendChild(csrfTokenInput);
 
         const emailInput = document.createElement('input');
