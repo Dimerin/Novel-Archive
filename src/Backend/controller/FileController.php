@@ -130,7 +130,7 @@ class FileController
 
         $userVisibility = $this->getUserVisibility();
 
-        if($visibility || $visibility > $userVisibility){
+        if(!$visibility || $visibility > $userVisibility){
             $this->logger->error('downloadFile', 'Missing download file permissions.', 403);
             return $this->sendResponse(['status' => 'error', 'message' => 'Missing download file permissions.'], 403);
         }
