@@ -2,7 +2,7 @@
 async function logoutUser() {
     try {
         const response = await fetch('/api/logout', {
-            method: 'GET'
+            method: 'POST'
         });
 
         if (!response.ok) {

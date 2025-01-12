@@ -395,15 +395,20 @@ class UserController
     }
     public function logout()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            // Destroy the session
-            session_unset();
-            session_destroy();
-            $this->logger->info('logout', 'Logout successful.', 200);
-            return $this->sendResponse(['status' => 'success', 'message' => 'Logout successful.'], 200);
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' ) {
+            $this->logger->error('logout', 'Invalid request method.', 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
-        $this->logger->error('logout', 'Invalid request method.', 400);
-        return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
+
+        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+            $this->logger->error('logout', 'Invalid request parameters.', 403);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 403);
+        }
+        // Destroy the session
+        session_unset();
+        session_destroy();
+        $this->logger->info('logout', 'Logout successful.', 200);
+        return $this->sendResponse(['status' => 'success', 'message' => 'Logout successful.'], 200);
     }
 
     public function showUsers()
