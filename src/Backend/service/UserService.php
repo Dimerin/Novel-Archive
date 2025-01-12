@@ -12,6 +12,17 @@ class UserService
         $this->conn = $conn;
         $this->postman = new Postman();
     }
+    public function getUsername($email)
+    {
+        $stmt = $this->conn->prepare("SELECT username FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($username);
+        $stmt->fetch();
+        $stmt->close();
+        return $username;
+    }
 
     public function checkUserExistence($email)
     {

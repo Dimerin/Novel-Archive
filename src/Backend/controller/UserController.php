@@ -78,7 +78,8 @@ class UserController
         }
 
         // Check the password format
-        $passwordError = $this->checkPasswordFormat($password);
+
+        $passwordError = $this->checkPasswordFormat($password, [$username, $email]);
         if ($passwordError !== false) {
             $this->logger->error('register', 'Weak password.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
@@ -263,14 +264,7 @@ class UserController
             $this->logger->error('resetPassword', 'Invalid email format.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email format.'], 400);
         }
-        
-        // Check the password format
-        $passwordError = $this->checkPasswordFormat($new_password);
-        if ($passwordError !== false) {
-            $this->logger->error('resetPassword', 'Weak password.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
-        }
-    
+            
         // Check if the token is valid
         if ($this->token_service->checkToken($receive_token, $email, 'reset') == false) {
             $this->logger->error('resetPassword', 'Token expired.', 401);
@@ -281,6 +275,14 @@ class UserController
         if ($this->user_service->checkUserExistence($email) == false) {
             $this->logger->error('resetPassword', 'User not found.', 404);
             return $this->sendResponse(['status' => 'error', 'message' => 'User not found.'], 404);
+        }
+
+        // Check the password format
+        $username = $this->user_service->getUsername($email);
+        $passwordError = $this->checkPasswordFormat($new_password, [$username, $email]);
+        if ($passwordError !== false) {
+            $this->logger->error('resetPassword', 'Weak password.', 400);
+            return $this->sendResponse(['status' => 'error', 'message' => $passwordError], 400);
         }
 
         // Check if the new password and confirm new password match
