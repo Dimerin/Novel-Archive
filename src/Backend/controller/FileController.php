@@ -15,11 +15,6 @@ class FileController
 
     public function upload()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->logger->error('upload', 'Metodo non consentito.', 405);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
-        }
-
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']){
             $this->logger->error('upload', 'CSFR Token missing.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Parametri mancanti.'], 401);
@@ -106,11 +101,6 @@ class FileController
         
     public function downloadFile()
     {   
-        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
-            $this->logger->error('downloadFile', 'Metodo non consentito.', 405);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
-        }
-
         if (!isset($_POST['file_id'])) {
             $this->logger->error('downloadFile', 'ID del file non fornito.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'ID del file non fornito.'], 400);
@@ -162,13 +152,8 @@ class FileController
         return $this->sendResponse($response);
     }
 
-    public function showFiles(){
-        
-        if( $_SERVER["REQUEST_METHOD"] !== "GET" ){
-            $this->logger->error('showFiles', 'Metodo non consentito.', 405);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
-        }
-
+    public function showFiles()
+    {
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) :1;
         $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? intval($_GET['limit']) :10;
         $file_type = isset($_GET['file_type']) ? $_GET['file_type'] : 'both';

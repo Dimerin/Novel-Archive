@@ -1,3 +1,13 @@
+# Impedisce l'accesso diretto ai file .php
+<FilesMatch "\.php$">
+    Require all denied
+</FilesMatch>
+
+# Consenti l'accesso solo ai file specificati (ad esempio index.php)
+<Files "index.php">
+    Require all granted
+</Files>
+
 RewriteEngine On
 RewriteBase /
 

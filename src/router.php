@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/Backend/controller/FileController.php';
 require_once __DIR__ . '/Backend/controller/UserController.php';
+require_once __DIR__ . '/Backend/utils/Logger.php';
+
 class Router
 {
     private static $instance = null;
@@ -14,6 +16,8 @@ class Router
 
     private $fc; // FileController
     private $uc; // UserController
+
+    private $logger;
 
     private function __construct()
     {
@@ -28,6 +32,8 @@ class Router
 
         $this->fc = new FileController();
         $this->uc = new UserController();
+
+        $this->logger = Logger::getInstance();
 
         $this->current_page = '';
     }
@@ -58,21 +64,22 @@ class Router
         
         // Mappatura degli endpoint API ai metodi corrispondenti e ai permessi richiesti
         $apiEndpoints = [
-            'upload_file' => ['handler' => [$this->fc, 'upload'], 'auth' => 'authenticated'],
-            'download_file' => ['handler' => [$this->fc, 'downloadFile'], 'auth' => 'authenticated'],
-            'show_files' => ['handler' => [$this->fc, 'showFiles'], 'auth' => 'authenticated'],
-            'login' => ['handler' => [$this->uc, 'login'], 'auth' => 'unauthenticated'],
-            'register' => ['handler' => [$this->uc, 'register'], 'auth' => 'unauthenticated'],
-            'logout' => ['handler' => [$this->uc, 'logout'], 'auth' => 'authenticated'],
-            'show_users' => ['handler' => [$this->uc, 'showUsers'], 'auth' => 'admin'],
-            'change_role' => ['handler' => [$this->uc, 'changeUserRole'], 'auth' => 'admin'],
-            'verify_user' => ['handler' => [$this->uc, 'verifyUser'], 'auth' => 'unauthenticated'],
-            'forgot_pwd' => ['handler' => [$this->uc, 'forgotPassword'], 'auth' => 'unauthenticated'],
-            'reset_pwd' => ['handler' => [$this->uc, 'resetPassword'], 'auth' => 'unauthenticated'],
+            'upload_file' => ['handler' => [$this->fc, 'upload'], 'auth' => 'authenticated', 'method' => "POST"],
+            'download_file' => ['handler' => [$this->fc, 'downloadFile'], 'auth' => 'authenticated', 'method' => "POST"],
+            'show_files' => ['handler' => [$this->fc, 'showFiles'], 'auth' => 'authenticated', 'method' => "GET"],
+            'login' => ['handler' => [$this->uc, 'login'], 'auth' => 'unauthenticated', 'method' => "POST"],
+            'register' => ['handler' => [$this->uc, 'register'], 'auth' => 'unauthenticated', 'method' => "POST"],
+            'logout' => ['handler' => [$this->uc, 'logout'], 'auth' => 'authenticated', 'method' => "POST"],
+            'show_users' => ['handler' => [$this->uc, 'showUsers'], 'auth' => 'admin', 'method' => "GET"],
+            'change_role' => ['handler' => [$this->uc, 'changeUserRole'], 'auth' => 'admin', 'method' => "POST"],
+            'verify_user' => ['handler' => [$this->uc, 'verifyUser'], 'auth' => 'unauthenticated', 'method' => "GET"],
+            'forgot_pwd' => ['handler' => [$this->uc, 'forgotPassword'], 'auth' => 'unauthenticated', 'method' => "POST"],
+            'reset_pwd' => ['handler' => [$this->uc, 'resetPassword'], 'auth' => 'unauthenticated', 'method' => "POST"],
         ];
     
         // Controlla se l'endpoint esiste nella mappatura
         if (!array_key_exists($apiRequest, $apiEndpoints)) {
+            $this->logger->error('handleRequest', 'API not found.', 404);
             http_response_code(404);
             echo json_encode(['error' => 'API not found']);
             return;
@@ -83,18 +90,29 @@ class Router
         
         // Verifica i permessi dell'endpoint
         if ($endpoint['auth'] === 'admin' && !$this->isAdmin()) {
+            $this->logger->error('handleRequest', 'Unauthorized.', 401);
             http_response_code(401);
             echo json_encode(['status' => 'error', 'message' => 'Unauthorized.']);
             return;
         }
         if ($endpoint['auth'] === 'authenticated' && !$this->isAuthenticated()) {
+            $this->logger->error('handleRequest', 'Unauthorized.', 401);
             http_response_code(401);
             echo json_encode(['status' => 'error', 'message' => 'Unauthorized.']);
             return;
         }
         if ($endpoint['auth'] === 'unauthenticated' && $this->isAuthenticated()) {
+            $this->logger->error('handleRequest', 'Unauthorized.', 401);
             http_response_code(401);
             echo json_encode(['status' => 'error', 'message' => 'Unauthorized.']);
+            return;
+        }
+
+        // Verifica il metodo dell'endpoint
+        if ($_SERVER['REQUEST_METHOD'] !== $endpoint['method']) {
+            $this->logger->error('handleRequest', 'Method not allowed.', 405);
+            http_response_code(405);
+            echo json_encode(['status' => 'error', 'message' => 'Method not allowed.']);
             return;
         }
     
@@ -121,6 +139,7 @@ class Router
         // Controllo se il percorso non esiste nella mappatura
         if (!array_key_exists($this->request, $pages)) {
             // Carica la pagina 404 se il percorso non esiste
+            $this->logger->error('handleRequest', 'Page not found.', 404);
             require "{$this->pages_path}/404.php";
             return;
         }
@@ -129,11 +148,13 @@ class Router
 
         // Controllo dei requisiti di autenticazione
         if ($pageInfo['auth'] === 'authenticated' && !$this->isAuthenticated()) {
+            $this->logger->error('handleRequest', 'Unauthorized.', 401);
             header("Location: /login");
             exit();
         }
 
         if ($pageInfo['auth'] === 'unauthenticated' && $this->isAuthenticated()) {
+            $this->logger->error('handleRequest', 'Unauthorized.', 401);
             header('Location: /dashboard');
             exit();
         }

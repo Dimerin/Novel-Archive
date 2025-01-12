@@ -58,11 +58,6 @@ class UserController
 
     public function register()
     {
-        if($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->logger->error('register', 'Invalid request method.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             $this->logger->error('register', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
@@ -146,10 +141,6 @@ class UserController
 
     public function verifyUser()
     {
-        if($_SERVER['REQUEST_METHOD'] !== 'GET') {
-            $this->logger->error('verifyUser', 'Invalid request.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
         if(!isset($_GET['token']) || !isset($_GET['email']) ) {
             $this->logger->error('verifyUser', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
@@ -190,11 +181,6 @@ class UserController
 
     public function forgotPassword()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->logger->error('forgotPassword', 'Invalid request method.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             $this->logger->error('forgotPassword', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
@@ -262,11 +248,6 @@ class UserController
     
     public function resetPassword()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->logger->error('resetPassword', 'Invalid request method.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             $this->logger->error('resetPassword', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
@@ -347,11 +328,6 @@ class UserController
 
     public function login()
     {   
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->logger->error('login', 'Invalid request method.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             $this->logger->error('login', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
@@ -425,14 +401,9 @@ class UserController
     }
     public function logout()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' ) {
-            $this->logger->error('logout', 'Invalid request method.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             $this->logger->error('logout', 'Invalid request parameters.', 403);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 403);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request, (Missing token, remove after debug).'], 403);
         }
         // Destroy the session
         session_unset();
@@ -443,11 +414,6 @@ class UserController
 
     public function showUsers()
     {
-        if ($_SERVER['REQUEST_METHOD']!== 'GET') {
-            $this->logger->error('showUsers', 'Invalid request method.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ?  $_GET['page'] : 1;
         $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? $_GET['limit'] : 10;
 
@@ -483,11 +449,6 @@ class UserController
 
     public function changeUserRole()
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->logger->error('changeUserRole', 'Invalid request method.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
             $this->logger->error('changeUserRole', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
