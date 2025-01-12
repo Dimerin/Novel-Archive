@@ -15,9 +15,14 @@ class FileController
 
     public function upload()
     {
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $this->logger->error('upload', 'Metodo non consentito.', 405);
             return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
+        }
+
+        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']){
+            $this->logger->error('upload', 'CSFR Token missing.', 401);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Parametri mancanti.'], 401);
         }
 
         // Controlla se il tipo di upload non è specificato
@@ -100,24 +105,28 @@ class FileController
     }
         
     public function downloadFile()
-    {
-        //FIXME: con questa funzione downloadFile chiunque entri in possesso del file_id può scaricare il file,
-        // bisogna aggiungere un controllo per vedere se l'utente ha i permessi per scaricare il file
-        if (!isset($_GET['file_id'])) {
+    {   
+        if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+            $this->logger->error('downloadFile', 'Metodo non consentito.', 405);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
+        }
+
+        if (!isset($_POST['file_id'])) {
             $this->logger->error('downloadFile', 'ID del file non fornito.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'ID del file non fornito.'], 400);
         }
 
-        $fileId = $_GET['file_id'];
+        $fileId = $_POST['file_id'];
         $stmt = $this->conn->prepare("
             SELECT 
                 files.title, 
                 files.filetype, 
                 files.filedata, 
-                users.username 
+                users.username,
+                files.visibility
             FROM 
                 files 
-            INNER JOIN 
+            INNER JOIN
                 users 
             ON 
                 files.user_id = users.id 
@@ -125,9 +134,16 @@ class FileController
                 files.id = ?");
         $stmt->bind_param("i", $fileId);
         $stmt->execute();
-        $stmt->bind_result($title, $filetype, $filedata, $author);
+        $stmt->bind_result($title, $filetype, $filedata, $author, $visibility);
         $stmt->fetch();
         $stmt->close();
+
+        $userVisibility = $this->getUserVisibility();
+
+        if($visibility || $visibility > $userVisibility){
+            $this->logger->error('downloadFile', 'Missing download file permissions.', 403);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Missing download file permissions.'], 403);
+        }
 
         if (!$title || !$filedata) {
             $this->logger->error('downloadFile', 'File non trovato.', 404);
@@ -148,7 +164,7 @@ class FileController
 
     public function showFiles(){
         
-        if( $_SERVER["REQUEST_METHOD"] != "GET" ){
+        if( $_SERVER["REQUEST_METHOD"] !== "GET" ){
             $this->logger->error('showFiles', 'Metodo non consentito.', 405);
             return $this->sendResponse(['status' => 'error', 'message' => 'Metodo non consentito.'], 405);
         }

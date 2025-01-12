@@ -84,17 +84,17 @@ class Router
         // Verifica i permessi dell'endpoint
         if ($endpoint['auth'] === 'admin' && !$this->isAdmin()) {
             http_response_code(401);
-            echo json_encode(['error' => 'Unauthorized']);
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized.']);
             return;
         }
         if ($endpoint['auth'] === 'authenticated' && !$this->isAuthenticated()) {
             http_response_code(401);
-            echo json_encode(['error' => 'Unauthorized']);
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized.']);
             return;
         }
         if ($endpoint['auth'] === 'unauthenticated' && $this->isAuthenticated()) {
             http_response_code(401);
-            echo json_encode(['error' => 'Unauthorized']);
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized.']);
             return;
         }
     

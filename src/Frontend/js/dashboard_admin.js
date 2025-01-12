@@ -42,6 +42,7 @@ class Dashboard {
 
         const csrfTokenInput = document.createElement('input');
         csrfTokenInput.type = 'hidden';
+        csrfTokenInput.id = 'csrf_form';
         csrfTokenInput.name = 'csrf_token';
         csrfTokenInput.value = document.getElementById('csrf').value;
         form.appendChild(csrfTokenInput);

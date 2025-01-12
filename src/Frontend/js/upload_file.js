@@ -42,6 +42,7 @@ async function uploadFile(event) {
     }
 
     formData.append('upload_type', uploadType);
+    formData.append('csrf_token', document.getElementById('csrf_form').value);
 
     try {
         const response = await fetch('/api/upload_file', {

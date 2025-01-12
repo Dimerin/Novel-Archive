@@ -14,6 +14,8 @@ class Register {
 
         const registerForm = event.target;
         const formData = new FormData(registerForm);
+        let pwd = formData.get('password'); //! fixme
+        formData.append('conf_password', pwd);
 
         try {
             const response = await fetch('/api/register', {
