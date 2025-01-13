@@ -3,7 +3,27 @@ window.addEventListener('load', init);
 function init() {
     const loginForm = document.getElementById('loginForm');
     loginForm.addEventListener('submit', handleLogin);
+    const showPasswordButton = document.getElementById('show_psw');
+    if (showPasswordButton) {
+        showPasswordButton.addEventListener('click', () => togglePasswordVisibility('password', showPasswordButton));
+    }
 }
+
+function togglePasswordVisibility(fieldId, button) {
+    const passwordField = document.getElementById(fieldId);
+    const icon = button.querySelector('i');
+
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.add("fa-eye-slash");
+        icon.classList.remove("fa-eye");
+    } else {
+        passwordField.type = 'password';
+        icon.classList.add("fa-eye");
+        icon.classList.remove("fa-eye-slash");
+    }
+}
+
 
 async function handleLogin(event){
     event.preventDefault();
