@@ -174,6 +174,7 @@ class Dashboard {
         const submitButton = document.createElement('button');
         submitButton.className = 'w3-button w3-black w3-animate-bottom';
         submitButton.type = 'submit';
+        submitButton.id = 'submitBtn';
         
         const uploadIcon = document.createElement('i');
         uploadIcon.className = 'fa fa-upload';
@@ -473,51 +474,53 @@ class Dashboard {
     }
     async downloadFile(fileId) {
         try {
-                if (!fileId) {
-                    throw new Error('File ID is required');
-                }
-                const queryParams = new URLSearchParams({
-                    file_id: fileId
-                });
-            
-                const response = await fetch(`/api/download_file?${queryParams.toString()}`, {
-                    method: 'GET'
-                });
-        
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-        
-                const result = await response.json();
-                if (result.status === 'success' && result.filetype === 'pdf') {
-                    showToast('success', "Download started");
-                    const link = document.createElement('a');
-                    link.href = `data:application/pdf;base64,${result.filedata}`;
-                    link.download = result.title;
-                    link.click();
-                }
-                else {
-                    showToast('error', result.message);
-                }
-            } catch (error) {
-                showToast('error', 'An error occurred while downloading the file');
+            if (!fileId) {
+                throw new Error('File ID is required');
             }
-            this.updateLinkClasses(document.getElementById('catalogueLink'));
-            this.ensureToastScript();
+    
+            const response = await fetch('/api/download_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ file_id: fileId })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            const result = await response.json();
+            if (result.status === 'success' && result.filetype === 'pdf') {
+                showToast('success', "Download started");
+                const link = document.createElement('a');
+                link.href = `data:application/pdf;base64,${result.filedata}`;
+                link.download = result.title;
+                link.click();
+            } else {
+                showToast('error', result.message);
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred while downloading the file');
         }
+        this.updateLinkClasses(document.getElementById('catalogueLink'));
+        this.ensureToastScript();
+    }
 
     async readFile(fileId) {
         try {
             if (!fileId) {
                 throw new Error('File ID is required');
             }
-            const queryParams = new URLSearchParams({
-                file_id: fileId
+    
+            const response = await fetch('/api/download_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ file_id: fileId })
             });
-
-            const response = await fetch(`/api/download_file?${queryParams.toString()}`, {
-                method: 'GET'
-            });
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -525,8 +528,7 @@ class Dashboard {
             const result = await response.json();
             if (result.status === 'success' && result.filetype === 'txt') {
                 this.loadNovelContent(result.filedata, result.title, result.author);
-            }
-            else {
+            } else {
                 showToast('error', result.message);
             }
         } catch (error) {
@@ -743,7 +745,6 @@ document.addEventListener('DOMContentLoaded', function() {
             logoutUser();
         });
     }
-
     // Aggiungi event listener per chiudere la sidebar
     const catalogueLinkMobile = document.getElementById('catalogueLink-mobile');
     if (catalogueLinkMobile) {
@@ -759,4 +760,5 @@ document.addEventListener('DOMContentLoaded', function() {
     if (adminPageLinkMobile) {
         adminPageLinkMobile.addEventListener('click', w3_close);
     }
+
 });

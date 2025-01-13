@@ -15,12 +15,11 @@
 <body>
     <?php require __DIR__ . '/../includes/navbar.php'; ?>
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
+    <input type="hidden" id="csrf" value="<?php echo $_SESSION['csrf_token']; ?>">
     <div class="w3-display-left w3-text-white padding48">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-">Logout</span><br>
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Logout</span><br>
-        <span class="w3-large w3-animate-bottom">You have successfully logged out, you will be redirected to the homepage in <span id="countdown">3</span> seconds.</span>
-        
-       
+        <span class="w3-large w3-animate-bottom">You have successfully logged out, you will be redirected to the homepage in <span id="countdown">3</span> seconds.</span>       
   </div> 
   </header>
   <script src="./Frontend/js/navbar.js"></script>

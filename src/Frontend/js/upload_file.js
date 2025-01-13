@@ -12,21 +12,38 @@ async function uploadFile(event) {
     event.preventDefault();
 
     const formData = new FormData();
-    const uploadType = document.querySelector('input[name="upload_type"]:checked').value;
+    const uploadTypeElement = document.querySelector('input[name="upload_type"]:checked');
+    const uploadType = uploadTypeElement ? uploadTypeElement.value : 'none';
 
+    if (uploadType === 'none') {
+        showToast('warning', 'Select the type of file to upload.');
+        return;
+    }
     if (uploadType === 'file') {
         const fileInput = document.getElementById('file');
-        const role = document.querySelector('input[name="novel-category"]:checked').value;
-        if (fileInput.files.length === 0) {
+        const roleElement = document.querySelector('input[name="novel-category"]:checked');
+        const role = roleElement ? roleElement.value : 'none';
+
+        if (role === 'none') {
+            showToast('warning', 'Select a role to upload.');
+            return;
+        }
+        if (!fileInput || fileInput.files.length === 0) {
             showToast('warning', 'Select a file to upload.');
             return;
         }
         formData.append('file', fileInput.files[0]);
         formData.append('novel_category', role);
-    } else {
+    } 
+    else{
         const title = document.getElementById('title').value;
         const textContent = document.getElementById('text_content').value;
-        const role = document.querySelector('input[name="novel-category"]:checked').value;
+        const roleElement = document.querySelector('input[name="novel-category"]:checked');
+        const role = roleElement ? roleElement.value : 'none';
+        if (role === 'none') {
+            showToast('warning', 'Select a role to upload.');
+            return;
+        }
         if (title.trim() === '') {
             showToast('warning', 'Insert a title.');
             return;
@@ -51,11 +68,23 @@ async function uploadFile(event) {
         });
         const result = await response.json();
         showToast(result.status, result.message);
+        resetFields();
     } catch (error) {
         showToast('error', 'Error during file or text upload.');
+        resetFields();
     }
 }
-
+function resetFields() {
+    if(document.getElementById('upload_file_radio').checked){
+        document.getElementById('file').value = '';
+    }
+    document.getElementById('title').value = '';
+    document.getElementById('text_content').value = '';
+    const roleElements = document.querySelectorAll('input[name="novel-category"]');
+    roleElements.forEach(element => {
+        element.checked = false;
+    });
+}
 function toggleUploadSection() {
     const isTextSelected = document.getElementById('upload_text_radio').checked;
     const fileUploadSection = document.getElementById('file_upload_section');

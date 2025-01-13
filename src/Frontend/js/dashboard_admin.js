@@ -666,51 +666,53 @@ class Dashboard {
     }
     async downloadFile(fileId) {
         try {
-                if (!fileId) {
-                    throw new Error('File ID is required');
-                }
-                const queryParams = new URLSearchParams({
-                    file_id: fileId
-                });
-            
-                const response = await fetch(`/api/download_file?${queryParams.toString()}`, {
-                    method: 'GET'
-                });
-        
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-        
-                const result = await response.json();
-                if (result.status === 'success' && result.filetype === 'pdf') {
-                    showToast('success', "Download started");
-                    const link = document.createElement('a');
-                    link.href = `data:application/pdf;base64,${result.filedata}`;
-                    link.download = result.title;
-                    link.click();
-                }
-                else {
-                    showToast('error', result.message);
-                }
-            } catch (error) {
-                showToast('error', 'An error occurred while downloading the file');
+            if (!fileId) {
+                throw new Error('File ID is required');
             }
-            this.updateLinkClasses(document.getElementById('catalogueLink'));
-            this.ensureToastScript();
+    
+            const response = await fetch('/api/download_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ file_id: fileId })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            const result = await response.json();
+            if (result.status === 'success' && result.filetype === 'pdf') {
+                showToast('success', "Download started");
+                const link = document.createElement('a');
+                link.href = `data:application/pdf;base64,${result.filedata}`;
+                link.download = result.title;
+                link.click();
+            } else {
+                showToast('error', result.message);
+            }
+        } catch (error) {
+            showToast('error', 'An error occurred while downloading the file');
         }
+        this.updateLinkClasses(document.getElementById('catalogueLink'));
+        this.ensureToastScript();
+    }
 
     async readFile(fileId) {
         try {
             if (!fileId) {
                 throw new Error('File ID is required');
             }
-            const queryParams = new URLSearchParams({
-                file_id: fileId
+    
+            const response = await fetch('/api/download_file', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({ file_id: fileId })
             });
-
-            const response = await fetch(`/api/download_file?${queryParams.toString()}`, {
-                method: 'GET'
-            });
+    
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -718,8 +720,7 @@ class Dashboard {
             const result = await response.json();
             if (result.status === 'success' && result.filetype === 'txt') {
                 this.loadNovelContent(result.filedata, result.title, result.author);
-            }
-            else {
+            } else {
                 showToast('error', result.message);
             }
         } catch (error) {

@@ -7,6 +7,16 @@ class Register {
         const registerForm = document.getElementById('registerForm');
         registerForm.addEventListener('submit', (event) => this.handleRegister(event));
         this.ensureToastScript();
+        const showPasswordButton = document.getElementById('show_psw');
+        const showConfPasswordButton = document.getElementById('show_conf');
+
+        if (showPasswordButton) {
+            showPasswordButton.addEventListener('click', () => this.togglePasswordVisibility('password', showPasswordButton));
+        }
+
+        if (showConfPasswordButton) {
+            showConfPasswordButton.addEventListener('click', () => this.togglePasswordVisibility('conf_password', showConfPasswordButton));
+        }
     }
 
     async handleRegister(event) {
@@ -14,8 +24,6 @@ class Register {
 
         const registerForm = event.target;
         const formData = new FormData(registerForm);
-        let pwd = formData.get('password'); //! fixme
-        formData.append('conf_password', pwd);
 
         try {
             const response = await fetch('/api/register', {
@@ -68,6 +76,20 @@ class Register {
         div.appendChild(span3);
 
         homeDiv.appendChild(div);
+    }
+    togglePasswordVisibility(fieldId, button) {
+        const passwordField = document.getElementById(fieldId);
+        const icon = button.querySelector('i');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            icon.classList.add("fa-eye-slash");
+            icon.classList.remove("fa-eye");
+        } else {
+            passwordField.type = 'password';
+            icon.classList.add("fa-eye");
+            icon.classList.remove("fa-eye-slash");
+        }
     }
 
     ensureToastScript() {

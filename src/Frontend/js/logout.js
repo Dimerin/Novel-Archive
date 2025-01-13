@@ -1,17 +1,20 @@
 
 async function logoutUser() {
     try {
+        const csrf = document.getElementById('csrf').value;
         const response = await fetch('/api/logout', {
-            method: 'POST'
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({ csrf_token: csrf })
         });
-
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
 
         const data = await response.json();
         if (data.status === 'success') {
-            //alert("Logout successful");
             // Redirect to the login page after successful logout
             window.location.href = '/logout';
         } else {

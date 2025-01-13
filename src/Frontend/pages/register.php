@@ -25,12 +25,21 @@
     <div class="w3-display-left w3-text-white padding48">
         <span class="w3-jumbo w3-hide-small w3-animate-bottom">Registration</span><br>
         <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom" >Registration</span><br>
-        <span class="w3-large w3-animate-bottom">Insert your credentials to create your account.</span>
+        <span class="w3-large w3-animate-bottom">Insert your credentials to create a new account.</span>
         <form id="registerForm" class="w3-animate-bottom">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="text" class="w3-input w3-border" name="username" placeholder="Username" required><br>
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
-            <input type="password"  class="w3-input w3-border" name="password" placeholder="Password" required><br>
+            <input type="text"  class="w3-input w3-border" name="name" placeholder="Name" required><br>
+            <div class="w3-row">
+                <div class="w3-half">
+                    <input type="password"  class="w3-input w3-border" id="password" name="password" placeholder="Password" required>
+                    <button type="button" class="w3-button w3-circle" id="show_psw"><i class="fa fa-eye" id="togglePassword"></i></button> 
+                </div>
+                <div class="w3-half">
+                    <input type="password"  class="w3-input w3-border" id="conf_password" name="conf_password" placeholder="Confirm Password" required>
+                    <button type="button" class="w3-button w3-circle" id="show_conf"><i class="fa fa-eye" id="togglePassword"></i></button><br>     
+                </div>
             <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-user-plus"></i> REGISTER</button>
         </form>
     </div>
