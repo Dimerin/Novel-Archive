@@ -30,7 +30,6 @@
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="text" class="w3-input w3-border" name="username" placeholder="Username" required><br>
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
-            <input type="text"  class="w3-input w3-border" name="name" placeholder="Name" required><br>
             <div class="w3-row">
                 <div class="w3-half">
                     <input type="password"  class="w3-input w3-border" id="password" name="password" placeholder="Password" required>
