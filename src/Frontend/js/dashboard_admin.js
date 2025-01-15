@@ -384,17 +384,17 @@ class Dashboard {
             const tr = document.createElement('tr');
 
             const tdId = document.createElement('td');
-            tdId.className = 'w3-bold';
+            tdId.style.fontWeight = 'bold';
             tdId.textContent = user.id;
             tr.appendChild(tdId);
 
             const tdUsername = document.createElement('td');
-            tdUsername.className = 'w3-bold';
+            tdUsername.style.fontWeight = 'bold';
             tdUsername.textContent = user.username;
             tr.appendChild(tdUsername);
 
             const tdEmail = document.createElement('td');
-            tdEmail.className = 'w3-bold';
+            tdEmail.style.fontWeight = 'bold';
             tdEmail.textContent = user.email;
             tr.appendChild(tdEmail);
 

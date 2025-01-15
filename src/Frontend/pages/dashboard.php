@@ -35,9 +35,9 @@
         <div id="catalogueSection" class="w3-section">
             <div class="w3-center w3-padding-64">
                 <div class="w3-center w3-text-black w3-margin-top">
-                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">Catalogue</span>
+                    <span class="w3-xxxlarge w3-hide-small w3-animate-bottom">Catalogue</span>
                     <br>
-                    <span class="w3-xxxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Catalogue</span>
+                    <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Catalogue</span>
                     <br>
                 </div>
                 <div class="w3-left-align w3-margin-left w3-section w3-bottombar w3-padding-16 w3-margin-bottom w3-animate-bottom">
@@ -57,10 +57,10 @@
         </div>
 
         <!-- Upload File Section -->
-        <div id="uploadFileSection" class=" w3-section w3-hide w3-padding-top-64 w3-margin-left">
+        <div id="uploadFileSection" class=" w3-section w3-hide w3-margin-left">
             <div class="w3-display-topmiddle w3-text-black w3-padding-64" >
                 <div class="w3-margin-top w3-padding-top-64">
-                    <span class="w3-jumbo w3-hide-small w3-animate-bottom">Upload your novel</span>
+                    <span class="w3-xxxlarge w3-hide-small w3-animate-bottom">Upload your novel</span>
                     <br>
                     <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Upload your novel</span>
                     <br>
@@ -74,8 +74,8 @@
                     <br>
                     <div class="overlap-container">
                         <div id="file_upload_section">
-                            <label id="upload_file_label" for="upload_file"><b>Select your PDF file</b></label>
-                            <input type="file" id="upload_file" class="w3-input w3-border" name="upload_file" id="file">
+                            <label id="upload_file_label" for="file"><b>Select your PDF file</b></label>
+                            <input type="file" class="w3-input w3-border" name="upload_file" id="file">
                             <br>
                         </div>
                         <div id="text_upload_section" class="hidden">
@@ -83,7 +83,7 @@
                             <input type="text" class="w3-input w3-border" name="title" id="title">
                             <br>
                             <label id="text_content_label" for="text_content"><b>Insert your text</b></label>
-                            <textarea class="w3-input w3-border" name="text_content" id="text_content" rows="10" cols="30"></textarea>
+                            <textarea class="w3-input w3-border textarea-max-height" name="text_content" id="text_content" rows="10" cols="150"></textarea>
                             <br>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
         <div id="manageUsersSection" class="w3-section w3-hide w3-padding-64">
             <div class="w3-display-topmiddle w3-half w3-text-black w3-padding-64">
                 <div class="w3-margin-top w3-padding-top-64">
-                    <span class="w3-jumbo w3-hide-small w3-animate-bottom w3-margin-left" id="manage-title">Manage Users</span>
+                    <span class="w3-xxxlarge w3-hide-small w3-animate-bottom w3-margin-left" id="manage-title">Manage Users</span>
                     <br>
                     <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-margin-left">Manage Users</span>
                     <br>
