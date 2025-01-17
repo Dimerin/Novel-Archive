@@ -28,8 +28,11 @@
         <form id="loginForm" class="w3-animate-bottom">
             <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
             <input type="email"  class="w3-input w3-border" name="email" placeholder="Email" required><br>
-            <input type="password"  class="w3-input w3-border" name="password" id="password" placeholder="Password" required>
-            <button type="button" class="w3-button w3-circle" id="show_psw"><i class="fa fa-eye" id="togglePassword"></i></button><br> 
+            <div class="password-container">
+                <input type="password"  class="w3-input w3-border" name="password" id="password" placeholder="Password" required>
+                <button type="button" class="w3-button w3-circle" id="show_psw"><i class="w3-text-black fa fa-eye" id="togglePassword"></i></button><br> 
+            </div>
+            <br>
             <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-sign-in"></i> LOGIN</button>
             <a href="/forgot_password"  class="w3-animate-bottom">Forgot password?</a>
         </form>
