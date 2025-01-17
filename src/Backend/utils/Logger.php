@@ -3,7 +3,10 @@
 class Logger {
     private static $instance = null; // Unica istanza del logger
     private $logFile;
-    private $sensitiveFields = ['password','new_password', 'conf_new_password', 'csrf_token', 'token'];
+    private $sensitiveFields = [
+        'password','new_password', 'conf_new_password',
+        'csrf_token', 'token', 'conf_password', 'PHPSESSID'
+    ];
 
     // Costruttore privato per prevenire l'uso diretto di "new"
     private function __construct($filePath) {
@@ -21,13 +24,25 @@ class Logger {
         return self::$instance;
     }
 
+    private function getUserData(){
+        if(isset($_SESSION['username'])){
+            return $_SESSION;
+        }
+        return null;
+    }
+
     // Funzione principale per loggare i dati
     private function logRequest($action, $responseCode, $message = '', $level = 'INFO') {
         // Rileva i dati della richiesta in base al metodo
-        $requestData = $this->getRequestData();
+        // $requestData = $this->getRequestData();
 
         // Filtra i campi sensibili come password
-        $filteredRequestData = $this->filterSensitiveData($requestData);
+        $filteredRequestDataPost = $this->filterSensitiveData($_POST);
+        $filteredRequestDataGet  = $this->filterSensitiveData($_GET);
+
+        $filteredSessionData = $this->filterSensitiveData($this->getUserData());
+
+        $uriPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
         $logEntry = [
             'timestamp' => date('Y-m-d H:i:s'),
@@ -35,27 +50,16 @@ class Logger {
             'client_ip' => $this->getClientIp(),
             'action' => $action,
             'method' => $_SERVER['REQUEST_METHOD'],
-            'url' => $_SERVER['REQUEST_URI'],
-            'query_params' => $_GET, // Se presenti
-            'body_params' => $filteredRequestData, // Dati del form o POST
+            'url' => $uriPath,
+            'query_params' => $filteredRequestDataGet, // Se presenti
+            'body_params' => $filteredRequestDataPost, // Dati del form o POST
+            'session_data' => $filteredSessionData,
             'response_code' => $responseCode,
             'message' => $message,
             'user_agent' => $_SERVER['HTTP_USER_AGENT']
         ];
 
         $this->writeLog($logEntry);
-    }
-
-    // Recupera i dati della richiesta in base al metodo
-    private function getRequestData() {
-        switch ($_SERVER['REQUEST_METHOD']) {
-            case 'POST':
-                return $_POST;
-            case 'GET':
-                return $_GET;
-            default:
-                return [];
-        }
     }
 
     // Filtra i campi sensibili dai dati della richiesta
