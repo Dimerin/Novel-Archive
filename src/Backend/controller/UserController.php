@@ -101,12 +101,20 @@ class UserController
         
         // Check if the user already exists
         if($this->user_service->checkUserExistence($email)) {
-            // todo: send email
+            // Send alert email
+            $message = file_get_contents(__DIR__ . '/../template/alertEmail.html');
+            // Send an email with the OTP
+            $subject = 'Novel Archive email reuse';
+            try {
+                $this->postman->send($email, $subject, $message);
+            } catch (Exception $e) {
+                $this->logger->error('register', 'Failed to send alarm email.', 500);
+            }
             $this->logger->error('register', 'email re-use for registration.', 409);
             return $this->sendResponse([
                 'status' => 'success', 
                 'message' => 'A confirmation email has been sent to your account.'
-            ], 409);
+            ], 201);
         }
 
         // Generate token
