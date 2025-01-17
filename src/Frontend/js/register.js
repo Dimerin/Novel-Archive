@@ -120,7 +120,7 @@ class Register {
             "w3-red",
             "w3-orange",
             "w3-yellow",
-            "w3-light-green",
+            "w3-yellow",
             "w3-green"
         ];
 
@@ -128,7 +128,7 @@ class Register {
             "weakest",
             "weak",
             "fair",
-            "good",
+            "fair",
             "strong"
         ];
     
@@ -136,7 +136,7 @@ class Register {
             "#ff6b6b",
             "#ffb304",
             "#f3ff00",
-            "#ace3a4",
+            "#f3ff00",
             "#22fa00"
         ];
         const result = zxcvbn(password);
