@@ -13,6 +13,7 @@ body, html {
     background-size: cover;
     min-height: 100vh; 
 }
+
 .bgnovel {
     background-image: url("../imgs/novel-txt.jpg");
     background-position: center;

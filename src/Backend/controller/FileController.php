@@ -17,51 +17,68 @@ class FileController
     {
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']){
             $this->logger->error('upload', 'CSFR Token missing.', 401);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Parametri mancanti.'], 401);
+            return $this->sendResponse(['status' => 'error', 'message' => 'File upload failed.'], 401);
         }
 
         // Controlla se il tipo di upload non è specificato
-        if (!isset($_POST['upload_type']) || !isset($_POST['novel_category']) || !is_string($_POST["novel_category"])) {
-            $this->logger->error('upload', 'Tipo di upload non specificato.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Tipo di upload non specificato.'], 400);
+        if (!isset($_POST['upload_type']) || !isset($_POST['novel_category']) ) {
+            $this->logger->error('upload', 'Missing parameters.', 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'File upload failed.'], 400);
+        }
+
+        if(!is_string($_POST["novel_category"]) || !is_string($_POST["upload_type"])){
+            $this->logger->error('upload', 'Types of parameters incorrect.', 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'File upload failed.'], 400);
         }
         
-        if ($_POST['upload_type'] == 'file' && isset($_FILES['file'])) {
+        if ($_POST['upload_type'] === 'file' && isset($_FILES['file'])) {
             $file = $_FILES['file'];
+
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                $this->logger->error('upload', 'File upload error code: ' . $file['error'], 400);
+                return $this->sendResponse(["status" => "error", "message" => "File upload failed."]);
+            }
+
+            if($file['size'] <= 0 || $file['size'] > 1024*1024*2){
+                $this->logger->error('upload', 'File size not supported.', 400);
+                return $this->sendResponse(["status"=>"error", "message" => "File size not supported"]);
+            }
+
+            if(empty($file["name"])){
+                $this->logger->error('upload', 'File name not supported.', 400);
+                return $this->sendResponse(["status"=>"error", "message" => "File name not supported"]);
+            }
+
             $filetype = pathinfo($file["name"], PATHINFO_EXTENSION);
             $title = pathinfo( $file["name"], PATHINFO_FILENAME);
             $title = preg_replace('/[^\w\-\.]/', '_', $title);
             $title = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+            $title = substr($title, 0, 255);
             $filedata = file_get_contents($file['tmp_name']);
-        } elseif ($_POST['upload_type'] == 'text' && isset($_POST['text_content'])) {
+        } elseif ($_POST['upload_type'] === 'text' && isset($_POST['text_content']) && isset($_POST['title']) 
+                && !empty($_POST['text_content']) && !empty($_POST['title'])) {
             $title = $_POST['title'];
             $title = htmlspecialchars($title,ENT_QUOTES, 'UTF-8');
             $filedata = $_POST['text_content'];
             $filedata = htmlspecialchars($filedata, ENT_QUOTES, 'UTF-8');
             $filetype = 'txt';
         } else {
-            return $this->sendResponse(['status' => 'error', 'message' => 'Nessun file o testo fornito.'], 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'No file or text inserted.'], 400);
         }
 
         if(!in_array($filetype, ["txt","pdf"])){
-            $this->logger->error('upload', 'Tipo di upload non supportato.', 400);
-            return $this->sendResponse(["status"=>"error", "message" => "Tipo di upload non supportato"]);
+            $this->logger->error('upload', 'File type not supported.', 400);
+            return $this->sendResponse(["status"=>"error", "message" => "File type not supported"]);
         }
         
         $novel_category = $_POST['novel_category'];
         if(!in_array($novel_category, ["free", "pro"])){
-            $this->logger->error('upload', 'Tipo di upload non supportato.', 400);
-            return $this->sendResponse(["status"=>"error", "message" => "Tipo di upload non supportato"]);
+            $this->logger->error('upload', 'File type not supported.', 400);
+            return $this->sendResponse(["status"=>"error", "message" => "File type not supported"]);
         }
         $user_id = $_SESSION['user_id'];
-        $userVisibility = $this->getUserVisibility();
 
-        $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
-
-        if($userVisibility < $selectedVisibility){
-            $this->logger->error('upload', 'Non hai i permessi per caricare questo contenuto.', 403);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Non hai i permessi per caricare questo contenuto.'], 403);
-        }
+        $selectedVisibility = $novel_category === 'pro' ? 1 : 0;
         
         $query = '
             INSERT INTO files (title, filetype, filedata, user_id, visibility)
@@ -69,25 +86,25 @@ class FileController
         ';
 
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) { //TODO: check if this is correct
-            throw new Exception("Preparazione della query fallita: " . $this->conn->error);
+        if (!$stmt) {
+            $this->logger->error('upload', 'Query preparation failed.', 500);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Query preparation failed.'], 500);
         }
 
         $stmt->bind_param("sssii", $title, $filetype, $filedata, $user_id, $selectedVisibility);
         if ($stmt->execute()) {
             $stmt->close();
-            $this->logger->info('upload', 'Testo caricato con successo.', 201);
-            return $this->sendResponse(['status' => 'success', 'message' => 'Testo caricato con successo.'], 201);
+            $this->logger->info('upload', 'Novel uploaded successfully', 201);
+            return $this->sendResponse(['status' => 'success', 'message' => 'Novel uploaded successfully'], 201);
         }
         $stmt->close();
-        $this->logger->error('upload', 'Caricamento del testo fallito.', 500);
-        return $this->sendResponse(['status' => 'error', 'message' => 'Caricamento del testo fallito.'], 500);
+        $this->logger->error('upload', 'Novel upload has failed', 500);
+        return $this->sendResponse(['status' => 'error', 'message' => 'Novel upload has failed'], 500);
     }
 
     private function getUserVisibility()
     {
-        //$user_id = 1; //TODO: when not testing, comment this line
-        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        $user_id = $_SESSION['user_id'];
         $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
         $stmt->bind_param('i', $user_id);
         $stmt->execute();
@@ -95,15 +112,15 @@ class FileController
         $stmt->fetch();
         $stmt->close();
 
-        $visibility = $role == 'free' ? 0 : 1;
+        $visibility = $role === 'free' ? 0 : 1;
         return $visibility;
     }
         
     public function downloadFile()
     {   
-        if (!isset($_POST['file_id'])) {
-            $this->logger->error('downloadFile', 'ID del file non fornito.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'ID del file non fornito.'], 400);
+        if (!isset($_POST['file_id']) || !is_numeric($_POST['file_id'])) {
+            $this->logger->error('downloadFile', 'File ID not provided', 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Download failed'], 400);
         }
 
         $fileId = $_POST['file_id'];
@@ -136,11 +153,11 @@ class FileController
         }
 
         if (!$title || !$filedata) {
-            $this->logger->error('downloadFile', 'File non trovato.', 404);
-            return $this->sendResponse(['status' => 'error', 'message' => 'File non trovato.'], 404);
+            $this->logger->error('downloadFile', 'File not found.', 404);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Download failed.'], 404);
         }
 
-        $this->logger->info('downloadFile', 'File scaricato con successo.', 200);
+        $this->logger->info('downloadFile', 'Novel uploaded successfully.', 200);
         $response = [
             'status' => 'success',
             'title' => $title,
@@ -156,12 +173,16 @@ class FileController
     {
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) :1;
         $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? intval($_GET['limit']) :10;
-        $file_type = isset($_GET['file_type']) ? $_GET['file_type'] : 'both';
+        $file_type = isset($_GET['file_type']) && is_string($_GET['file_type']) ? $_GET['file_type'] : 'both';
 
-        if( $page < 1){
+        if(!in_array($file_type, ['txt', 'pdf', 'both'])){
+            $file_type = 'both';
+        }
+
+        if($page < 1){
             $page = 1; //FIXME: come controllo la pagina massima da ritornare?
         }
-        if( $limit < 1 || $limit > 6){
+        if($limit < 1 || $limit > 6){
             $limit = 6;
         }
 
@@ -203,7 +224,11 @@ class FileController
 
         $stmt->close();
         $this->logger->info('showFiles', 'Files retrieved successfully.', 200);
-        return $this->sendResponse(['status'=> 'success','files'=> $files, 'last-page' => $isLastPage],200);
+        return $this->sendResponse([
+            'status'=> 'success',
+            'files'=> $files, 
+            'last-page' => $isLastPage
+        ],200);
     }
 
     private function sendResponse($data, $statusCode = 200)

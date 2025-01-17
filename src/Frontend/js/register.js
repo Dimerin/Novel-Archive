@@ -7,8 +7,12 @@ class Register {
         const registerForm = document.getElementById('registerForm');
         registerForm.addEventListener('submit', (event) => this.handleRegister(event));
         this.ensureToastScript();
+        this.ensureZxcvbnScript();
+        const passwordField = document.getElementById('password');
+        const confPasswordField = document.getElementById('conf_password');
         const showPasswordButton = document.getElementById('show_psw');
         const showConfPasswordButton = document.getElementById('show_conf');
+        const passwordStrengthText = document.getElementById('zxcvbn-text');
 
         if (showPasswordButton) {
             showPasswordButton.addEventListener('click', () => this.togglePasswordVisibility('password', showPasswordButton));
@@ -16,6 +20,14 @@ class Register {
 
         if (showConfPasswordButton) {
             showConfPasswordButton.addEventListener('click', () => this.togglePasswordVisibility('conf_password', showConfPasswordButton));
+        }
+        if (passwordField) {
+            passwordField.addEventListener('input', () => 
+                this.checkPasswordStrength(passwordField.value,  passwordStrengthText));
+        }
+        if (confPasswordField){
+            confPasswordField.addEventListener('input', () =>
+                this.checkPasswordMatching(passwordField.value, confPasswordField.value));
         }
     }
 
@@ -89,6 +101,93 @@ class Register {
             passwordField.type = 'password';
             icon.classList.add("fa-eye");
             icon.classList.remove("fa-eye-slash");
+        }
+    }
+
+    checkPasswordStrength(password, text) {        
+        const passwordField = document.getElementById('password');
+        const meter = document.getElementById('password-strength-meter')
+
+        const strength = [
+            "Weakest",
+            "Weak",
+            "Weak",
+            "Weak",
+            "Strong"
+        ];
+     
+        const w3_colors = [
+            "w3-red",
+            "w3-orange",
+            "w3-yellow",
+            "w3-yellow",
+            "w3-green"
+        ];
+
+        const meterClasses = [
+            "weakest",
+            "weak",
+            "fair",
+            "fair",
+            "strong"
+        ];
+    
+        const colors = [
+            "#ff6b6b",
+            "#ffb304",
+            "#f3ff00",
+            "#f3ff00",
+            "#22fa00"
+        ];
+        const result = zxcvbn(password);
+        if (password === '') {
+            text.innerText = '';
+            text.style.color = '';
+            w3_colors.forEach(color => passwordField.classList.remove(color));
+            meter.value = 0;
+            meter.className = '';
+            return;
+        }
+    
+        text.innerText = `${strength[result.score]}`;
+        text.style.color = colors[result.score];
+        meter.value = result.score;
+        meter.className = meterClasses[result.score];
+        w3_colors.forEach(w3_colors => passwordField.classList.remove(w3_colors));
+
+        passwordField.classList.add(w3_colors[result.score]);
+    }
+    checkPasswordMatching(passwordField, confPasswordField) {
+        const matchPsw = document.getElementById('match_psw');
+        const confPasswordInput = document.getElementById('conf_password');
+        if(matchPsw){
+            if (passwordField === confPasswordField) {
+                matchPsw.style.color = '#22fa00';
+                matchPsw.innerText = 'Passwords match';
+                confPasswordInput.classList.remove('w3-red');
+                confPasswordInput.classList.add('w3-green');
+            } 
+            else if(confPasswordField === '') {
+                matchPsw.style.color = '';
+                matchPsw.innerText = '';
+                confPasswordInput.classList.remove('w3-red');
+                confPasswordInput.classList.remove('w3-green');
+            }
+            else {
+                matchPsw.style.color = '#ff6b6b';
+                matchPsw.innerText = 'Passwords do not match';
+                confPasswordInput.classList.add('w3-red');
+                confPasswordInput.classList.remove('w3-green');
+            }
+        }
+    }
+
+    ensureZxcvbnScript() {
+        // Check if zxcvbn.js is already loaded
+        if (!document.querySelector('script[src="./Frontend/js/zxcvbn.js"]')) {
+            var script = document.createElement('script');
+            script.src = './Frontend/js/zxcvbn.js';
+            document.head.appendChild(script);
         }
     }
 
