@@ -26,14 +26,32 @@ class FileController
             return $this->sendResponse(['status' => 'error', 'message' => 'Upload type not specified.'], 400);
         }
         
-        if ($_POST['upload_type'] == 'file' && isset($_FILES['file'])) {
+        if ($_POST['upload_type'] === 'file' && isset($_FILES['file'])) {
             $file = $_FILES['file'];
+
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                $this->logger->error('upload', 'File upload error code: ' . $file['error'], 400);
+                return $this->sendResponse(["status" => "error", "message" => "File upload failed."]);
+            }
+
+            if($file['size'] <= 0 || $file['size'] > 1024*1024*2){
+                $this->logger->error('upload', 'File size not supported.', 400);
+                return $this->sendResponse(["status"=>"error", "message" => "File size not supported"]);
+            }
+
+            if(empty($file["name"])){
+                $this->logger->error('upload', 'File name not supported.', 400);
+                return $this->sendResponse(["status"=>"error", "message" => "File name not supported"]);
+            }
+
             $filetype = pathinfo($file["name"], PATHINFO_EXTENSION);
             $title = pathinfo( $file["name"], PATHINFO_FILENAME);
             $title = preg_replace('/[^\w\-\.]/', '_', $title);
             $title = htmlspecialchars($title, ENT_QUOTES, 'UTF-8');
+            $title = substr($title, 0, 255);
             $filedata = file_get_contents($file['tmp_name']);
-        } elseif ($_POST['upload_type'] == 'text' && isset($_POST['text_content'])) {
+        } elseif ($_POST['upload_type'] === 'text' && isset($_POST['text_content']) && isset($_POST['title']) 
+                && !empty($_POST['text_content']) && !empty($_POST['title'])) {
             $title = $_POST['title'];
             $title = htmlspecialchars($title,ENT_QUOTES, 'UTF-8');
             $filedata = $_POST['text_content'];
@@ -56,7 +74,7 @@ class FileController
         $user_id = $_SESSION['user_id'];
         $userVisibility = $this->getUserVisibility();
 
-        $selectedVisibility = $novel_category == 'pro' ? 1 : 0;
+        $selectedVisibility = $novel_category === 'pro' ? 1 : 0;
 
         if($userVisibility < $selectedVisibility){
             $this->logger->error('upload', 'Missing file permissions.', 403);
@@ -69,8 +87,9 @@ class FileController
         ';
 
         $stmt = $this->conn->prepare($query);
-        if (!$stmt) { //TODO: check if this is correct
-            throw new Exception("Preparazione della query fallita: " . $this->conn->error);
+        if (!$stmt) {
+            $this->logger->error('upload', 'Query preparation failed.', 500);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Query preparation failed.'], 500);
         }
 
         $stmt->bind_param("sssii", $title, $filetype, $filedata, $user_id, $selectedVisibility);
@@ -86,8 +105,7 @@ class FileController
 
     private function getUserVisibility()
     {
-        //$user_id = 1; //TODO: when not testing, comment this line
-        $user_id = $_SESSION['user_id']; //TODO: when not testing, uncomment this line
+        $user_id = $_SESSION['user_id'];
         $stmt = $this->conn->prepare('SELECT role FROM users WHERE id = ?');
         $stmt->bind_param('i', $user_id);
         $stmt->execute();
@@ -95,7 +113,7 @@ class FileController
         $stmt->fetch();
         $stmt->close();
 
-        $visibility = $role == 'free' ? 0 : 1;
+        $visibility = $role === 'free' ? 0 : 1;
         return $visibility;
     }
         
