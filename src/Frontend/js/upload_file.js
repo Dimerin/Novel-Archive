@@ -32,6 +32,14 @@ async function uploadFile(event) {
             showToast('warning', 'Select a file to upload.');
             return;
         }
+        const file = fileInput.files[0];
+        const maxFileSize = 2 * 1024 * 1024;
+
+        if (file.size > maxFileSize) {
+            showToast('warning', 'File size exceeds the maximum limit of 2 MB.');
+            resetFields();
+            return;
+        }
         formData.append('file', fileInput.files[0]);
         formData.append('novel_category', role);
     } 

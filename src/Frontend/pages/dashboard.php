@@ -74,7 +74,7 @@
                     <br>
                     <div class="overlap-container">
                         <div id="file_upload_section">
-                            <label id="upload_file_label" for="file"><b>Select your PDF file</b></label>
+                            <label id="upload_file_label" for="file"><b>Select your PDF file (Max Size: 2MB)</b></label>
                             <input type="file" class="w3-input w3-border" name="upload_file" id="file">
                             <br>
                         </div>
