@@ -17,13 +17,18 @@ class FileController
     {
         if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']){
             $this->logger->error('upload', 'CSFR Token missing.', 401);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Parameters missing.'], 401);
+            return $this->sendResponse(['status' => 'error', 'message' => 'File upload failed.'], 401);
         }
 
         // Controlla se il tipo di upload non è specificato
-        if (!isset($_POST['upload_type']) || !isset($_POST['novel_category']) || !is_string($_POST["novel_category"])) {
-            $this->logger->error('upload', 'Upload type not specified.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Upload type not specified.'], 400);
+        if (!isset($_POST['upload_type']) || !isset($_POST['novel_category']) ) {
+            $this->logger->error('upload', 'Missing parameters.', 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'File upload failed.'], 400);
+        }
+
+        if(!is_string($_POST["novel_category"]) || !is_string($_POST["upload_type"])){
+            $this->logger->error('upload', 'Types of parameters incorrect.', 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'File upload failed.'], 400);
         }
         
         if ($_POST['upload_type'] === 'file' && isset($_FILES['file'])) {
@@ -113,9 +118,9 @@ class FileController
         
     public function downloadFile()
     {   
-        if (!isset($_POST['file_id'])) {
+        if (!isset($_POST['file_id']) || !is_numeric($_POST['file_id'])) {
             $this->logger->error('downloadFile', 'File ID not provided', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'File ID not provided'], 400);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Download failed'], 400);
         }
 
         $fileId = $_POST['file_id'];
@@ -149,7 +154,7 @@ class FileController
 
         if (!$title || !$filedata) {
             $this->logger->error('downloadFile', 'File not found.', 404);
-            return $this->sendResponse(['status' => 'error', 'message' => 'File not found.'], 404);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Download failed.'], 404);
         }
 
         $this->logger->info('downloadFile', 'Novel uploaded successfully.', 200);
@@ -168,12 +173,16 @@ class FileController
     {
         $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) :1;
         $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? intval($_GET['limit']) :10;
-        $file_type = isset($_GET['file_type']) ? $_GET['file_type'] : 'both';
+        $file_type = isset($_GET['file_type']) && is_string($_GET['file_type']) ? $_GET['file_type'] : 'both';
 
-        if( $page < 1){
+        if(!in_array($file_type, ['txt', 'pdf', 'both'])){
+            $file_type = 'both';
+        }
+
+        if($page < 1){
             $page = 1; //FIXME: come controllo la pagina massima da ritornare?
         }
-        if( $limit < 1 || $limit > 6){
+        if($limit < 1 || $limit > 6){
             $limit = 6;
         }
 
@@ -215,7 +224,11 @@ class FileController
 
         $stmt->close();
         $this->logger->info('showFiles', 'Files retrieved successfully.', 200);
-        return $this->sendResponse(['status'=> 'success','files'=> $files, 'last-page' => $isLastPage],200);
+        return $this->sendResponse([
+            'status'=> 'success',
+            'files'=> $files, 
+            'last-page' => $isLastPage
+        ],200);
     }
 
     private function sendResponse($data, $statusCode = 200)
