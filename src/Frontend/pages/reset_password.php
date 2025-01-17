@@ -12,6 +12,7 @@
     <script src="./Frontend/js/reset_password.js"></script>
     <link rel="stylesheet" href="./Frontend/css/toast.css">
     <link rel="stylesheet" href="./Frontend/css/reset_password.css">
+    <script type="text/javascript" src="./Frontend/js/zxcvbn.js"></script>
     <script src="./Frontend/js/navbar.js"></script>
     <script src="./Frontend/js/toast.js"></script>
 </head>
@@ -24,6 +25,31 @@
     <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
     <input type="hidden" name="csrf" id="csrf" value="<?php echo $_SESSION['csrf_token']; ?>">
     <div class="w3-display-left w3-text-white padding48" id="ResetPswContentId">
+    <span class="w3-jumbo w3-hide-small w3-animate-bottom">Insert a new password</span>
+        <br>
+        <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom">Insert your new password</span>
+        <br>
+        <span class="w3-xlarge w3-animate-bottom">Use a strong password to increase security.</span>
+        <form id="resetpswForm" class="w3-animate-bottom">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            <input type="hidden" name="email" value="<?php echo htmlspecialchars($_GET['email']); ?>">
+            <input type="hidden" name="token" value="<?php echo htmlspecialchars($_GET['token']); ?>">
+            <input type="password" id="password" class="w3-input w3-border" name="new_password" placeholder="New Password" required>
+            <button type="button" class="w3-button w3-circle" id="show_psw">
+                <i class="fa fa-eye" id="togglePassword"></i>
+            </button>
+            <span id="zxcvbn-text" class="w3-medium"></span>
+            <br>
+            <input type="password" id="conf_password" class="w3-input w3-border" name="conf_new_password" placeholder="Confirm Password" required>
+            <button type="button" class="w3-button w3-circle" id="show_conf">
+                <i class="fa fa-eye" id="togglePassword"></i>
+            </button>
+            <span id="match_psw" class="w3-medium"></span>
+            <br>
+            <button type="submit" class="w3-button w3-black w3-animate-bottom">
+                <i class="fa fa-user-plus"></i> RESET PASSWORD
+            </button>
+        </form>
     </div>
     </header>
 </body>

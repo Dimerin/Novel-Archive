@@ -1,12 +1,9 @@
 .bgimg-1 {
     background-image: url('../imgs/dash.jpg');
-    height: 100vh; /* Set the height to 100% of the viewport height */
-    background-size: cover; /* Ensure the background image covers the entire area */
-    background-position: center; 
 }
 
 .textarea-max-height {
-    max-height: 15em; 
+    max-height: 12em; 
     overflow-y: auto;  
 }
 

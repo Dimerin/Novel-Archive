@@ -2,7 +2,7 @@ class Dashboard {
     constructor(mainContentId) {
         this.mainContent = document.getElementById(mainContentId);
         this.userPage = 1;
-        this.usersPerPage = 10;
+        this.usersPerPage = 5;
         this.cataloguePage = 1;
         this.novelsPerPage = 6;
         this.novels = [];

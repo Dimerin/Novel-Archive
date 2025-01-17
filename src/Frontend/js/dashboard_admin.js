@@ -2,7 +2,7 @@ class Dashboard {
     constructor(mainContentId) {
         this.mainContent = document.getElementById(mainContentId);
         this.userPage = 1;
-        this.usersPerPage = 10;
+        this.usersPerPage = 5;
         this.cataloguePage = 1;
         this.novelsPerPage = 6;
         this.novels = [];
@@ -359,11 +359,9 @@ class Dashboard {
     async loadAdminPageContent() {
         await this.fetchUsers(this.userPage);
 
-        // Add event listeners for pagination buttons
         document.getElementById('prevUserPageBtn').addEventListener('click', () => this.changePage('users', 'prev'));
         document.getElementById('nextUserPageBtn').addEventListener('click', () => this.changePage('users', 'next'));
 
-        // Add event listener for role change using event delegation
         document.getElementById('userTableBody').addEventListener('change', (event) => {
             if (event.target && event.target.name === 'role') {
                 const userId = event.target.getAttribute('data-user-id');
@@ -492,7 +490,14 @@ class Dashboard {
     }
 
     async changePage(type, direction) {
-        if (type === 'catalogue') {
+        if (type === 'users') {
+            if (direction === 'next' && !this.isLastUserPage) {
+                this.userPage++;
+            } else if (direction === 'prev' && this.userPage > 1) {
+                this.userPage--;
+            }
+            await this.fetchUsers(this.userPage);
+        } else if (type === 'catalogue') {
             if (direction === 'next' && !this.isLastCataloguePage) {
                 this.cataloguePage++;
             } else if (direction === 'prev' && this.cataloguePage > 1) {

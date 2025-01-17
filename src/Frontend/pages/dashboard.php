@@ -58,7 +58,7 @@
 
         <!-- Upload File Section -->
         <div id="uploadFileSection" class=" w3-section w3-hide w3-margin-left">
-            <div class="w3-display-topmiddle w3-text-black w3-padding-64" >
+            <div class="w3-display-topmiddle w3-text-black" >
                 <div class="w3-margin-top w3-padding-top-64">
                     <span class="w3-xxxlarge w3-hide-small w3-animate-bottom">Upload your novel</span>
                     <br>
@@ -83,15 +83,15 @@
                             <input type="text" class="w3-input w3-border" name="title" id="title">
                             <br>
                             <label id="text_content_label" for="text_content"><b>Insert your text</b></label>
-                            <textarea class="w3-input w3-border textarea-max-height" name="text_content" id="text_content" rows="10" cols="150"></textarea>
+                            <textarea class="w3-input w3-border textarea-max-height" name="text_content" id="text_content" rows="6" cols="150"></textarea>
                             <br>
                         </div>
+                    
+                        <input type="radio" name="novel-category" id="novel-category-free-pdf" value="free" class="w3-radio">
+                        <span class="w3-medium"><b>Free</b></span>
+                        <input type="radio" name="novel-category" id="novel-category-pro-pdf" value="pro" class="w3-radio">
+                        <span class="w3-medium"><b>Pro</b></span>
                     </div>
-                    <input type="radio" name="novel-category" id="novel-category-free-pdf" value="free" class="w3-radio" checked>
-                    <span class="w3-medium"><b>Free</b></span>
-                    <input type="radio" name="novel-category" id="novel-category-pro-pdf" value="pro" class="w3-radio">
-                    <span class="w3-medium"><b>Pro</b></span>
-                    <br><br>
                     <button type="submit" class="w3-button w3-black w3-animate-bottom" id="submitBtn">
                         <i class="fa fa-upload"></i> UPLOAD
                     </button>
@@ -102,14 +102,14 @@
        <!-- Manage Users Section -->
        <?php if ($_SESSION['role'] === 'admin'): ?>
         <div id="manageUsersSection" class="w3-section w3-hide w3-padding-64">
-            <div class="w3-display-topmiddle w3-half w3-text-black w3-padding-64">
+            <div class="w3-display-topmiddle w3-half w3-text-black">
                 <div class="w3-margin-top w3-padding-top-64">
                     <span class="w3-xxxlarge w3-hide-small w3-animate-bottom w3-margin-left" id="manage-title">Manage Users</span>
                     <br>
                     <span class="w3-xxlarge w3-hide-large w3-hide-medium w3-animate-bottom w3-margin-left">Manage Users</span>
                     <br>
                 </div>
-                <div class="w3-container w3-margin-top w3-padding-16">
+                <div class="w3-container w3-responsive w3-padding-16">
                     <table class="w3-table w3-card-4 w3-border-black w3-round-large w3-centered w3-animate-bottom">
                         <thead>
                             <tr class="w3-black">
@@ -129,7 +129,6 @@
                     <span id="usersPageInfo"></span>
                     <button class="w3-button w3-black" id="nextUserPageBtn">Next</button>
                 </div>
-              
             </div>
         </div>
         <?php endif; ?>

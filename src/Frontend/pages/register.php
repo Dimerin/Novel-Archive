@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="./Frontend/css/register.css">
 
     <link rel="icon" href="./Frontend/imgs/icon.ico">
-
+    <script type="text/javascript" src="./Frontend/js/zxcvbn.js"></script>
     <script src="./Frontend/js/register.js"></script>
 </head>
  
@@ -33,11 +33,13 @@
             <div class="w3-row">
                 <div class="w3-half">
                     <input type="password"  class="w3-input w3-border" id="password" name="password" placeholder="Password" required>
-                    <button type="button" class="w3-button w3-circle" id="show_psw"><i class="fa fa-eye" id="togglePassword"></i></button> 
+                    <button class="w3-button w3-circle" id="show_psw"><i class="fa fa-eye" id="togglePassword"></i></button> 
+                    <span class="w3-medium" id="zxcvbn-text"></span>
                 </div>
                 <div class="w3-half">
                     <input type="password"  class="w3-input w3-border" id="conf_password" name="conf_password" placeholder="Confirm Password" required>
-                    <button type="button" class="w3-button w3-circle" id="show_conf"><i class="fa fa-eye" id="togglePassword"></i></button><br>     
+                    <button class="w3-button w3-circle" id="show_conf"><i class="fa fa-eye" id="togglePassword"></i></button>
+                    <span class="w3-medium" id="match_psw"></span>   
                 </div>
             <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-user-plus"></i> REGISTER</button>
         </form>
