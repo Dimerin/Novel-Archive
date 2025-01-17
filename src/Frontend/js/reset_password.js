@@ -75,15 +75,16 @@ class ResetPswPage {
 
     checkPasswordStrength(password, text) {        
         const passwordField = document.getElementById('password');
+        const meter = document.getElementById('password-strength-meter')
 
         const strength = [
-            "Very Weak",
+            "Weakest",
             "Weak",
-            "Fair",
-            "Good",
+            "Weak",
+            "Weak",
             "Strong"
         ];
-
+     
         const w3_colors = [
             "w3-red",
             "w3-orange",
@@ -92,6 +93,14 @@ class ResetPswPage {
             "w3-green"
         ];
 
+        const meterClasses = [
+            "weakest",
+            "weak",
+            "fair",
+            "good",
+            "strong"
+        ];
+    
         const colors = [
             "#ff6b6b",
             "#ffb304",
@@ -104,12 +113,15 @@ class ResetPswPage {
             text.innerText = '';
             text.style.color = '';
             w3_colors.forEach(color => passwordField.classList.remove(color));
+            meter.value = 0;
+            meter.className = '';
             return;
         }
     
-        text.innerText = `Strength: ${strength[result.score]}`;
+        text.innerText = `${strength[result.score]}`;
         text.style.color = colors[result.score];
-
+        meter.value = result.score;
+        meter.className = meterClasses[result.score];
         w3_colors.forEach(w3_colors => passwordField.classList.remove(w3_colors));
 
         passwordField.classList.add(w3_colors[result.score]);

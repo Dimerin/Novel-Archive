@@ -33,12 +33,15 @@
             <div class="w3-row">
                 <div class="w3-half">
                     <input type="password"  class="w3-input w3-border" id="password" name="password" placeholder="Password" required>
-                    <button class="w3-button w3-circle" id="show_psw"><i class="fa fa-eye" id="togglePassword"></i></button> 
+                    <button type= "button" class="w3-button w3-circle" id="show_psw"><i class="fa fa-eye" id="togglePassword"></i></button> 
+                    <meter max="4" id="password-strength-meter"></meter>
                     <span class="w3-medium" id="zxcvbn-text"></span>
                 </div>
                 <div class="w3-half">
                     <input type="password"  class="w3-input w3-border" id="conf_password" name="conf_password" placeholder="Confirm Password" required>
-                    <button class="w3-button w3-circle" id="show_conf"><i class="fa fa-eye" id="togglePassword"></i></button>
+                    <button type="button" class="w3-button w3-circle" id="show_conf"><i class="fa fa-eye" id="togglePassword"></i></button>
+                   
+
                     <span class="w3-medium" id="match_psw"></span>   
                 </div>
             <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-user-plus"></i> REGISTER</button>

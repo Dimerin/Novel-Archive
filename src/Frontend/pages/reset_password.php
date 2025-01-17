@@ -38,12 +38,14 @@
             <button type="button" class="w3-button w3-circle" id="show_psw">
                 <i class="fa fa-eye" id="togglePassword"></i>
             </button>
+            <meter max="4" id="password-strength-meter"></meter>
             <span id="zxcvbn-text" class="w3-medium"></span>
             <br>
             <input type="password" id="conf_password" class="w3-input w3-border" name="conf_new_password" placeholder="Confirm Password" required>
             <button type="button" class="w3-button w3-circle" id="show_conf">
                 <i class="fa fa-eye" id="togglePassword"></i>
             </button>
+            
             <span id="match_psw" class="w3-medium"></span>
             <br>
             <button type="submit" class="w3-button w3-black w3-animate-bottom">
