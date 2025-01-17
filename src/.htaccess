@@ -1,3 +1,5 @@
+LimitRequestBody 3145728
+
 # Impedisce l'accesso diretto ai file .php
 <FilesMatch "\.php$">
     Require all denied
