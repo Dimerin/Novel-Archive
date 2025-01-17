@@ -94,8 +94,9 @@ class UserController
         
         // Check if the user already exists
         if($this->user_service->checkUserExistence($email)) {
-            $this->logger->error('register', 'User already exists.', 409);
-            return $this->sendResponse(['status' => 'error', 'message' => 'User already exists.'], 409);
+            // todo: send email
+            $this->logger->error('register', 'email re-use for registration.', 409);
+            return $this->sendResponse(['status' => 'error', 'message' => 'A confirmation email has been sent to your account.'], 409);
         }
 
         // Generate token
@@ -379,7 +380,7 @@ class UserController
             }
             else {
                 $this->logger->error('login', 'User is timed out.', 401);
-                return $this->sendResponse(['status' => 'error', 'message' => 'User is timed out.'], 401);
+                return $this->sendResponse(['status' => 'error', 'message' => 'Invalid credentials or too many failed attempts.'], 401);
             }
         }
 
@@ -390,6 +391,7 @@ class UserController
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $role;
             $_SESSION['user_id'] = $id;
+            $_SESSION['email'] = $email;
 
             $this->logger->info('login', 'Login successful.', 200);
             return $this->sendResponse(['status' => 'success', 'message' => 'Login successful.', 'user' => ['id' => $id, 'username' => $username]], 200);
@@ -397,7 +399,7 @@ class UserController
         }
         $this->user_service->updateLoginAttempts($email, $first_attempt, $timedout, $attempts);
         $this->logger->error('login', 'Invalid email or password.', 401);
-        return $this->sendResponse(['status' => 'error', 'message' => 'Invalid email or password.'], 401);
+        return $this->sendResponse(['status' => 'error', 'message' => 'Invalid credentials or too many failed attempts.'], 401);
     }
     public function logout()
     {
