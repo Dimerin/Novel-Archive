@@ -72,14 +72,8 @@ class FileController
             return $this->sendResponse(["status"=>"error", "message" => "File type not supported"]);
         }
         $user_id = $_SESSION['user_id'];
-        $userVisibility = $this->getUserVisibility();
 
         $selectedVisibility = $novel_category === 'pro' ? 1 : 0;
-
-        if($userVisibility < $selectedVisibility){
-            $this->logger->error('upload', 'Missing file permissions.', 403);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Missing file permissions.'], 403);
-        }
         
         $query = '
             INSERT INTO files (title, filetype, filedata, user_id, visibility)
