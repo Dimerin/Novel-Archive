@@ -22,8 +22,10 @@ class Register {
             showConfPasswordButton.addEventListener('click', () => this.togglePasswordVisibility('conf_password', showConfPasswordButton));
         }
         if (passwordField) {
-            passwordField.addEventListener('input', () => 
-                this.checkPasswordStrength(passwordField.value,  passwordStrengthText));
+            passwordField.addEventListener('input', () => {
+                this.checkPasswordStrength(passwordField.value,  passwordStrengthText);
+                this.checkPasswordMatching(passwordField.value, confPasswordField.value)
+            });
         }
         if (confPasswordField){
             confPasswordField.addEventListener('input', () =>
@@ -45,12 +47,12 @@ class Register {
 
             if (response.ok) {
                 const result = await response.json();
-                console.log(result);
+                //console.log(result);
                 showToast('success', result.message);
                 this.showConfirmationPage();
             } else {
                 const error = await response.json();
-                console.log(error);
+                //console.log(error);
                 showToast('error', error.message);
             }
         } catch (error) {
