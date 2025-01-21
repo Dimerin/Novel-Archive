@@ -78,7 +78,7 @@ class Router
         ];
     
         // Controlla se l'endpoint esiste nella mappatura
-        if (!array_key_exists($apiRequest, $apiEndpoints)) {
+        if (!is_string($apiRequest) || !array_key_exists($apiRequest, $apiEndpoints)) {
             $this->logger->error('handleRequest', 'API not found.', 404);
             http_response_code(404);
             echo json_encode(['error' => 'API not found']);
@@ -137,7 +137,7 @@ class Router
         ];
 
         // Controllo se il percorso non esiste nella mappatura
-        if (!array_key_exists($this->request, $pages)) {
+        if (!is_string($this->request) || !array_key_exists($this->request, $pages)) {
             // Carica la pagina 404 se il percorso non esiste
             $this->logger->error('handleRequest', 'Page not found.', 404);
             require "{$this->pages_path}/404.php";

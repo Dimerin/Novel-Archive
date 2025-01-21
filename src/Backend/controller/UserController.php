@@ -405,13 +405,6 @@ class UserController
         $stmt->fetch();
         $stmt->close();
 
-        if ($status == INACTIVE) {
-            $this->logger->error('login', 'User is inactive.', 401);
-            return $this->sendResponse([
-                'status' => 'error', 
-                'message' => 'User is inactive.'
-            ], 401);
-        }
         //Check if the user is timedout
         if($timedout)
         {
@@ -433,31 +426,55 @@ class UserController
             }
         }
 
-        // Verifica la password
-        if (password_verify($password, $hashedPassword)) {
-            // Regenerate session ID to prevent fixation after successful login
-            session_regenerate_id(true);
-            $_SESSION['username'] = $username;
-            $_SESSION['role'] = $role;
-            $_SESSION['user_id'] = $id;
-            $_SESSION['email'] = $email;
-
-            $this->logger->info('login', 'Login successful.', 200);
+        if(!password_verify($password, $hashedPassword)) {
+            if($status === ACTIVE){
+                $this->user_service->updateLoginAttempts(
+                    $email, $first_attempt, 
+                    $timedout, $attempts
+                );
+            }
+            $this->logger->error(
+                'login', 
+                'Invalid email or password.', 
+                401
+            );
             return $this->sendResponse([
-                'status' => 'success', 
-                'message' => 'Login successful.', 
-                'user' => ['id' => $id, 'username' => $username]
-            ], 200);
-
+                'status' => 'error', 
+                'message' => 'Invalid credentials or too many failed attempts.'
+            ], 401);
         }
-        $this->user_service->updateLoginAttempts($email, $first_attempt, 
-            $timedout, $attempts);
 
-        $this->logger->error('login', 'Invalid email or password.', 401);
+        if ($status === INACTIVE) {
+            $this->logger->error(
+                'login', 
+                'User is inactive.', 
+                401
+            );
+            return $this->sendResponse([
+                'status' => 'error', 
+                'message' => 'User is inactive.'
+            ], 401);
+        }
+
+        $this->user_service->resetAttempts($email);
+
+        // Regenerate session ID to prevent fixation after successful login
+        session_regenerate_id(true);
+        $_SESSION['username'] = $username;
+        $_SESSION['role'] = $role;
+        $_SESSION['user_id'] = $id;
+        $_SESSION['email'] = $email;
+
+        $this->logger->info(
+            'login', 
+            'Login successful.', 
+            200
+        );
         return $this->sendResponse([
-            'status' => 'error', 
-            'message' => 'Invalid credentials or too many failed attempts.'
-        ], 401);
+            'status' => 'success', 
+            'message' => 'Login successful.', 
+            'user' => ['id' => $id, 'username' => $username]
+        ], 200);
     }
     public function logout()
     {
@@ -543,17 +560,20 @@ class UserController
         $newRole = $_POST['new_role'];
         $actualRole = $_POST['actual_role'];
 
-        if ($newRole !== 'free' && $newRole !== 'admin' && $newRole !== 'pro') {
-            $this->logger->error('changeUserRole', 'Invalid role.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid role.'], 400);
+        if(!in_array($newRole, ['free', 'admin', 'pro'], true)
+            || !in_array($actualRole, ['free', 'admin', 'pro'], true)) {
+            $this->logger->error(
+                'changeUserRole',
+                 'Invalid role.',
+                  400
+            );
+            return $this->sendResponse([
+                'status' => 'error', 
+                'message' => 'Invalid role.'
+            ], 400);
         }
 
-        if ($actualRole !== 'free'&& $actualRole !== 'admin' && $actualRole !== 'pro') {
-            $this->logger->error('changeUserRole', 'Invalid role.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid role.'], 400);
-        }
-
-        if ($actualRole === 'admin') {
+        if ($actualRole === 'admin' || $newRole === 'admin') {
             $this->logger->error('changeUserRole', 'Unauthorized.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
@@ -561,11 +581,6 @@ class UserController
         if ( $actualRole ===  $newRole ){
             $this->logger->error('changeUserRole', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-
-        if ( $newRole === 'admin' ){
-            $this->logger->error('changeUserRole', 'Unauthorized.', 401);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
 
         $stmt = $this->conn->prepare(
@@ -592,12 +607,7 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Unauthorized.'], 401);
         }
 
-        if($role === $newRole) {
-            $this->logger->error('changeUserRole', 'Invalid request.', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
-        }
-        
-        if($role !== $actualRole) {
+        if($role === $newRole || $role !== $actualRole) {
             $this->logger->error('changeUserRole', 'Invalid request.', 400);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 400);
         }
