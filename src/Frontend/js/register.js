@@ -35,28 +35,51 @@ class Register {
 
     async handleRegister(event) {
         event.preventDefault();
-
+        const icon = document.getElementById('register-icon');
         const registerForm = event.target;
         const formData = new FormData(registerForm);
+        const registerSubmit = document.querySelector('button[type="submit"]');
 
         try {
+            this.changeIcon(icon);
+            this.toggleButton(registerSubmit);
             const response = await fetch('/api/register', {
                 method: 'POST',
                 body: formData
             });
-
             if (response.ok) {
                 const result = await response.json();
-                //console.log(result);
+                this.changeIcon(icon);
+                this.toggleButton(registerSubmit);
                 showToast('success', result.message);
                 this.showConfirmationPage();
             } else {
                 const error = await response.json();
-                //console.log(error);
+                this.toggleButton(registerSubmit);
+                this.changeIcon(icon);
                 showToast('error', error.message);
             }
         } catch (error) {
+            this.toggleButton(registerSubmit);
+            this.changeIcon(icon);
             showToast('error', error.message);
+        }
+    }
+
+    toggleButton(button) {
+        if (button.disabled) {
+            button.disabled = false;
+        } else {
+            button.disabled = true;
+        }
+    }
+    changeIcon(icon) {
+        if (icon.classList.contains('fa-user-plus')) {
+            icon.classList.remove('fa-user-plus');
+            icon.classList.add('fa-spinner', 'fa-spin');
+        } else {
+            icon.classList.remove('fa-spinner', 'fa-spin');
+            icon.classList.add('fa-user-plus');
         }
     }
 

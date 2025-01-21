@@ -52,7 +52,7 @@ class EmailConfirmationPage {
 
         const span3 = document.createElement('span');
         span3.className = 'w3-xlarge w3-animate-bottom w3-animate-delay-2';
-        span3.textContent = 'You have successfully registered, you will be redirected to the homepage in ';
+        span3.textContent = 'You have successfully registered, you will be redirected to the login page in ';
         const countdownSpan = document.createElement('span');
         countdownSpan.id = 'countdown';
         countdownSpan.textContent = '3';

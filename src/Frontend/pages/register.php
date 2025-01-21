@@ -44,7 +44,7 @@
                 </div>
                 <span class="w3-medium w3-margin-left w3-padding-left" id="match_psw"></span> 
             <br>
-            <button class="w3-button w3-black w3-animate-bottom" type="submit"><i class="fa fa-user-plus"></i> REGISTER</button>       
+            <button class="w3-button w3-black w3-animate-bottom" type="submit"><i id="register-icon" class="fa fa-user-plus"></i> REGISTER</button>       
         </form>
     </div>
     </header>
