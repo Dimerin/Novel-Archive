@@ -186,13 +186,13 @@ class Register {
         const matchPsw = document.getElementById('match_psw');
         const confPasswordInput = document.getElementById('conf_password');
         if(matchPsw){
-            if (passwordField === confPasswordField) {
+            if (passwordField === confPasswordField && passwordField !== '' && confPasswordField !== '') {
                 matchPsw.style.color = '#22fa00';
                 matchPsw.innerText = 'Passwords match';
                 confPasswordInput.classList.remove('w3-red');
                 confPasswordInput.classList.add('w3-green');
             } 
-            else if(confPasswordField === '') {
+            else if(confPasswordField === '' || passwordField === '') {
                 matchPsw.style.color = '';
                 matchPsw.innerText = '';
                 confPasswordInput.classList.remove('w3-red');
