@@ -232,12 +232,9 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to initiate password reset.'], 500);
         }
 
-        //Disable the user
-        try {
-            $this->user_service->setUserStatus($email, INACTIVE);
-        } catch (Exception $e) {
-            $this->logger->error('forgotPassword', 'Failed to initiate password reset.', 500);
-            return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
+        if(!$this->user_service->setUserStatus($email, INACTIVE)){
+            $this->logger->error('forgotPassword', 'Failed to disable user.', 500);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to initiate password reset.'], 500);
         }
         
         $htmlTemplate = file_get_contents(__DIR__ . '/../template/resetEmail.html');
@@ -339,15 +336,13 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
         
-        //ENABLE the user
-        try {
-            $this->user_service->setUserStatus($email, ACTIVE);
-        } catch (Exception $e) {
+        if(!$this->user_service->setUserStatus($email, ACTIVE)){
             $this->logger->error('resetPassword', 'Failed to enable user.', 500);
-            return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to enable user.'], 500);
         }
+
         $this->logger->info('resetPassword', 'Password reset successfully.', 200);
-       return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
+        return $this->sendResponse(['status' => 'success', 'message' => 'Password reset successfully.'], 200);
     }  
 
     public function login()
