@@ -58,7 +58,8 @@ class UserController
 
     public function register()
     {
-        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) 
+            || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->logger->error('register', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
         }
@@ -200,7 +201,8 @@ class UserController
 
     public function forgotPassword()
     {
-        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) 
+            || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->logger->error('forgotPassword', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
         }
@@ -265,7 +267,8 @@ class UserController
     
     public function resetPassword()
     {
-        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) 
+            || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->logger->error('resetPassword', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
         }
@@ -352,7 +355,8 @@ class UserController
 
     public function login()
     {   
-        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) 
+            || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->logger->error('login', 'Invalid request.', 401);
             return $this->sendResponse([
                 'status' => 'error',
@@ -478,7 +482,8 @@ class UserController
     }
     public function logout()
     {
-        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) 
+            || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->logger->error('logout', 'Invalid request parameters.', 403);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 403);
         }
@@ -539,7 +544,8 @@ class UserController
 
     public function changeUserRole()
     {
-        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) 
+            || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->logger->error('changeUserRole', 'Invalid request.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 401);
         }

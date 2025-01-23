@@ -15,7 +15,8 @@ class FileController
 
     public function upload()
     {
-        if(!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']){
+        if(!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token'])
+            || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])){
             $this->logger->error('upload', 'CSFR Token missing.', 401);
             return $this->sendResponse(['status' => 'error', 'message' => 'File upload failed.'], 401);
         }
