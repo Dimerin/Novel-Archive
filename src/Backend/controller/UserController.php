@@ -182,12 +182,9 @@ class UserController
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid Token.'], 401);
         }
 
-        // Update the user's status to verified
-        try{
-            $this->user_service->setUserStatus($email, ACTIVE);
-        } catch (Exception $e) {
+        if(!$this->user_service->setUserStatus($email, ACTIVE)) {
             $this->logger->error('verifyUser', 'User Staus not updated', 400);
-            return $this->sendResponse(['status' => 'error', 'message' => $e->getMessage()], 500);
+            return $this->sendResponse(['status' => 'error', 'message' => 'Failed to verify user.'], 500);
         }
             
         // Delete the token from the tokens table
