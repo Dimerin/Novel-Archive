@@ -483,11 +483,17 @@ class UserController
             $this->logger->error('logout', 'Invalid request parameters.', 403);
             return $this->sendResponse(['status' => 'error', 'message' => 'Invalid request.'], 403);
         }
+        $this->logger->info(
+            'logout',
+            'Logout successful.', 200
+        );
         // Destroy the session
         session_unset();
         session_destroy();
-        $this->logger->info('logout', 'Logout successful.', 200);
-        return $this->sendResponse(['status' => 'success', 'message' => 'Logout successful.'], 200);
+        return $this->sendResponse([
+            'status' => 'success',
+            'message' => 'Logout successful.'
+        ], 200);
     }
 
     public function showUsers()
