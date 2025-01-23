@@ -389,10 +389,14 @@ class UserController
 
         if ($stmt->num_rows == 0) {
             $stmt->close();
-            $this->logger->error('login', 'Invalid email or password.', 401);
+            $this->logger->error(
+                'login', 
+                'Invalid email or password.', 
+                401
+            );
             return $this->sendResponse([
                 'status' => 'error', 
-                'message' => 'Invalid email or password.'
+                'message' => 'Invalid credentials or too many failed attempts.'
             ], 401);
         }
 
