@@ -48,7 +48,7 @@ cd Novel-Archive
     LOG_PATH=/var/www/logs/novel_archive
     ```
     Insert in the corrisponding fields the database and mail credentials.
-4. Download and install (composer)[https://getcomposer.org/].
+4. Download and install [composer](https://getcomposer.org/).
 5. Use composer for installing phpmailer:
     ```bash
     composer require phpmailer/phpmailer
