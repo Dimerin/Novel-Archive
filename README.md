@@ -31,10 +31,10 @@ The system can be deployed with docker.
 Here are the installation steps:
 
 1. Clone the repository:
-```
-git clone https://github.com/Dimerin/Novel-Archive
-cd Novel-Archive
-```
+    ```
+    git clone https://github.com/Dimerin/Novel-Archive
+    cd Novel-Archive
+    ```
 2. Create or prepare a valid email for the application use.
 3. Create `.env` file with the following structure:
     ``` 
