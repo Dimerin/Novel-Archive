@@ -57,3 +57,6 @@ Here are the installation steps:
    ```bash
    docker-compose 
    ```
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
