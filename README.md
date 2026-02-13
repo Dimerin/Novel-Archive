@@ -25,6 +25,11 @@ Novel Archive is the project for the "System and network Hacking"'s course of Un
 
 ## Security
 The platform has implemented defenses and mitigation for:
+- SQL injections
+- Role Based Access Control
+- Cross Side Scripting
+- TLS access
+- CSRF token
 
 ## Installation
 The system can be deployed with docker.
